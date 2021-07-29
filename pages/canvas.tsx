@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { KeyboardEvent, useEffect, useRef } from 'react';
 import styled from 'styled-components'
 
-const CHUNK_SIZE = 20;
+const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
 
 class Chunk {
@@ -56,14 +56,15 @@ class CanvasController {
     canvas.height = this.size.height;
     this.canvas = canvas;
 
-    this.loadChunk(0, 0);
-
+    this.loadNeighboringChunks();
     window.addEventListener('resize', this.resize);
     window.addEventListener('mousedown', this.mouseDown);
     window.addEventListener('mousemove', this.mouseMove);
     window.addEventListener('mouseup', this.mouseUp);
     // @ts-ignore
     window.addEventListener('mousewheel', this.zoom);
+    // @ts-ignore
+    window.addEventListener('keydown', this.keydown);
   }
 
   destructor() {
@@ -74,17 +75,23 @@ class CanvasController {
     window.removeEventListener('mouseup', this.mouseUp);
     // @ts-ignore
     window.removeEventListener('mousewheel', this.zoom);
+    // @ts-ignore
+    window.removeEventListener('keydown', this.keydown);
   }
 
   // Utils //
   setCanvasSize = () => {
-    this.canvas.width = document.documentElement.clientWidth;
-    this.canvas.height = document.documentElement.clientHeight
+    this.size = {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+    };
+    this.canvas.width = this.size.width;
+    this.canvas.height = this.size.height;
   }
   coordinatesOnCanvas = (targetX: number, targetY: number) => {
     const { zoom, x, y } = this.position;
-    const width = document.documentElement.clientWidth;
-    const height = document.documentElement.clientHeight;
+    const width = this.size.width;
+    const height = this.size.height;
     const pixelSize = PIXEL_SIZE / zoom;
     const centerX = (width / 2);
     const centerY = (height / 2);
@@ -96,8 +103,8 @@ class CanvasController {
   }
   canvasToCoordinates = (posX: number, posY: number) => {
     const { zoom, x, y } = this.position;
-    const width = document.documentElement.clientWidth;
-    const height = document.documentElement.clientHeight;
+    const width = this.size.width;
+    const height = this.size.height;
     const pixelSize = PIXEL_SIZE / zoom;
     const centerX = (width / 2);
     const centerY = (height / 2);
@@ -107,17 +114,36 @@ class CanvasController {
 
     return { coordX, coordY };
   };
-  loadChunk = (chunkX: number, chunkY: number) => {
+  loadChunk = (chunkX: number, chunkY: number, reload: boolean = false) => {
+    if (!reload && this.chunks[`${chunkX};${chunkY}`])
+      return;
+
     const img = new Image();
-    img.src = '/pixels.png'
+    img.src = '/pixels2.png'
     img.onload = () => {
       const chunk = new Chunk({x: chunkX, y: chunkY});
       chunk.loadImage(img);
-      this.chunks[`${chunkX}-${chunkY}`] = chunk;
+      this.chunks[`${chunkX};${chunkY}`] = chunk;
       this.render();
     }
     img.onerror = (e) => {
       console.error(e)
+    }
+  }
+  loadNeighboringChunks = () => {
+    const width = this.size.width;
+    const height = this.size.height;
+    const centerX = (width / 2);
+    const centerY = (height / 2);
+
+    const { coordX, coordY } = this.canvasToCoordinates(centerX, centerY);
+
+    const chunkNbX = Math.ceil(width / CHUNK_SIZE) + 2;
+    const chunkNbY = Math.ceil(height / CHUNK_SIZE) + 2;
+    for (let x = coordX - CHUNK_SIZE * (chunkNbX / 2); x < coordX + CHUNK_SIZE * (chunkNbX / 2); x+= CHUNK_SIZE) {
+      for (let y = coordY - CHUNK_SIZE * (chunkNbY / 2); y < coordY + CHUNK_SIZE * (chunkNbY / 2); y+= CHUNK_SIZE) {
+          this.loadChunk(Math.floor(x / CHUNK_SIZE), Math.floor(y / CHUNK_SIZE));
+      }
     }
   }
   placePixel = (coordX: number, coordY: number) => {
@@ -126,14 +152,31 @@ class CanvasController {
     if (!ctx)
       return;
 
+      console.log(coordX, coordY);
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
-
-    if (this.chunks[`${chunkX}-${chunkY}`]) {
-      this.chunks[`${chunkX}-${chunkY}`].placePixel(coordX % CHUNK_SIZE, coordY % CHUNK_SIZE, "#FF0000");
+    if (this.chunks[`${chunkX};${chunkY}`]) {
+      const px = (coordX > 0 ? coordX : CHUNK_SIZE + coordX ) % CHUNK_SIZE;
+      const py = (coordY > 0 ? coordY : CHUNK_SIZE + coordY ) % CHUNK_SIZE;
+      this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, "#FF0000");
       this.render();
     }
+  }
+  changeZoom = (delta: number) => {
+    const newZoom = this.position.zoom + (delta / PIXEL_SIZE);
+    this.position = {
+      ...this.position,
+      zoom: newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom,
+    };
+    this.loadNeighboringChunks();
+    this.render();
+  }
+  changePosition = (deltaX: number, deltaY: number) => {
+    this.position.x += deltaX;
+    this.position.y += deltaY;
+    this.loadNeighboringChunks();
+    this.render();
   }
 
 
@@ -154,12 +197,7 @@ class CanvasController {
         }
         this.isMoving = true;
       }
-      this.position = {
-        ...this.position,
-        x: this.position.x + (e.clientX - this.startMove.x),
-        y: this.position.y + (e.clientY - this.startMove.y),
-      }
-      this.render();
+      this.changePosition(e.clientX - this.startMove.x, e.clientY - this.startMove.y);
       this.startMove = {
         x: e.clientX,
         y: e.clientY,
@@ -177,12 +215,30 @@ class CanvasController {
     this.isMouseDown = false
   }
   zoom = (e: WheelEvent) => {
-    const newZoom = this.position.zoom + (e.deltaY / PIXEL_SIZE);
-    this.position = {
-      ...this.position,
-      zoom: newZoom < 1 ? 1 : newZoom,
-    };
-    this.render();
+    this.changeZoom(e.deltaY);
+  }
+  keydown = (e: KeyboardEvent) => {
+    console.log(e.key);
+    switch (e.key) {
+      case 'e':
+        this.changeZoom(-this.position.zoom * 2);
+        break;
+      case 'a':
+        this.changeZoom(this.position.zoom * 2);
+        break;
+      case 'ArrowUp':
+        this.changePosition(0, 4 * PIXEL_SIZE);
+        break;
+      case 'ArrowDown':
+        this.changePosition(0, -4 * PIXEL_SIZE);
+        break;
+      case 'ArrowLeft':
+        this.changePosition(4 * PIXEL_SIZE, 0);
+        break;
+      case 'ArrowRight':
+        this.changePosition(-4 * PIXEL_SIZE, 0);
+        break;
+    }
   }
 
   // Drawing //
@@ -233,7 +289,7 @@ class CanvasController {
     const pixelSize = PIXEL_SIZE / this.position.zoom;
     Object.keys(this.chunks).map((name) => {
       const chunk = this.chunks[name];
-      const {posX, posY} = this.coordinatesOnCanvas(0, 0);
+      const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
 
       ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
     })
