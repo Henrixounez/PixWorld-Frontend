@@ -59,26 +59,26 @@ class CanvasController {
     this.canvas = canvas;
 
     this.loadNeighboringChunks();
-    window.addEventListener('resize', this.resize);
-    window.addEventListener('mousedown', this.mouseDown);
-    window.addEventListener('mousemove', this.mouseMove);
-    window.addEventListener('mouseup', this.mouseUp);
-    window.addEventListener('wheel', this.zoom);
-    window.addEventListener('keypress', this.keypress);
-    window.addEventListener('keydown', this.keydown);
-    window.addEventListener('keyup', this.keyup);
+    this.canvas.addEventListener('resize', this.resize);
+    this.canvas.addEventListener('mousedown', this.mouseDown);
+    this.canvas.addEventListener('mousemove', this.mouseMove);
+    this.canvas.addEventListener('mouseup', this.mouseUp);
+    this.canvas.addEventListener('wheel', this.zoom);
+    this.canvas.addEventListener('keypress', this.keypress);
+    this.canvas.addEventListener('keydown', this.keydown);
+    this.canvas.addEventListener('keyup', this.keyup);
   }
 
   destructor() {
     console.log('destructor');
-    window.removeEventListener('resize', this.resize);
-    window.removeEventListener('mousedown', this.mouseDown);
-    window.removeEventListener('mousemove', this.mouseMove);
-    window.removeEventListener('mouseup', this.mouseUp);
-    window.removeEventListener('wheel', this.zoom);
-    window.removeEventListener('keypress', this.keypress);
-    window.removeEventListener('keydown', this.keydown);
-    window.removeEventListener('keyup', this.keyup);
+    this.canvas.removeEventListener('resize', this.resize);
+    this.canvas.removeEventListener('mousedown', this.mouseDown);
+    this.canvas.removeEventListener('mousemove', this.mouseMove);
+    this.canvas.removeEventListener('mouseup', this.mouseUp);
+    this.canvas.removeEventListener('wheel', this.zoom);
+    this.canvas.removeEventListener('keypress', this.keypress);
+    this.canvas.removeEventListener('keydown', this.keydown);
+    this.canvas.removeEventListener('keyup', this.keyup);
   }
 
   // Utils //
@@ -160,9 +160,9 @@ class CanvasController {
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
     if (this.chunks[`${chunkX};${chunkY}`]) {
-      const px = (coordX > 0 ? coordX : CHUNK_SIZE + coordX ) % CHUNK_SIZE;
-      const py = (coordY > 0 ? coordY : CHUNK_SIZE + coordY ) % CHUNK_SIZE;
-      this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, "#FF0000");
+      const px = coordX % CHUNK_SIZE;
+      const py = coordY % CHUNK_SIZE;
+      this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, "#FF0000");
       this.render();
     }
   }
