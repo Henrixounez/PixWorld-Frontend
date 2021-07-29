@@ -1,5 +1,28 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
+import palette from './palette';
+
+const Canvas = styled.canvas`
+  z-index: -1;
+`;
+const Palette = styled.div`
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 5px;
+  background-color: #FFF;
+  border: 1px solid #000;
+
+  .palette-color {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+`;
 
 const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
@@ -34,9 +57,6 @@ class Chunk {
   }
 }
 
-const Canvas = styled.canvas`
-`;
-
 class CanvasController {
   canvas: HTMLCanvasElement;
   shiftPressed = false;
@@ -47,11 +67,13 @@ class CanvasController {
   isMouseDown = false;
   startMove = { x: 0, y: 0 };
   chunks: Record<string, Chunk> = {};
+  selectedColor = palette[0];
+  haveMouseOver = false;
 
   constructor() {
     this.size = {
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight,
+      width: window.innerWidth,
+      height: window.innerHeight,
     }
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     canvas.width = this.size.width;
@@ -59,36 +81,35 @@ class CanvasController {
     this.canvas = canvas;
 
     this.loadNeighboringChunks();
-    this.canvas.addEventListener('resize', this.resize);
     this.canvas.addEventListener('mousedown', this.mouseDown);
     this.canvas.addEventListener('mousemove', this.mouseMove);
     this.canvas.addEventListener('mouseup', this.mouseUp);
+    this.canvas.addEventListener('mouseenter', this.mouseEnter);
+    this.canvas.addEventListener('mouseleave', this.mouseLeave);
     this.canvas.addEventListener('wheel', this.zoom);
-    this.canvas.addEventListener('keypress', this.keypress);
-    this.canvas.addEventListener('keydown', this.keydown);
-    this.canvas.addEventListener('keyup', this.keyup);
+    document.addEventListener('keypress', this.keypress);
+    document.addEventListener('keydown', this.keydown);
+    document.addEventListener('keyup', this.keyup);
+    window.addEventListener('resize', this.resize);
   }
 
   destructor() {
     console.log('destructor');
-    this.canvas.removeEventListener('resize', this.resize);
     this.canvas.removeEventListener('mousedown', this.mouseDown);
     this.canvas.removeEventListener('mousemove', this.mouseMove);
     this.canvas.removeEventListener('mouseup', this.mouseUp);
+    this.canvas.removeEventListener('mouseenter', this.mouseEnter);
+    this.canvas.removeEventListener('mouseleave', this.mouseLeave);
     this.canvas.removeEventListener('wheel', this.zoom);
-    this.canvas.removeEventListener('keypress', this.keypress);
-    this.canvas.removeEventListener('keydown', this.keydown);
-    this.canvas.removeEventListener('keyup', this.keyup);
+    document.removeEventListener('keypress', this.keypress);
+    document.removeEventListener('keydown', this.keydown);
+    document.removeEventListener('keyup', this.keyup);
+    window.removeEventListener('resize', this.resize);
   }
 
   // Utils //
-  setCanvasSize = () => {
-    this.size = {
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight,
-    };
-    this.canvas.width = this.size.width;
-    this.canvas.height = this.size.height;
+  setSelectedColor = (color: string) => {
+    this.selectedColor = color;
   }
   coordinatesOnCanvas = (targetX: number, targetY: number) => {
     const { zoom, x, y } = this.position;
@@ -162,7 +183,7 @@ class CanvasController {
     if (this.chunks[`${chunkX};${chunkY}`]) {
       const px = coordX % CHUNK_SIZE;
       const py = coordY % CHUNK_SIZE;
-      this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, "#FF0000");
+      this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, this.selectedColor);
       this.render();
     }
   }
@@ -180,8 +201,14 @@ class CanvasController {
   }
 
   // Actions //
-  resize = () => {
-    this.setCanvasSize();
+  resize = (e: UIEvent) => {
+    const eWindow = e.target as Window;
+    this.size = {
+      width: eWindow.innerWidth,
+      height: eWindow.innerHeight,
+    };
+    this.canvas.width = this.size.width;
+    this.canvas.height = this.size.height;
     this.render();
   }
   mouseDown = () => {
@@ -225,6 +252,13 @@ class CanvasController {
     }
     this.isMouseDown = false
   }
+  mouseEnter = () => {
+    this.haveMouseOver = true;
+  }
+  mouseLeave = () => {
+    this.haveMouseOver = false;
+    this.shiftPressed = false;
+  }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
     this.changeZoom(e.deltaY / 2, coordX, coordY);
@@ -244,9 +278,11 @@ class CanvasController {
         this.changePosition(4 * this.position.zoom, 0);
         break;
       case 'Shift':
-        this.shiftPressed = true;
-        const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-        this.placePixel(coordX, coordY);
+        if (this.haveMouseOver) {
+          this.shiftPressed = true;
+          const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+          this.placePixel(coordX, coordY);
+        }
         break;
       default:
         console.log('[KeyDown]', e.key);
@@ -339,20 +375,40 @@ class CanvasController {
 
 function CanvasComponent() {
   const canvasRef = useRef<HTMLCanvasElement>();
+  const controller = useRef<CanvasController | null>();
+  const [selectedColor, setSelectedColor] = useState(palette[0]);
 
   useEffect(() => {
     if (canvasRef.current) {
-      let controller: CanvasController | null = new CanvasController();
-      controller.render();
+      let _controller: CanvasController | null = new CanvasController();
+      _controller.render();
+      controller.current = _controller;
       return () => {
-        controller?.destructor();
-        controller = null;
+        _controller?.destructor();
+        _controller = null;
+        controller.current = null;
       }
     }
   }, [canvasRef])
 
   return (
     <>
+      <Palette>
+        {palette.map((color, i) => (
+          <div
+            key={i}
+            className="palette-color"
+            style={{
+              backgroundColor: color,
+              transform: selectedColor === color ? "scale(1.2)" : '',
+            }}
+            onClick={() => {
+              controller.current?.setSelectedColor(color);
+              setSelectedColor(color);
+            }}
+          />
+        ))}
+      </Palette>
       <Canvas
         // @ts-ignore
         ref={canvasRef}
