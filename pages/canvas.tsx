@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components'
 
 const CHUNK_SIZE = 256;
@@ -39,7 +39,9 @@ const Canvas = styled.canvas`
 
 class CanvasController {
   canvas: HTMLCanvasElement;
+  shiftPressed = false;
   position = { x: 0, y: 0, zoom: 1 };
+  cursorPosition = { x: 0, y: 0 };
   size = { width: 0, height: 0 };
   isMoving = false;
   isMouseDown = false;
@@ -61,10 +63,10 @@ class CanvasController {
     window.addEventListener('mousedown', this.mouseDown);
     window.addEventListener('mousemove', this.mouseMove);
     window.addEventListener('mouseup', this.mouseUp);
-    // @ts-ignore
-    window.addEventListener('mousewheel', this.zoom);
-    // @ts-ignore
+    window.addEventListener('wheel', this.zoom);
+    window.addEventListener('keypress', this.keypress);
     window.addEventListener('keydown', this.keydown);
+    window.addEventListener('keyup', this.keyup);
   }
 
   destructor() {
@@ -73,10 +75,10 @@ class CanvasController {
     window.removeEventListener('mousedown', this.mouseDown);
     window.removeEventListener('mousemove', this.mouseMove);
     window.removeEventListener('mouseup', this.mouseUp);
-    // @ts-ignore
-    window.removeEventListener('mousewheel', this.zoom);
-    // @ts-ignore
+    window.removeEventListener('wheel', this.zoom);
+    window.removeEventListener('keypress', this.keypress);
     window.removeEventListener('keydown', this.keydown);
+    window.removeEventListener('keyup', this.keyup);
   }
 
   // Utils //
@@ -96,8 +98,8 @@ class CanvasController {
     const centerX = (width / 2);
     const centerY = (height / 2);
 
-    const posX = centerX + (x + targetX * pixelSize);
-    const posY = centerY  + (y + targetY * pixelSize);
+    const posX = centerX + (-x + targetX) * pixelSize;
+    const posY = centerY + (-y + targetY) * pixelSize;
 
     return { posX, posY };
   }
@@ -109,42 +111,44 @@ class CanvasController {
     const centerX = (width / 2);
     const centerY = (height / 2);
 
-    const coordX = Math.floor((posX - centerX - x) / pixelSize);
-    const coordY = Math.floor((posY - centerY - y) / pixelSize);
+    const coordX = Math.floor((posX - centerX + (x * pixelSize)) / pixelSize);
+    const coordY = Math.floor((posY - centerY + (y * pixelSize)) / pixelSize);
 
     return { coordX, coordY };
   };
-  loadChunk = (chunkX: number, chunkY: number, reload: boolean = false) => {
+  loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
     if (!reload && this.chunks[`${chunkX};${chunkY}`])
       return;
 
     const img = new Image();
-    img.src = '/pixels2.png'
-    img.onload = () => {
-      const chunk = new Chunk({x: chunkX, y: chunkY});
-      chunk.loadImage(img);
-      this.chunks[`${chunkX};${chunkY}`] = chunk;
-      this.render();
-    }
-    img.onerror = (e) => {
-      console.error(e)
-    }
+    await new Promise((resolve) => {
+      img.src = '/pixels2.png'
+      img.onload = () => {
+        const chunk = new Chunk({x: chunkX, y: chunkY});
+        chunk.loadImage(img);
+        this.chunks[`${chunkX};${chunkY}`] = chunk;
+        resolve(true);
+      }
+      img.onerror = (e) => {
+        console.error(e)
+        resolve(true);
+      }
+    })
   }
-  loadNeighboringChunks = () => {
+  loadNeighboringChunks = async () => {
     const width = this.size.width;
     const height = this.size.height;
-    const centerX = (width / 2);
-    const centerY = (height / 2);
-
-    const { coordX, coordY } = this.canvasToCoordinates(centerX, centerY);
 
     const chunkNbX = Math.ceil(width / CHUNK_SIZE) + 2;
     const chunkNbY = Math.ceil(height / CHUNK_SIZE) + 2;
-    for (let x = coordX - CHUNK_SIZE * (chunkNbX / 2); x < coordX + CHUNK_SIZE * (chunkNbX / 2); x+= CHUNK_SIZE) {
-      for (let y = coordY - CHUNK_SIZE * (chunkNbY / 2); y < coordY + CHUNK_SIZE * (chunkNbY / 2); y+= CHUNK_SIZE) {
-          this.loadChunk(Math.floor(x / CHUNK_SIZE), Math.floor(y / CHUNK_SIZE));
+    const chunkLoading = [];
+    for (let x = this.position.x - CHUNK_SIZE * (chunkNbX / 2); x < this.position.x + CHUNK_SIZE * (chunkNbX / 2); x+= CHUNK_SIZE) {
+      for (let y = this.position.y - CHUNK_SIZE * (chunkNbY / 2); y < this.position.y + CHUNK_SIZE * (chunkNbY / 2); y+= CHUNK_SIZE) {
+        chunkLoading.push(this.loadChunk(Math.floor(x / CHUNK_SIZE), Math.floor(y / CHUNK_SIZE)));
       }
     }
+    await Promise.all(chunkLoading);
+    this.render();
   }
   placePixel = (coordX: number, coordY: number) => {
     const ctx = this.canvas.getContext('2d');
@@ -152,7 +156,6 @@ class CanvasController {
     if (!ctx)
       return;
 
-      console.log(coordX, coordY);
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
@@ -163,13 +166,10 @@ class CanvasController {
       this.render();
     }
   }
-  changeZoom = (delta: number) => {
-    const newZoom = this.position.zoom + (delta / PIXEL_SIZE);
-    this.position = {
-      ...this.position,
-      zoom: newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom,
-    };
-    this.loadNeighboringChunks();
+  changeZoom = (delta: number, _focalX: number, _focalY: number) => {
+    const newZoom = this.position.zoom + delta;
+    this.position.zoom = newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom;
+
     this.render();
   }
   changePosition = (deltaX: number, deltaY: number) => {
@@ -178,7 +178,6 @@ class CanvasController {
     this.loadNeighboringChunks();
     this.render();
   }
-
 
   // Actions //
   resize = () => {
@@ -197,10 +196,22 @@ class CanvasController {
         }
         this.isMoving = true;
       }
-      this.changePosition(e.clientX - this.startMove.x, e.clientY - this.startMove.y);
+      const pixelSize = PIXEL_SIZE / this.position.zoom;
+      this.changePosition((this.startMove.x - e.clientX) / pixelSize, (this.startMove.y - e.clientY) / pixelSize);
       this.startMove = {
         x: e.clientX,
         y: e.clientY,
+      }
+    } else {
+      this.cursorPosition = {
+        x: e.clientX,
+        y: e.clientY
+      };
+      if (this.shiftPressed === true) {
+        const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+        this.placePixel(coordX, coordY);
+      } else {
+        this.render();
       }
     }
   }
@@ -215,32 +226,65 @@ class CanvasController {
     this.isMouseDown = false
   }
   zoom = (e: WheelEvent) => {
-    this.changeZoom(e.deltaY);
+    const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
+    this.changeZoom(e.deltaY / 2, coordX, coordY);
   }
   keydown = (e: KeyboardEvent) => {
-    console.log(e.key);
     switch (e.key) {
-      case 'e':
-        this.changeZoom(-this.position.zoom * 2);
-        break;
-      case 'a':
-        this.changeZoom(this.position.zoom * 2);
-        break;
       case 'ArrowUp':
-        this.changePosition(0, 4 * PIXEL_SIZE);
+        this.changePosition(0, -4 * this.position.zoom);
         break;
       case 'ArrowDown':
-        this.changePosition(0, -4 * PIXEL_SIZE);
+        this.changePosition(0, 4 * this.position.zoom);
         break;
       case 'ArrowLeft':
-        this.changePosition(4 * PIXEL_SIZE, 0);
+        this.changePosition(-4 * this.position.zoom, 0);
         break;
       case 'ArrowRight':
-        this.changePosition(-4 * PIXEL_SIZE, 0);
+        this.changePosition(4 * this.position.zoom, 0);
         break;
+      case 'Shift':
+        this.shiftPressed = true;
+        const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+        this.placePixel(coordX, coordY);
+        break;
+      default:
+        console.log('[KeyDown]', e.key);
     }
   }
-
+  keypress = (e: KeyboardEvent) => {
+    console.log('keypress', e);
+    switch (e.key) {
+      case 'e':
+        this.changeZoom(-this.position.zoom * 0.5, this.position.x, this.position.y);
+        break;
+      case 'a':
+        this.changeZoom(this.position.zoom, this.position.x, this.position.y);
+        break;
+      case 'ArrowUp':
+        this.changePosition(0, -4 * this.position.zoom);
+        break;
+      case 'ArrowDown':
+        this.changePosition(0, 4 * this.position.zoom);
+        break;
+      case 'ArrowLeft':
+        this.changePosition(-4 * this.position.zoom, 0);
+        break;
+      case 'ArrowRight':
+        this.changePosition(4 * this.position.zoom, 0);
+        break;
+      default:
+        console.log('[KeyPress]', e.key);
+    }
+  }
+  keyup = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case 'Shift':
+        this.shiftPressed = false;
+      default:
+        console.log('[KeyUp]', e.key);
+    }
+  }
   // Drawing //
   render = () => {
     const ctx = this.canvas.getContext('2d');
@@ -252,36 +296,33 @@ class CanvasController {
     this.drawGrid(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
+    if (this.position.zoom > 4) {
+      return;
+    }
+
     const width = document.documentElement.clientWidth;
     const height = document.documentElement.clientHeight;
-    const { zoom, x, y } = this.position;
-    const pixelSize = PIXEL_SIZE / zoom;
-    const centerH = (width / 2) + x % pixelSize;
-    const centerV = (height / 2) + y % pixelSize;
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    const centerH = (width / 2) - this.position.x * pixelSize % pixelSize;
+    const centerV = (height / 2) - this.position.y * pixelSize % pixelSize;
     const linesH = Math.ceil(height / pixelSize) + 2;
     const linesV = Math.ceil(width / pixelSize) + 2;
 
-    if (zoom < 4) {
-      for (let i = Math.floor(-linesH / 2); i < Math.ceil(linesH / 2); i++) {
-        ctx.strokeStyle = "#000000";
-        // if (i === 0)
-        //   ctx.strokeStyle = "#FF0000";
-        ctx.beginPath();
-        const posY = centerV + i * pixelSize;
-        ctx.moveTo(0, posY);
-        ctx.lineTo(width, posY);
-        ctx.stroke();
-      }
-      for (let i = Math.floor(-linesV / 2); i < Math.ceil(linesV / 2); i++) {
-        ctx.strokeStyle = "#000000";
-        // if (i === 0)
-        //   ctx.strokeStyle = "#FF0000";
-        ctx.beginPath();
-        const posX = centerH + i * pixelSize;
-        ctx.moveTo(posX, 0);
-        ctx.lineTo(posX, height);
-        ctx.stroke();
-      }
+    for (let i = Math.floor(-linesH / 2); i < Math.ceil(linesH / 2); i++) {
+      ctx.strokeStyle = "#000000";
+      ctx.beginPath();
+      const posY = centerV + i * pixelSize;
+      ctx.moveTo(0, posY);
+      ctx.lineTo(width, posY);
+      ctx.stroke();
+    }
+    for (let i = Math.floor(-linesV / 2); i < Math.ceil(linesV / 2); i++) {
+      ctx.strokeStyle = "#000000";
+      ctx.beginPath();
+      const posX = centerH + i * pixelSize;
+      ctx.moveTo(posX, 0);
+      ctx.lineTo(posX, height);
+      ctx.stroke();
     }
   }
   drawChunks = (ctx: CanvasRenderingContext2D) => {
@@ -311,11 +352,13 @@ function CanvasComponent() {
   }, [canvasRef])
 
   return (
-    <Canvas
-      // @ts-ignore
-      ref={canvasRef}
-      id="canvas"
-    />
+    <>
+      <Canvas
+        // @ts-ignore
+        ref={canvasRef}
+        id="canvas"
+      />
+    </>
   );
 }
 
