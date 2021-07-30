@@ -41,12 +41,10 @@ class CanvasController {
   canvas: HTMLCanvasElement;
   shiftPressed = false;
   position = { x: 0, y: 0, zoom: 50 };
-  zoomInfos = {mousePosX: 0, mousePosY: 0}
   cursorPosition = { x: 0, y: 0 };
   size = { width: 0, height: 0 };
   isMoving = false;
   isMouseDown = false;
-  zoomed = false;
   startMove = { x: 0, y: 0 };
   chunks: Record<string, Chunk> = {};
 
@@ -182,13 +180,10 @@ class CanvasController {
       this.render();
     }
   }
-  changePosition = (deltaX: number, deltaY: number, rend = true) => {
+  changePosition = (deltaX: number, deltaY: number) => {
     this.position.x += deltaX;
     this.position.y += deltaY;
     this.loadNeighboringChunks();
-    if(rend) {
-      this.render();
-    }
   }
 
   // Actions //
@@ -232,7 +227,7 @@ class CanvasController {
       this.startMove = { x: 0, y: 0 };
       this.isMoving = false;
     } else {
-      const { coordX, coordY } = this.canvasToCoordinates(e.pageX, e.pageY);
+      const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
       this.placePixel(coordX, coordY);
     }
     this.isMouseDown = false
@@ -306,13 +301,6 @@ class CanvasController {
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
     this.drawGrid(ctx);
-
-    if (this.zoomed) {
-      this.zoomed = false;
-      if (this.position.zoom != 1 && this.position.zoom != PIXEL_SIZE) {
-        this.changePosition(this.zoomInfos.mousePosX, this.zoomInfos.mousePosY);
-      }
-    }
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
     if (this.position.zoom > 4) {
