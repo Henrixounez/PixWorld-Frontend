@@ -251,7 +251,7 @@ class CanvasController {
     return { coordX, coordY };
   };
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
-    const boundingTL = [0, 0];
+    const boundingTL = [-1, -1];
     const boundingBR = [0, 0];
 
     if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
