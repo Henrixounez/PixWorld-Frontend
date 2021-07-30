@@ -108,22 +108,25 @@ class Chunk {
   toHex(n: number) {
     const s = n.toString(16);
     return s.length === 1 ? '0' + s : s;
-  } 
+  }
+  getColorAt(x: number, y: number) {
+    const ctx = this.canvas.getContext('2d');
+
+    if (!ctx)
+      return '#000000';
+    const data = ctx.getImageData(x, y, 1, 1).data;
+    return ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
+
+  }
   placePixel(x: number, y: number, color: string) {
     const ctx = this.canvas.getContext('2d');
 
     if (!ctx)
-    return;
-    
-    const data = ctx.getImageData(x, y, 1, 1).data;
-    const currentColor = ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
-    if (currentColor === color)
-      return false;
+      return;
 
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 1, 1);
-
-    return true;
+    return;
   }
 }
 
@@ -139,9 +142,11 @@ class CanvasController {
   chunks: Record<string, Chunk> = {};
   selectedColor = palette[0];
   haveMouseOver = false;
+  hookSetColor: (s: string) => void;
   ws: WebSocket;
 
-  constructor() {
+  constructor(setColor: (s: string) => void) {
+    this.hookSetColor = setColor;
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -175,6 +180,7 @@ class CanvasController {
     this.canvas.addEventListener('mouseup', this.mouseUp);
     this.canvas.addEventListener('mouseenter', this.mouseEnter);
     this.canvas.addEventListener('mouseleave', this.mouseLeave);
+    this.canvas.addEventListener('auxclick', this.auxclick);
     this.canvas.addEventListener('wheel', this.zoom);
     document.addEventListener('keypress', this.keypress);
     document.addEventListener('keydown', this.keydown);
@@ -190,6 +196,7 @@ class CanvasController {
     this.canvas.removeEventListener('mouseup', this.mouseUp);
     this.canvas.removeEventListener('mouseenter', this.mouseEnter);
     this.canvas.removeEventListener('mouseleave', this.mouseLeave);
+    this.canvas.removeEventListener('auxclick', this.auxclick);
     this.canvas.removeEventListener('wheel', this.zoom);
     document.removeEventListener('keypress', this.keypress);
     document.removeEventListener('keydown', this.keydown);
@@ -203,6 +210,7 @@ class CanvasController {
   }
   setSelectedColor = (color: string) => {
     this.selectedColor = color;
+    this.hookSetColor(color);
   }
   coordinatesOnCanvas = (targetX: number, targetY: number) => {
     const { zoom, x, y } = this.position;
@@ -280,10 +288,14 @@ class CanvasController {
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
     if (this.chunks[`${chunkX};${chunkY}`]) {
-      const px = coordX % CHUNK_SIZE;
-      const py = coordY % CHUNK_SIZE;
-      const isPlaced = this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, color);
-      if (isPlaced) {
+      let px = coordX % CHUNK_SIZE;
+      let py = coordY % CHUNK_SIZE;
+      px = px >= 0 ? px : CHUNK_SIZE + px;
+      py = py >= 0 ? py : CHUNK_SIZE + py;
+      const chunk = this.chunks[`${chunkX};${chunkY}`];
+
+      if (chunk.getColorAt(px, py) !== color) {
+        this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, color);
         if (send)
           this.sendToWs('placePixel', { x: coordX, y: coordY, color });
         this.render();
@@ -301,6 +313,21 @@ class CanvasController {
     this.position.y += deltaY;
     this.loadNeighboringChunks();
     this.render();
+  }
+  getColorOnCoordinates(coordX: number, coordY: number) {
+    const chunkX = Math.floor(coordX / CHUNK_SIZE);
+    const chunkY = Math.floor(coordY / CHUNK_SIZE);
+
+    if (this.chunks[`${chunkX};${chunkY}`]) {
+      let px = coordX % CHUNK_SIZE;
+      let py = coordY % CHUNK_SIZE;
+      px = px >= 0 ? px : CHUNK_SIZE + px;
+      py = py >= 0 ? py : CHUNK_SIZE + py;
+      const chunk = this.chunks[`${chunkX};${chunkY}`];
+      return chunk.getColorAt(px, py);
+    } else {
+      return "#000000";
+    }
   }
 
   // Actions //
@@ -350,8 +377,10 @@ class CanvasController {
       this.startMove = { x: 0, y: 0 };
       this.isMoving = false;
     } else {
-      const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
-      this.placePixel(coordX, coordY, this.selectedColor);
+      if (e.button === 0) {
+        const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
+        this.placePixel(coordX, coordY, this.selectedColor);
+      }
     }
     this.isMouseDown = false
   }
@@ -361,6 +390,13 @@ class CanvasController {
   mouseLeave = () => {
     this.haveMouseOver = false;
     this.shiftPressed = false;
+  }
+  auxclick = (e: MouseEvent) => {
+    if (e.button === 1) {
+      const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
+      this.setSelectedColor(this.getColorOnCoordinates(coordX, coordY));
+      e.stopPropagation();
+    }
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
@@ -386,6 +422,10 @@ class CanvasController {
           const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
           this.placePixel(coordX, coordY, this.selectedColor);
         }
+        break;
+      case 'Control':
+        const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+        this.setSelectedColor(this.getColorOnCoordinates(coordX, coordY));
         break;
     }
   }
@@ -477,7 +517,7 @@ function CanvasComponent() {
 
   useEffect(() => {
     if (canvasRef.current) {
-      let _controller: CanvasController | null = new CanvasController();
+      let _controller: CanvasController | null = new CanvasController(setSelectedColor);
       _controller.render();
       controller.current = _controller;
       return () => {
@@ -523,7 +563,6 @@ function CanvasComponent() {
             }}
             onClick={() => {
               controller.current?.setSelectedColor(color);
-              setSelectedColor(color);
             }}
           />
         ))}

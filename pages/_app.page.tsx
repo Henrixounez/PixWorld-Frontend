@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>PixWorld</title>
-        <meta name="description">Place pixels where you want on this canvas !</meta>
+        <meta name="description" content="Place pixels where you want on this canvas !"/>
       </Head>
       <Component {...pageProps} />
     </>
