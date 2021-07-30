@@ -26,8 +26,8 @@ const Palette = styled.div`
 
 const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
-const API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'wss://api.henrixounez.com/pixworld';
-const WS_URL  = process.env.NODE_ENV === 'development' ? 'ws://localhost:8080' : 'https://api.henrixounez.com/pixworld';
+const API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://api.henrixounez.com/pixworld';
+const WS_URL  = process.env.NODE_ENV === 'development' ? 'ws://localhost:8080' : 'wss://api.henrixounez.com/pixworld';
 
 class Chunk {
   canvas: HTMLCanvasElement;
