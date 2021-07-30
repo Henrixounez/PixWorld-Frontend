@@ -139,6 +139,8 @@ class CanvasController {
   isMoving = false;
   isMouseDown = false;
   startMove = { x: 0, y: 0 };
+  pinchDistance = 0;
+  longTouchTimeout: NodeJS.Timeout | null = null;
   chunks: Record<string, Chunk> = {};
   selectedColor = palette[0];
   haveMouseOver = false;
@@ -182,6 +184,11 @@ class CanvasController {
     this.canvas.addEventListener('mouseleave', this.mouseLeave);
     this.canvas.addEventListener('auxclick', this.auxclick);
     this.canvas.addEventListener('wheel', this.zoom);
+    this.canvas.addEventListener('touchstart', this.touchStart);
+    this.canvas.addEventListener('touchend', this.touchEnd);
+    this.canvas.addEventListener('touchcancel', this.touchCancel);
+    this.canvas.addEventListener('touchleave', this.touchLeave);
+    this.canvas.addEventListener('touchmove', this.touchMove);
     document.addEventListener('keypress', this.keypress);
     document.addEventListener('keydown', this.keydown);
     document.addEventListener('keyup', this.keyup);
@@ -198,6 +205,11 @@ class CanvasController {
     this.canvas.removeEventListener('mouseleave', this.mouseLeave);
     this.canvas.removeEventListener('auxclick', this.auxclick);
     this.canvas.removeEventListener('wheel', this.zoom);
+    this.canvas.removeEventListener('touchstart', this.touchStart);
+    this.canvas.removeEventListener('touchend', this.touchEnd);
+    this.canvas.removeEventListener('touchcancel', this.touchCancel);
+    this.canvas.removeEventListener('touchleave', this.touchLeave);
+    this.canvas.removeEventListener('touchmove', this.touchMove);
     document.removeEventListener('keypress', this.keypress);
     document.removeEventListener('keydown', this.keydown);
     document.removeEventListener('keyup', this.keyup);
@@ -258,6 +270,7 @@ class CanvasController {
           const chunk = new Chunk({x: chunkX, y: chunkY});
           chunk.loadImage(img);
           this.chunks[`${chunkX};${chunkY}`] = chunk;
+          this.render();
           resolve(true);
         }
       })
@@ -464,6 +477,64 @@ class CanvasController {
         this.shiftPressed = false;
     }
   }
+  onLongTouch = (e: TouchEvent) => {
+    const { coordX, coordY } = this.canvasToCoordinates(e.touches[0].clientX, e.touches[0].clientY);
+    this.setSelectedColor(this.getColorOnCoordinates(coordX, coordY));
+  }
+  touchStart = (e: TouchEvent) => {
+    this.isMouseDown = true;
+    this.longTouchTimeout = setTimeout(() => this.onLongTouch(e), 500);
+  }
+  touchEnd = () => {
+    this.pinchDistance = 0;
+    if (this.longTouchTimeout)
+      clearTimeout(this.longTouchTimeout);
+    this.longTouchTimeout = null;
+    this.pinchDistance = 0;
+    if (this.isMoving === true) {
+      this.startMove = { x: 0, y: 0 };
+      this.isMoving = false;
+    }
+    this.isMouseDown = false
+  }
+  touchCancel = () => {
+    this.touchEnd();
+  }
+  touchLeave = () => {
+    this.touchEnd();
+  }
+  touchMove = (e: TouchEvent) => {
+    const touches = e.touches;
+
+    if (this.longTouchTimeout)
+      clearTimeout(this.longTouchTimeout);
+    this.longTouchTimeout = null;
+
+    if (touches.length === 1) {
+      e.preventDefault();
+      const touch = touches[0];
+      if (!this.isMoving) {
+        this.startMove = {
+          x: touch.clientX,
+          y: touch.clientY,
+        }
+        this.isMoving = true;
+      }
+      const pixelSize = PIXEL_SIZE / this.position.zoom;
+      this.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
+      this.startMove = {
+        x: touch.clientX,
+        y: touch.clientY,
+      }
+    } else if (touches.length === 2) {
+      const distX = touches[0].clientX - touches[1].clientX;
+      const distY = touches[0].clientY - touches[1].clientY;
+      const pinchDistance = Math.hypot(distX, distY);
+      this.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
+      this.pinchDistance = pinchDistance;
+    }
+  }
+
   // Drawing //
   render = () => {
     const ctx = this.canvas.getContext('2d');
@@ -482,23 +553,25 @@ class CanvasController {
     const width = document.documentElement.clientWidth;
     const height = document.documentElement.clientHeight;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    const centerH = (width / 2) - this.position.x * pixelSize % pixelSize;
-    const centerV = (height / 2) - this.position.y * pixelSize % pixelSize;
+    const centerCoord = { x: Math.round(this.position.x), y: Math.round(this.position.y) };
+    const centerPoint = this.coordinatesOnCanvas(centerCoord.x, centerCoord.y);
     const linesH = Math.ceil(height / pixelSize) + 2;
     const linesV = Math.ceil(width / pixelSize) + 2;
 
-    for (let i = Math.floor(-linesH / 2); i < Math.ceil(linesH / 2); i++) {
-      ctx.strokeStyle = "#000000";
+    for (let i = centerCoord.y - linesH; i < centerCoord.y + linesH; i++) {
+      ctx.strokeStyle = "#666";
+      ctx.lineWidth = i % 10 === 0 ? 2 : 1;
       ctx.beginPath();
-      const posY = centerV + i * pixelSize;
+      const posY = centerPoint.posY + (i - centerCoord.y) * pixelSize;
       ctx.moveTo(0, posY);
       ctx.lineTo(width, posY);
       ctx.stroke();
     }
-    for (let i = Math.floor(-linesV / 2); i < Math.ceil(linesV / 2); i++) {
-      ctx.strokeStyle = "#000000";
+    for (let i = centerCoord.x - linesV; i < centerCoord.x + linesV; i++) {
+      ctx.strokeStyle = "#666";
+      ctx.lineWidth = i % 10 === 0 ? 2 : 1;
       ctx.beginPath();
-      const posX = centerH + i * pixelSize;
+      const posX = centerPoint.posX + (i - centerCoord.x) * pixelSize;
       ctx.moveTo(posX, 0);
       ctx.lineTo(posX, height);
       ctx.stroke();
@@ -512,7 +585,7 @@ class CanvasController {
       const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
 
       ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
-    })
+    });
   }
 }
 
