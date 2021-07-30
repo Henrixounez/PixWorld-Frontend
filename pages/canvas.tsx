@@ -408,7 +408,6 @@ class CanvasController {
     this.haveMouseOver = true;
   }
   mouseLeave = () => {
-    console.log("leaved");
     this.haveMouseOver = false;
     this.shiftPressed = false;
     this.startMove = { x: 0, y: 0};
