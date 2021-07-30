@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { HelpCircle, XCircle } from 'react-feather';
 import styled from 'styled-components'
 import palette from './palette';
 
@@ -21,6 +22,61 @@ const Palette = styled.div`
     &:hover {
       transform: scale(1.2);
     }
+  }
+`;
+const ButtonList = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+
+  div {
+    background-color: #FFFD;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    &:hover {
+      background-color: #FFFA;
+    }
+  }
+`;
+const ModalBackdrop = styled.div`
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: #FFFA;
+`;
+const ModalContent = styled.div`
+  position: relative;
+  margin: 10vh auto;
+  width: 80vw;
+  height: 80vh;
+  max-width: 800px;
+  background-color: white;
+  box-sizing: border-box;
+  padding: 2.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  line-height: 1.5rem;
+  hr {
+    margin: 2rem 0;
+  }
+`;
+const CloseButton = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  transition: 0.1s;;
+  &:hover {
+    transform: scale(1.1);
   }
 `;
 
@@ -417,6 +473,7 @@ function CanvasComponent() {
   const canvasRef = useRef<HTMLCanvasElement>();
   const controller = useRef<CanvasController | null>();
   const [selectedColor, setSelectedColor] = useState(palette[0]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -433,6 +490,28 @@ function CanvasComponent() {
 
   return (
     <>
+      { showModal && (
+        <ModalBackdrop onClick={() => setShowModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={() => setShowModal(false)}>
+              <XCircle color="#000" />
+            </CloseButton>
+            <h3>Welcome on PixWorld - Bienvenue sur PixWorld</h3>
+            <hr/>
+            Place pixels where you want on this canvas !<br/>
+            Placez des pixels où vous voulez sur cette carte !
+            <hr/>
+            Website made by Henrixounez & MXS<br/>
+            Available Open Source on Github: <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
+            Join our <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
+          </ModalContent>
+        </ModalBackdrop>
+      )}
+      <ButtonList>
+        <div onClick={() => setShowModal(true)}>
+          <HelpCircle color="#000" />
+        </div>
+      </ButtonList>
       <Palette>
         {palette.map((color, i) => (
           <div
