@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
+const ZOOM_STEP = 16;
 
 class Chunk {
   canvas: HTMLCanvasElement;
@@ -40,11 +41,13 @@ const Canvas = styled.canvas`
 class CanvasController {
   canvas: HTMLCanvasElement;
   shiftPressed = false;
-  position = { x: 0, y: 0, zoom: 1 };
+  position = { x: 0, y: 0, zoom: 50 };
+  zoomInfos = {mousePosX: 0, mousePosY: 0}
   cursorPosition = { x: 0, y: 0 };
   size = { width: 0, height: 0 };
   isMoving = false;
   isMouseDown = false;
+  zoomed = false;
   startMove = { x: 0, y: 0 };
   chunks: Record<string, Chunk> = {};
 
@@ -167,16 +170,30 @@ class CanvasController {
     }
   }
   changeZoom = (delta: number, _focalX: number, _focalY: number) => {
+
+    const deltaX = _focalX - this.canvas.width / 2;
+    console.log(deltaX);
+
+    if (this.position.zoom != 1 && this.position.zoom != PIXEL_SIZE) {
+      this.changePosition((_focalX - this.canvas.width / 2) / (PIXEL_SIZE / this.position.zoom), (_focalY - this.canvas.height / 2) / (PIXEL_SIZE / this.position.zoom));
+    }
+
+    this.zoomInfos.mousePosX = ((this.canvas.width / 2 - _focalX) / (PIXEL_SIZE / this.position.zoom)) / 2;
+    this.zoomInfos.mousePosY = ((this.canvas.height / 2 - _focalY) / (PIXEL_SIZE / this.position.zoom)) / 2;
     const newZoom = this.position.zoom + delta;
     this.position.zoom = newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom;
 
+    this.zoomed = true;
+
     this.render();
   }
-  changePosition = (deltaX: number, deltaY: number) => {
+  changePosition = (deltaX: number, deltaY: number, rend = true) => {
     this.position.x += deltaX;
     this.position.y += deltaY;
     this.loadNeighboringChunks();
-    this.render();
+    if(rend) {
+      this.render();
+    }
   }
 
   // Actions //
@@ -220,14 +237,14 @@ class CanvasController {
       this.startMove = { x: 0, y: 0 };
       this.isMoving = false;
     } else {
-      const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
+      const { coordX, coordY } = this.canvasToCoordinates(e.pageX, e.pageY);
       this.placePixel(coordX, coordY);
     }
     this.isMouseDown = false
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
-    this.changeZoom(e.deltaY / 2, coordX, coordY);
+    this.changeZoom(e.deltaY / ZOOM_STEP, e.clientX, e.clientY);
   }
   keydown = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -293,7 +310,15 @@ class CanvasController {
 
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
-    this.drawGrid(ctx);
+    //this.drawGrid(ctx);
+
+    if (this.zoomed) {
+      this.zoomed = false;
+      if (this.position.zoom != 1 && this.position.zoom != PIXEL_SIZE) {
+        console.log(this.position.zoom);
+        this.changePosition(this.zoomInfos.mousePosX, this.zoomInfos.mousePosY);
+      }
+    }
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
     if (this.position.zoom > 4) {
