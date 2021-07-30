@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
-const ZOOM_STEP = 16;
 
 class Chunk {
   canvas: HTMLCanvasElement;
@@ -169,24 +168,19 @@ class CanvasController {
       this.render();
     }
   }
-  changeZoom = (delta: number, _focalX: number, _focalY: number) => {
-
-    const zoomIn = delta < 0;
-    console.log(zoomIn);
-    const deltaX = _focalX - this.canvas.width / 2;
-
-    if (this.position.zoom != 1 && zoomIn) {
-      this.changePosition((_focalX - this.canvas.width / 2) / (PIXEL_SIZE / this.position.zoom) / (1 + 0.6 * (this.position.zoom/50)), (_focalY - this.canvas.height / 2) / (PIXEL_SIZE / this.position.zoom) / (1 + 0.6 * (this.position.zoom/50)));
-    }
-
-    this.zoomInfos.mousePosX = ((this.canvas.width / 2 - _focalX) / (PIXEL_SIZE / this.position.zoom)) / 2;
-    this.zoomInfos.mousePosY = ((this.canvas.height / 2 - _focalY) / (PIXEL_SIZE / this.position.zoom)) / 2;
+  changeZoom = (delta: number, focalX: number, focalY: number) => {
+    const oldZoom = this.position.zoom;
     const newZoom = this.position.zoom + delta;
-    this.position.zoom = newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom;
 
-    this.zoomed = true;
-
-    this.render();
+    if (newZoom > 1 && newZoom < 50) {
+      const changeInZoom = (oldZoom - newZoom) / 15;
+      this.position.zoom = newZoom;
+      const translateX = (focalX - this.position.x) * changeInZoom;
+      const transtateY = (focalY - this.position.y) * changeInZoom;
+      this.position.x += translateX;
+      this.position.y += transtateY;
+      this.render();
+    }
   }
   changePosition = (deltaX: number, deltaY: number, rend = true) => {
     this.position.x += deltaX;
@@ -245,7 +239,7 @@ class CanvasController {
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
-    this.changeZoom(e.deltaY / ZOOM_STEP, e.clientX, e.clientY);
+    this.changeZoom(e.deltaY < 0 ? -1 : 1, coordX, coordY);
   }
   keydown = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -274,10 +268,10 @@ class CanvasController {
     console.log('keypress', e);
     switch (e.key) {
       case 'e':
-        this.changeZoom(-this.position.zoom * 0.5, this.position.x, this.position.y);
+        this.changeZoom(-1, this.position.x, this.position.y);
         break;
       case 'a':
-        this.changeZoom(this.position.zoom, this.position.x, this.position.y);
+        this.changeZoom(1, this.position.x, this.position.y);
         break;
       case 'ArrowUp':
         this.changePosition(0, -4 * this.position.zoom);
@@ -311,7 +305,7 @@ class CanvasController {
 
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
-    //this.drawGrid(ctx);
+    this.drawGrid(ctx);
 
     if (this.zoomed) {
       this.zoomed = false;
