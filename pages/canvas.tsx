@@ -410,6 +410,9 @@ class CanvasController {
   mouseLeave = () => {
     this.haveMouseOver = false;
     this.shiftPressed = false;
+    this.startMove = { x: 0, y: 0};
+    this.isMoving = false;
+    this.isMouseDown = false;
   }
   auxclick = (e: MouseEvent) => {
     if (e.button === 1) {
