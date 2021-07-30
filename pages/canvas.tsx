@@ -133,7 +133,7 @@ class Chunk {
 class CanvasController {
   canvas: HTMLCanvasElement;
   shiftPressed = false;
-  position = { x: 0, y: 0, zoom: 1 };
+  position = { x: 0, y: 0, zoom: 50 };
   cursorPosition = { x: 0, y: 0 };
   size = { width: 0, height: 0 };
   isMoving = false;
@@ -302,17 +302,24 @@ class CanvasController {
       }
     }
   }
-  changeZoom = (delta: number, _focalX: number, _focalY: number) => {
+  changeZoom = (delta: number, focalX: number, focalY: number) => {
+    const oldZoom = this.position.zoom;
     const newZoom = this.position.zoom + delta;
-    this.position.zoom = newZoom < 1 ? 1 : newZoom > 50 ? 50 : newZoom;
 
-    this.render();
+    if (newZoom > 1 && newZoom < 50) {
+      const changeInZoom = (oldZoom - newZoom) / 15;
+      this.position.zoom = newZoom;
+      const translateX = (focalX - this.position.x) * changeInZoom;
+      const transtateY = (focalY - this.position.y) * changeInZoom;
+      this.position.x += translateX;
+      this.position.y += transtateY;
+      this.render();
+    }
   }
   changePosition = (deltaX: number, deltaY: number) => {
     this.position.x += deltaX;
     this.position.y += deltaY;
     this.loadNeighboringChunks();
-    this.render();
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -400,7 +407,7 @@ class CanvasController {
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
-    this.changeZoom(e.deltaY / 2, coordX, coordY);
+    this.changeZoom(e.deltaY < 0 ? -1 : 1, coordX, coordY);
   }
   keydown = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -432,10 +439,10 @@ class CanvasController {
   keypress = (e: KeyboardEvent) => {
     switch (e.key) {
       case 'e':
-        this.changeZoom(-this.position.zoom * 0.5, this.position.x, this.position.y);
+        this.changeZoom(-1, this.position.x, this.position.y);
         break;
       case 'a':
-        this.changeZoom(this.position.zoom, this.position.x, this.position.y);
+        this.changeZoom(1, this.position.x, this.position.y);
         break;
       case 'ArrowUp':
         this.changePosition(0, -4 * this.position.zoom);
