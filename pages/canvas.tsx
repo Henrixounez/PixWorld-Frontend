@@ -83,6 +83,19 @@ const ModalContent = styled.div`
   hr {
     margin: 2rem 0;
   }
+  button {
+    outline: none;
+    background-color: white;
+    border: 1px solid #555;
+    border-radius: 2px;
+    padding: 5px 10px;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px #000;
+    transition: .5s;
+    &:hover {
+      box-shadow: 2px 2px 3px #000;
+    }
+  }
 `;
 const CloseButton = styled.div`
   position: absolute;
@@ -159,11 +172,14 @@ class CanvasController {
   chunks: Record<string, Chunk> = {};
   selectedColor = palette[0];
   haveMouseOver = false;
+  boundingChunks = [[0, 0], [0, 0]];
   hookSetColor: (s: string) => void;
+  activateModal: (t: ModalTypes) => void;
   ws: WebSocket;
 
-  constructor(setColor: (s: string) => void) {
+  constructor(setColor: (s: string) => void, activateModal: (t: ModalTypes) => void) {
     this.hookSetColor = setColor;
+    this.activateModal = activateModal;
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -173,23 +189,8 @@ class CanvasController {
     canvas.height = this.size.height;
     this.canvas = canvas;
 
-    // TODO: Reconnecti
     this.ws = new WebSocket(`${WS_URL}/pix/connect`);
-    this.ws.onopen = (mess) => {
-      console.info('[WS] Open', mess);
-    }
-    this.ws.onerror = (err) => {
-      console.info('[WS] Error', err);
-    }
-    this.ws.onmessage = (mess) => {
-      const { type, data } = JSON.parse(mess.data);
-
-      switch (type) {
-        case 'placePixel':
-          this.placePixel(data.x, data.y, data.color, false);
-        break;
-      }
-    }
+    this.connectWs();
 
     this.loadNeighboringChunks();
     this.canvas.addEventListener('mousedown', this.mouseDown);
@@ -232,6 +233,30 @@ class CanvasController {
   }
 
   // Utils //
+  connectWs = () => {
+    this.ws.onopen = () => {
+    }
+    this.ws.onclose = (e) => {
+      if (!e.wasClean)
+        setTimeout(() => this.activateModal(ModalTypes.PROBLEM), 2000);
+    }
+    this.ws.onerror = () => {
+      setTimeout(() => this.activateModal(ModalTypes.PROBLEM), 2000);
+    }
+    this.ws.onmessage = (mess) => {
+      const { type, data } = JSON.parse(mess.data);
+
+      switch (type) {
+        case 'init':
+          this.boundingChunks = data.boundingChunks;
+          this.loadNeighboringChunks();
+          break;
+        case 'placePixel':
+          this.placePixel(data.x, data.y, data.color, false);
+          break;
+      }
+    }
+  }
   sendToWs = (type: string, data: any) => {
     this.ws.send(JSON.stringify({ type, data }));
   }
@@ -266,8 +291,8 @@ class CanvasController {
     return { coordX, coordY };
   };
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
-    const boundingTL = [-1, -1];
-    const boundingBR = [0, 0];
+    const boundingTL = this.boundingChunks[0];
+    const boundingBR = this.boundingChunks[1];
 
     if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
       return;
@@ -607,15 +632,29 @@ class CanvasController {
   }
 }
 
+enum ModalTypes {
+  INFOS,
+  PROBLEM
+};
+
 function CanvasComponent() {
   const canvasRef = useRef<HTMLCanvasElement>();
   const controller = useRef<CanvasController | null>();
   const [selectedColor, setSelectedColor] = useState(palette[0]);
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState(ModalTypes.INFOS);
+
+  const activateModal = (type: ModalTypes) => {
+    setShowModal(true);
+    setModalType(type);
+  }
 
   useEffect(() => {
     if (canvasRef.current) {
-      let _controller: CanvasController | null = new CanvasController(setSelectedColor);
+      let _controller: CanvasController | null = new CanvasController(
+        setSelectedColor,
+        activateModal,
+      );
       _controller.render();
       controller.current = _controller;
       return () => {
@@ -634,19 +673,35 @@ function CanvasComponent() {
             <CloseButton onClick={() => setShowModal(false)}>
               <XCircle color="#000" />
             </CloseButton>
-            <h3>Welcome on PixWorld - Bienvenue sur PixWorld</h3>
-            <hr/>
-            Place pixels where you want on this canvas !<br/>
-            Placez des pixels où vous voulez sur cette carte !
-            <hr/>
-            Website made by Henrixounez & MXS<br/>
-            Available Open Source on Github: <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
-            Join our <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
+            { modalType === ModalTypes.INFOS && (
+              <>
+                <h3>Welcome on PixWorld - Bienvenue sur PixWorld</h3>
+                <hr/>
+                Place pixels where you want on this canvas !<br/>
+                Placez des pixels où vous voulez sur cette carte !
+                <hr/>
+                Website made by Henrixounez & MXS<br/>
+                Available Open Source on Github: <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
+                Join our <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
+              </>
+            )}
+            { modalType === ModalTypes.PROBLEM && (
+              <>
+                <h3>Connection lost with the server - Connexion perdue avec le serveur</h3>
+                <hr/>
+                Please refresh the page - Veuillez rafraichir la page
+                <br/>
+                <br/>
+                <button onClick={() => location.reload()}>
+                  Refresh - Rafraichir
+                </button>
+              </>
+            )}
           </ModalContent>
         </ModalBackdrop>
       )}
       <ButtonList>
-        <div onClick={() => setShowModal(true)}>
+        <div onClick={() => activateModal(ModalTypes.INFOS)}>
           <HelpCircle color="#000" />
         </div>
       </ButtonList>
