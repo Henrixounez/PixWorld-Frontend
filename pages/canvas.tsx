@@ -171,11 +171,12 @@ class CanvasController {
   }
   changeZoom = (delta: number, _focalX: number, _focalY: number) => {
 
+    const zoomIn = delta < 0;
+    console.log(zoomIn);
     const deltaX = _focalX - this.canvas.width / 2;
-    console.log(deltaX);
 
-    if (this.position.zoom != 1 && this.position.zoom != PIXEL_SIZE) {
-      this.changePosition((_focalX - this.canvas.width / 2) / (PIXEL_SIZE / this.position.zoom), (_focalY - this.canvas.height / 2) / (PIXEL_SIZE / this.position.zoom));
+    if (this.position.zoom != 1 && zoomIn) {
+      this.changePosition((_focalX - this.canvas.width / 2) / (PIXEL_SIZE / this.position.zoom) / (1 + 0.6 * (this.position.zoom/50)), (_focalY - this.canvas.height / 2) / (PIXEL_SIZE / this.position.zoom) / (1 + 0.6 * (this.position.zoom/50)));
     }
 
     this.zoomInfos.mousePosX = ((this.canvas.width / 2 - _focalX) / (PIXEL_SIZE / this.position.zoom)) / 2;
@@ -315,7 +316,6 @@ class CanvasController {
     if (this.zoomed) {
       this.zoomed = false;
       if (this.position.zoom != 1 && this.position.zoom != PIXEL_SIZE) {
-        console.log(this.position.zoom);
         this.changePosition(this.zoomInfos.mousePosX, this.zoomInfos.mousePosY);
       }
     }
