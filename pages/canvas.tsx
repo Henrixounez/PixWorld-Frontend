@@ -7,21 +7,36 @@ const Canvas = styled.canvas`
   z-index: -1;
 `;
 const Palette = styled.div`
-  position: absolute;
+  position: fixed;
   right: 10px;
   bottom: 10px;
   padding: 5px;
   background-color: #FFF;
   border: 1px solid #000;
+  overflow: hidden;
 
-  .palette-color {
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    transition: 0.2s;
-    &:hover {
-      transform: scale(1.2);
-    }
+  display: flex;
+  flex-flow: column wrap;
+
+  height: calc(30*25px);
+  transition: 0.2s;
+
+  @media (max-height: 800px) {
+    height: calc(15 * 25px);
+    width: calc(2 * 25px);
+  }
+  @media (max-height: 400px) {
+    height: calc(6 * 25px);
+    width: calc(5 * 25px);
+  }
+`;
+const PaletteButton = styled.div<{selected: boolean}>`
+  width: 25px;
+  min-height: 25px;
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover {
+    transform: scale(1.2);
   }
 `;
 const ButtonList = styled.div`
@@ -637,9 +652,9 @@ function CanvasComponent() {
       </ButtonList>
       <Palette>
         {palette.map((color, i) => (
-          <div
+          <PaletteButton
             key={i}
-            className="palette-color"
+            selected={selectedColor === color}
             style={{
               backgroundColor: color,
               transform: selectedColor === color ? "scale(1.2)" : '',
