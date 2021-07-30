@@ -26,6 +26,8 @@ const Palette = styled.div`
 
 const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
+const API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'wss://api.henrixounez.com/pixworld';
+const WS_URL  = process.env.NODE_ENV === 'development' ? 'ws://localhost:8080' : 'https://api.henrixounez.com/pixworld';
 
 class Chunk {
   canvas: HTMLCanvasElement;
@@ -40,20 +42,32 @@ class Chunk {
   
   loadImage(img: HTMLImageElement) {
     const ctx = this.canvas.getContext('2d');
+    img.setAttribute('crossOrigin', '');
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(img, 0, 0);
     }
   }
+  toHex(n: number) {
+    const s = n.toString(16);
+    return s.length === 1 ? '0' + s : s;
+  } 
   placePixel(x: number, y: number, color: string) {
     const ctx = this.canvas.getContext('2d');
 
     if (!ctx)
-      return;
+    return;
+    
+    const data = ctx.getImageData(x, y, 1, 1).data;
+    const currentColor = ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
+    if (currentColor === color)
+      return false;
 
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 1, 1);
+
+    return true;
   }
 }
 
@@ -69,6 +83,7 @@ class CanvasController {
   chunks: Record<string, Chunk> = {};
   selectedColor = palette[0];
   haveMouseOver = false;
+  ws: WebSocket;
 
   constructor() {
     this.size = {
@@ -79,6 +94,24 @@ class CanvasController {
     canvas.width = this.size.width;
     canvas.height = this.size.height;
     this.canvas = canvas;
+
+    // TODO: Reconnecti
+    this.ws = new WebSocket(`${WS_URL}/pix/connect`);
+    this.ws.onopen = (mess) => {
+      console.info('[WS] Open', mess);
+    }
+    this.ws.onerror = (err) => {
+      console.info('[WS] Error', err);
+    }
+    this.ws.onmessage = (mess) => {
+      const { type, data } = JSON.parse(mess.data);
+
+      switch (type) {
+        case 'placePixel':
+          this.placePixel(data.x, data.y, data.color, false);
+        break;
+      }
+    }
 
     this.loadNeighboringChunks();
     this.canvas.addEventListener('mousedown', this.mouseDown);
@@ -95,6 +128,7 @@ class CanvasController {
 
   destructor() {
     console.log('destructor');
+    this.ws.close();
     this.canvas.removeEventListener('mousedown', this.mouseDown);
     this.canvas.removeEventListener('mousemove', this.mouseMove);
     this.canvas.removeEventListener('mouseup', this.mouseUp);
@@ -108,6 +142,9 @@ class CanvasController {
   }
 
   // Utils //
+  sendToWs = (type: string, data: any) => {
+    this.ws.send(JSON.stringify({ type, data }));
+  }
   setSelectedColor = (color: string) => {
     this.selectedColor = color;
   }
@@ -138,23 +175,29 @@ class CanvasController {
     return { coordX, coordY };
   };
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
+    const boundingTL = [0, 0];
+    const boundingBR = [0, 0];
+
+    if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
+      return;
     if (!reload && this.chunks[`${chunkX};${chunkY}`])
       return;
 
     const img = new Image();
-    await new Promise((resolve) => {
-      img.src = '/pixels2.png'
-      img.onload = () => {
-        const chunk = new Chunk({x: chunkX, y: chunkY});
-        chunk.loadImage(img);
-        this.chunks[`${chunkX};${chunkY}`] = chunk;
-        resolve(true);
-      }
-      img.onerror = (e) => {
-        console.error(e)
-        resolve(true);
-      }
-    })
+    try {
+      await new Promise((resolve) => {
+        img.onerror = () => {
+          resolve(true);
+        }
+        img.src = `${API_URL}/chunk/${chunkX}/${chunkY}`;
+        img.onload = () => {
+          const chunk = new Chunk({x: chunkX, y: chunkY});
+          chunk.loadImage(img);
+          this.chunks[`${chunkX};${chunkY}`] = chunk;
+          resolve(true);
+        }
+      })
+    } catch (e) {}
   }
   loadNeighboringChunks = async () => {
     const width = this.size.width;
@@ -171,7 +214,7 @@ class CanvasController {
     await Promise.all(chunkLoading);
     this.render();
   }
-  placePixel = (coordX: number, coordY: number) => {
+  placePixel = (coordX: number, coordY: number, color: string, send = true) => {
     const ctx = this.canvas.getContext('2d');
 
     if (!ctx)
@@ -183,8 +226,12 @@ class CanvasController {
     if (this.chunks[`${chunkX};${chunkY}`]) {
       const px = coordX % CHUNK_SIZE;
       const py = coordY % CHUNK_SIZE;
-      this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, this.selectedColor);
-      this.render();
+      const isPlaced = this.chunks[`${chunkX};${chunkY}`].placePixel(px >= 0 ? px : CHUNK_SIZE + px, py >= 0 ? py : CHUNK_SIZE + py, color);
+      if (isPlaced) {
+        if (send)
+          this.sendToWs('placePixel', { x: coordX, y: coordY, color });
+        this.render();
+      }
     }
   }
   changeZoom = (delta: number, _focalX: number, _focalY: number) => {
@@ -236,7 +283,7 @@ class CanvasController {
       };
       if (this.shiftPressed === true) {
         const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-        this.placePixel(coordX, coordY);
+        this.placePixel(coordX, coordY, this.selectedColor);
       } else {
         this.render();
       }
@@ -248,7 +295,7 @@ class CanvasController {
       this.isMoving = false;
     } else {
       const { coordX, coordY } = this.canvasToCoordinates(e.clientX, e.clientY);
-      this.placePixel(coordX, coordY);
+      this.placePixel(coordX, coordY, this.selectedColor);
     }
     this.isMouseDown = false
   }
@@ -281,15 +328,12 @@ class CanvasController {
         if (this.haveMouseOver) {
           this.shiftPressed = true;
           const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-          this.placePixel(coordX, coordY);
+          this.placePixel(coordX, coordY, this.selectedColor);
         }
         break;
-      default:
-        console.log('[KeyDown]', e.key);
     }
   }
   keypress = (e: KeyboardEvent) => {
-    console.log('keypress', e);
     switch (e.key) {
       case 'e':
         this.changeZoom(-this.position.zoom * 0.5, this.position.x, this.position.y);
@@ -309,16 +353,12 @@ class CanvasController {
       case 'ArrowRight':
         this.changePosition(4 * this.position.zoom, 0);
         break;
-      default:
-        console.log('[KeyPress]', e.key);
     }
   }
   keyup = (e: KeyboardEvent) => {
     switch (e.key) {
       case 'Shift':
         this.shiftPressed = false;
-      default:
-        console.log('[KeyUp]', e.key);
     }
   }
   // Drawing //
