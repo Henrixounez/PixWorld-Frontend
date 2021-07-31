@@ -234,10 +234,8 @@ export default class InteractionController {
       clearTimeout(this.longTouchTimeout);
     this.longTouchTimeout = null;
     this.pinchDistance = 0;
-    if (this.isMoving === true) {
-      this.startMove = { x: 0, y: 0 };
-      this.isMoving = false;
-    }
+    this.startMove = { x: 0, y: 0 };
+    this.isMoving = false;
     this.isMouseDown = false
   }
   touchCancel = () => {
@@ -253,27 +251,27 @@ export default class InteractionController {
       clearTimeout(this.longTouchTimeout);
     this.longTouchTimeout = null;
 
-    if (touches.length === 1) {
-      e.preventDefault();
-      const touch = touches[0];
-      if (!this.isMoving) {
-        this.startMove = {
-          x: touch.clientX,
-          y: touch.clientY,
-        }
-        this.isMoving = true;
-      }
-      const pixelSize = PIXEL_SIZE / this.position.zoom;
-      this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
+    e.preventDefault();
+    const touch = touches[0];
+    if (!this.isMoving) {
       this.startMove = {
         x: touch.clientX,
         y: touch.clientY,
       }
-    } else if (touches.length === 2) {
+      this.isMoving = true;
+    }
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
+    this.startMove = {
+      x: touch.clientX,
+      y: touch.clientY,
+    }
+    if (touches.length === 2) {
       const distX = touches[0].clientX - touches[1].clientX;
       const distY = touches[0].clientY - touches[1].clientY;
       const pinchDistance = Math.hypot(distX, distY);
-      this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
+      if (this.pinchDistance !== 0)
+        this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
       this.pinchDistance = pinchDistance;
     }
   }
