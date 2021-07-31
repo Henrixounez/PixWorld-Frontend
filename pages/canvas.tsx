@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { HelpCircle, XCircle } from 'react-feather';
 import styled from 'styled-components'
+import { store } from '../store';
+import { SET_NB_PLAYERS } from '../store/actions/infos';
 import palette from './palette';
+import PlayerCounter from './playerCounter';
 
 const Canvas = styled.canvas`
   z-index: -1;
@@ -250,9 +253,13 @@ class CanvasController {
         case 'init':
           this.boundingChunks = data.boundingChunks;
           this.loadNeighboringChunks();
+          store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           break;
         case 'placePixel':
           this.placePixel(data.x, data.y, data.color, false);
+          break;
+        case 'playerNb':
+          store?.dispatch({ type: SET_NB_PLAYERS, payload: data });
           break;
       }
     }
@@ -720,6 +727,7 @@ function CanvasComponent() {
           />
         ))}
       </Palette>
+      <PlayerCounter/>
       <Canvas
         // @ts-ignore
         ref={canvasRef}
