@@ -115,7 +115,7 @@ export class CanvasController {
     if (!ctx)
       return;
     
-    if (store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
+    if (send && store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
       const overlayPos = store.getState().overlay.position;
       color = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
     }
