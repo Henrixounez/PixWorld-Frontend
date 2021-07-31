@@ -6,6 +6,7 @@ import Modal from './ui/Modal';
 import PaletteList from './ui/PaletteList';
 import PlayerCounter from './ui/PlayerCounter';
 import Overlay from './ui/Overlay';
+import Cooldown from './ui/Cooldown';
 
 const Container = styled.div`
   width: 100vw;
@@ -20,6 +21,7 @@ export default function Home() {
       <Modal/>
       <ButtonList/>
       <Overlay/>
+      <Cooldown/>
       <PaletteList/>
       <PlayerCounter/>
       <CursorPosition/>

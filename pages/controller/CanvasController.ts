@@ -13,6 +13,7 @@ export class CanvasController {
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
   boundingChunks = [[0, 0], [0, 0]];
+  waitingPixels: Record<string, string> = {};
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
@@ -129,14 +130,25 @@ export class CanvasController {
       px = px >= 0 ? px : CHUNK_SIZE + px;
       py = py >= 0 ? py : CHUNK_SIZE + py;
       const chunk = this.chunks[`${chunkX};${chunkY}`];
+      const currentColor = chunk.getColorAt(px, py);
 
-      if (chunk.getColorAt(px, py) !== color) {
+      if (currentColor !== color) {
         this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, color);
-        if (send)
+        if (send) {
           this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
+          this.waitingPixels[`${coordX};${coordY}`] = currentColor;
+        }
         this.render();
       }
     }
+  }
+  restorePixel = (coordX: number, coordY: number) => {
+    const color = this.waitingPixels[`${coordX};${coordY}`];
+    delete this.waitingPixels[`${coordX};${coordY}`];
+    this.placePixel(coordX, coordY, color, false);
+  }
+  confirmPixel = (coordX: number, coordY: number) => {
+    delete this.waitingPixels[`${coordX};${coordY}`];
   }
   changeZoom = (delta: number, focalX: number, focalY: number) => {
     const oldZoom = this.position.zoom;

@@ -10,6 +10,7 @@ export interface ReduxState {
   cursorPos: {x: number, y: number};
   selectedColor: string;
   currentModal: ModalTypes;
+  cooldown: number;
   overlay: {
     activate: boolean;
     image: string;
@@ -27,6 +28,7 @@ export const initialState: ReduxState = {
   cursorPos: { x: 0, y: 0 },
   selectedColor: palette[0],
   currentModal: ModalTypes.NONE,
+  cooldown: 0,
   overlay: {
     activate: false,
     image: "",

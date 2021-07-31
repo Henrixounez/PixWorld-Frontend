@@ -5,6 +5,7 @@ import ModalTypes from "../../pages/constants/modalTypes";
 export const SET_NB_PLAYERS = 'SET_NB_PLAYERS';
 export const SET_CURSOR_POS = 'SET_CURSOR_POS';
 export const SET_MODAL = 'SET_MODAL';
+export const SET_COOLDOWN = 'SET_COOLDOWN';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -19,8 +20,12 @@ export interface SetModalAction {
   type: typeof SET_MODAL;
   payload: ModalTypes;
 }
+export interface SetCooldownAction {
+  type: typeof SET_COOLDOWN;
+  payload: number;
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -41,6 +46,12 @@ export function setModal(state: ReduxState, action: SetModalAction): ReduxState 
     currentModal: action.payload,
   };
 }
+export function setCooldown(state: ReduxState, action: SetCooldownAction): ReduxState {
+  return {
+    ...state,
+    cooldown: action.payload,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -55,5 +66,9 @@ export const dispatches = [
   {
     action: SET_MODAL,
     function: setModal,
-  }
+  },
+  {
+    action: SET_COOLDOWN,
+    function: setCooldown,
+  },
 ];
