@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { Users } from 'react-feather';
-import { ReduxState } from "../store"
+import { ReduxState } from "../../store"
 
 const Counter = styled.div`
   position: fixed;

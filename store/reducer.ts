@@ -1,8 +1,10 @@
 import { ReduxState } from './';
 import * as Infos from './actions/infos';
+import * as Painting from './actions/painting';
 
 export type ActionTypes =
-  Infos.Actions;
+  Infos.Actions |
+  Painting.Actions;
 
 export interface Dispatch {
   action: string,
@@ -12,6 +14,7 @@ export interface Dispatch {
 // @ts-ignore
 const allDispatches: Array<Dispatch> = [
   Infos.dispatches,
+  Painting.dispatches
 ].flat();
 
 export function reducer(state: ReduxState, action: ActionTypes) {
