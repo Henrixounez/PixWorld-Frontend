@@ -2,10 +2,14 @@ import { useMemo } from 'react';
 import { createStore, Store } from 'redux';
 import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
+import palette from '../pages/constants/palette';
+import ModalTypes from '../pages/constants/modalTypes';
 
 export interface ReduxState {
   playersNb: number;
   cursorPos: {x: number, y: number};
+  selectedColor: string;
+  currentModal: ModalTypes;
 }
 
 export let store: Store<ReduxState, ActionTypes> | undefined;
@@ -13,6 +17,8 @@ export let store: Store<ReduxState, ActionTypes> | undefined;
 export const initialState: ReduxState = {
   playersNb: 0,
   cursorPos: { x: 0, y: 0 },
+  selectedColor: palette[0],
+  currentModal: ModalTypes.NONE,
 };
 
 const reducer = (state = initialState, action: ActionTypes) => {

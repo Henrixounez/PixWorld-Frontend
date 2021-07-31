@@ -1,8 +1,10 @@
 import { ReduxState } from "..";
+import ModalTypes from "../../pages/constants/modalTypes";
 
 /* Actions */
 export const SET_NB_PLAYERS = 'SET_NB_PLAYERS';
 export const SET_CURSOR_POS = 'SET_CURSOR_POS';
+export const SET_MODAL = 'SET_MODAL';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -13,8 +15,12 @@ export interface SetCursorPosAction {
   type: typeof SET_CURSOR_POS;
   payload: { x: number, y: number };
 }
+export interface SetModalAction {
+  type: typeof SET_MODAL;
+  payload: ModalTypes;
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -29,6 +35,12 @@ export function setCursorPos(state: ReduxState, action: SetCursorPosAction): Red
     cursorPos: action.payload,
   };
 }
+export function setModal(state: ReduxState, action: SetModalAction): ReduxState {
+  return {
+    ...state,
+    currentModal: action.payload,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -38,6 +50,10 @@ export const dispatches = [
   },
   {
     action: SET_CURSOR_POS,
-    function: setCursorPos
+    function: setCursorPos,
+  },
+  {
+    action: SET_MODAL,
+    function: setModal,
   }
 ];

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useSelector } from "react-redux"
-import { ReduxState } from "../store"
+import { ReduxState } from "../../store"
 
 const Pos = styled.div`
   position: fixed;
