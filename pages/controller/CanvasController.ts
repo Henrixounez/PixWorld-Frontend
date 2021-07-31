@@ -163,10 +163,12 @@ export class CanvasController {
     if (newZoom > 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
       this.position.zoom = newZoom;
-      const translateX = (focalX - this.position.x) * changeInZoom;
-      const transtateY = (focalY - this.position.y) * changeInZoom;
-      this.position.x += translateX;
-      this.position.y += transtateY;
+      if (store?.getState().zoomTowardCursor) {
+        const translateX = (focalX - this.position.x) * changeInZoom;
+        const transtateY = (focalY - this.position.y) * changeInZoom;
+        this.position.x += translateX;
+        this.position.y += transtateY;
+      }
       this.render();
     }
   }

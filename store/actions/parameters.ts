@@ -2,6 +2,7 @@ import { ReduxState } from "..";
 
 /* Action */
 export const SET_GRID_ACTIVE = 'SET_GRID_ACTIVE';
+export const SET_ZOOM_TOWARD_CURSOR = 'SET_ZOOM_TOWARD_CURSOR';
 
 /* Types */
 
@@ -10,7 +11,14 @@ export interface SetGridActiveAction {
     payload: boolean;
 }
 
+export interface SetZoomTowardCursorAction {
+    type: typeof SET_ZOOM_TOWARD_CURSOR;
+    payload: boolean;
+}
+
 export type Actions = SetGridActiveAction;
+
+export type Action = SetZoomTowardCursorAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -20,10 +28,21 @@ export function setGridActive(state: ReduxState, action: SetGridActiveAction): R
     };
 }
 
+export function setZoomTowardCursor(state: ReduxState, action: SetZoomTowardCursorAction): ReduxState {
+    return {
+        ...state,
+        zoomTowardCursor: action.payload
+    };
+}
+
 /* Dispatches */
 export const dispatches = [
     {
         action: SET_GRID_ACTIVE,
         function: setGridActive
+    },
+    {
+        action: SET_ZOOM_TOWARD_CURSOR,
+        function: setZoomTowardCursor
     }
 ]

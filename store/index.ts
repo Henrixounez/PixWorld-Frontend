@@ -13,6 +13,7 @@ export interface ReduxState {
   cooldown: number;
   chatMessages: { author: string, msg: string }[];
   gridActive: boolean;
+  zoomTowardCursor: boolean;
   overlay: {
     activate: boolean;
     image: string;
@@ -34,6 +35,7 @@ export const initialState: ReduxState = {
   cooldown: 0,
   chatMessages: [],
   gridActive: true,
+  zoomTowardCursor: true,
   overlay: {
     activate: false,
     image: "",
