@@ -35,7 +35,7 @@ function hexToRgb(hex: string) {
     parseInt(result![3], 16)]
 }
 
-function getRGBPalette() {
+export function getRGBPalette() {
   let newPalette = Array<number[]>(palette.length);
   for (let i = 0; i < palette.length; i++) {
     newPalette[i] = hexToRgb(palette[i]);
@@ -43,7 +43,7 @@ function getRGBPalette() {
   return newPalette;
 }
 
-function FindNearestColor(pixel: number[], pal: number[][]) {
+export function FindNearestColor(pixel: number[], pal: number[][]) {
   let r = pixel[0];
   let g = pixel[1];
   let b = pixel[2];

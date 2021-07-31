@@ -2,6 +2,7 @@ import { Unsubscribe } from "redux";
 import { store } from "../../store";
 import { SET_OVERLAY_POSITION } from "../../store/actions/overlay";
 import { PIXEL_SIZE } from "../constants/painting";
+import { FindNearestColor, getRGBPalette } from "../ui/modals/Converter";
 import { CanvasController } from "./CanvasController";
 
 export default class OverlayController {
@@ -94,6 +95,8 @@ export default class OverlayController {
     if (!ctx)
       return '#000000';
     const data = ctx.getImageData(x, y, 1, 1).data;
-    return ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
+    const palette = getRGBPalette();
+    const color = FindNearestColor([data[0], data[1], data[2]], palette);
+    return ('#' + this.toHex(color[0]) + this.toHex(color[1]) + this.toHex(color[2])).toUpperCase();
   }
 }
