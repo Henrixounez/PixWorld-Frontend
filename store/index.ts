@@ -18,6 +18,7 @@ export interface ReduxState {
     position: { x: number, y: number };
     positionMouse: boolean;
     autoColor: boolean;
+    tainted: boolean;
   }
 }
 
@@ -36,6 +37,7 @@ export const initialState: ReduxState = {
     position: { x: 0, y: 0 },
     positionMouse: false,
     autoColor: false,
+    tainted: false,
   }
 };
 

@@ -7,6 +7,7 @@ export const SET_OVERLAY_TRANSPARENCY = 'SET_OVERLAY_TRANSPARENCY';
 export const SET_OVERLAY_POSITION = 'SET_OVERLAY_POSITION';
 export const SET_OVERLAY_POSITION_MOUSE = 'SET_OVERLAY_POSITION_MOUSE';
 export const SET_OVERLAY_AUTOCOLOR = 'SET_OVERLAY_AUTOCOLOR';
+export const SET_OVERLAY_TAINTED = 'SET_OVERLAY_TAINTED';
 
 /* Types */
 export interface SetOverlayActivateAction {
@@ -33,8 +34,13 @@ export interface SetOverlayAutoColorAction {
   type: typeof SET_OVERLAY_AUTOCOLOR;
   payload: boolean;
 }
+export interface SetOverlayTaintedAction {
+  type: typeof SET_OVERLAY_TAINTED;
+  payload: boolean;
+}
 
-export type Actions = SetOverlayActivateAction | SetOverlayImageAction | SetOverlayTransparencyAction | SetOverlayPositionAction | SetOverlayPositionMouseAction | SetOverlayAutoColorAction;
+
+export type Actions = SetOverlayActivateAction | SetOverlayImageAction | SetOverlayTransparencyAction | SetOverlayPositionAction | SetOverlayPositionMouseAction | SetOverlayAutoColorAction | SetOverlayTaintedAction;
 
 /* Functions */
 export function setOverlayActivate(state: ReduxState, action: SetOverlayActivateAction): ReduxState {
@@ -91,6 +97,15 @@ export function setOverlayAutoColor(state: ReduxState, action: SetOverlayAutoCol
     }
   };
 }
+export function setOverlayTainted(state: ReduxState, action: SetOverlayTaintedAction): ReduxState {
+  return {
+    ...state,
+    overlay: {
+      ...state.overlay,
+      tainted: action.payload,
+    }
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -117,5 +132,9 @@ export const dispatches = [
   {
     action: SET_OVERLAY_AUTOCOLOR,
     function: setOverlayAutoColor,
+  },
+  {
+    action: SET_OVERLAY_TAINTED,
+    function: setOverlayTainted,
   }
 ];

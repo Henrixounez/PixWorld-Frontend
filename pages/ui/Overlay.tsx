@@ -54,6 +54,11 @@ const CheckboxRow = styled.div`
   align-items: center;
   gap: 10px;
 `;
+const TaintedText = styled.span`
+  font-size: 0.8rem;
+  max-width: 220px;
+  margin: 0;
+`;
 
 export default function Overlay() {
   const dispatch = useDispatch();
@@ -62,6 +67,7 @@ export default function Overlay() {
   const position = useSelector((state: ReduxState) => state.overlay.position);
   const positionWithMouse = useSelector((state: ReduxState) => state.overlay.positionMouse);
   const autoColor = useSelector((state: ReduxState) => state.overlay.autoColor);
+  const tainted = useSelector((state: ReduxState) => state.overlay.tainted);
   const [open, setOpen] = useState(true);
 
   const openFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,10 +119,17 @@ export default function Overlay() {
                 Position with mouse
               </CheckboxRow>
               <br/>
-              <CheckboxRow onClick={() => dispatch({ type: SET_OVERLAY_AUTOCOLOR, payload: !autoColor })}>
-                <input type="checkbox" checked={autoColor} readOnly />
-                Auto Color
-              </CheckboxRow>
+              { tainted ? (
+                <TaintedText>
+                  The image URL is protected, making the Auto Color feature not available.<br/>
+                  Use sites that do not support CORS requests (eg: imgur, dropbox).
+                </TaintedText>
+              ) : (
+                <CheckboxRow onClick={() => dispatch({ type: SET_OVERLAY_AUTOCOLOR, payload: !autoColor })}>
+                  <input type="checkbox" checked={autoColor} readOnly />
+                  Auto Color
+                </CheckboxRow>
+              )}
             </>
           )}
           <OpenButton onClick={() => setOpen(!open)}>

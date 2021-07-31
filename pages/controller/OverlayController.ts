@@ -1,6 +1,6 @@
 import { Unsubscribe } from "redux";
 import { store } from "../../store";
-import { SET_OVERLAY_POSITION } from "../../store/actions/overlay";
+import { SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_POSITION, SET_OVERLAY_TAINTED } from "../../store/actions/overlay";
 import { PIXEL_SIZE } from "../constants/painting";
 import { FindNearestColor, getRGBPalette } from "../ui/modals/Converter";
 import { CanvasController } from "./CanvasController";
@@ -81,6 +81,13 @@ export default class OverlayController {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(img, 0, 0);
         this.canvasController.render();
+      }
+      try {
+        ctx?.getImageData(0, 0, 1, 1);
+        store?.dispatch({ type: SET_OVERLAY_TAINTED, payload: false });
+      } catch (e) {
+        store?.dispatch({ type: SET_OVERLAY_AUTOCOLOR, payload: false });
+        store?.dispatch({ type: SET_OVERLAY_TAINTED, payload: true });
       }
     }
   }
