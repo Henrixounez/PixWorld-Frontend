@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { HelpCircle, XCircle } from 'react-feather';
+import { HelpCircle, XCircle, Upload } from 'react-feather';
 import styled from 'styled-components'
 import { store } from '../store';
 import { SET_CURSOR_POS, SET_NB_PLAYERS } from '../store/actions/infos';
@@ -116,6 +116,10 @@ const CHUNK_SIZE = 256;
 const PIXEL_SIZE = 50;
 const API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://api.henrixounez.com/pixworld';
 const WS_URL  = process.env.NODE_ENV === 'development' ? 'ws://localhost:8080' : 'wss://api.henrixounez.com/pixworld';
+enum ModalTypes {
+  INFOS,
+  PROBLEM
+};
 
 class Chunk {
   canvas: HTMLCanvasElement;
@@ -640,22 +644,155 @@ class CanvasController {
   }
 }
 
-enum ModalTypes {
-  INFOS,
-  PROBLEM
-};
+function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
+  var array = new Array<number[][]>(height);
+  for (let i = 0; i < height; i++) {
+    array[i] = new Array<number[]>(width);
+    for (let j = 0; j < width; j++) {
+      let index = (i * width * 4 +  j * 4);
+      array[i][j] = [data[index], data[index + 1], data[index + 2], data[index + 3]];
+    }
+  }
+  return array;
+}
+
+function ImageArrayToOneDimension(array: number[][][], width: number, height: number, size: number) {
+  var data = new Uint8ClampedArray(size);
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      let index = (i * width * 4 +  j * 4);
+      data[index] = array[i][j][0];
+      data[index + 1] = array[i][j][1];
+      data[index + 2] = array[i][j][2];
+      data[index + 3] = array[i][j][3];
+    }
+  }
+  return data;
+}
+
+function hexToRgb(hex: string) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return [
+    parseInt(result![1], 16),
+    parseInt(result![2], 16),
+    parseInt(result![3], 16)]
+}
+
+function getRGBPalette() {
+  let newPalette = Array<number[]>(palette.length);
+  for (let i = 0; i < palette.length; i++) {
+    newPalette[i] = hexToRgb(palette[i]);
+  }
+  return newPalette;
+}
+
+function FindNearestColor(pixel: number[], pal: number[][]) {
+  let r = pixel[0];
+  let g = pixel[1];
+  let b = pixel[2];
+
+  let colorDiff = new Array<number[]>();
+  for (let i = 0; i < pal.length; i++) {
+    let cr = pal[i][0];
+    let cg = pal[i][1];
+    let cb = pal[i][2];
+
+    let diff = Math.sqrt(Math.pow(Math.abs(r - cr), 2) + Math.pow(Math.abs(g - cg), 2) + Math.pow(Math.abs(b - cb), 2));
+    colorDiff[i] = [diff, cr, cg, cb]
+  }
+  let nearest = colorDiff.sort(function(a, b) { return a[0] - b[0]; });
+  return [nearest[0][1], nearest[0][2], nearest[0][3], 255];
+}
+
+function ImgToPalette(data: number[][][], width: number, height: number) {
+  let cData = data;
+  let rgbPalette = getRGBPalette();
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      cData[i][j] = FindNearestColor(cData[i][j], rgbPalette);
+    }
+  }
+  return cData;
+}
 
 function CanvasComponent() {
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const controller = useRef<CanvasController | null>();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previewRef = useRef<HTMLCanvasElement | null>(null);
+  const controller = useRef<CanvasController | null>(null);
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
   const [selectedColor, setSelectedColor] = useState(palette[0]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(ModalTypes.INFOS);
+  const [showConverter, setShowConverter] = useState(false);
+  const [wantedWidth, setWantedWidth] = useState(50);
 
   const activateModal = (type: ModalTypes) => {
     setShowModal(true);
     setModalType(type);
   }
+
+  const UploadImage = () => {
+    if (inputFileRef.current)
+      inputFileRef.current.click();
+  }
+
+  const DownloadImage = () => {
+    const ctx = previewRef.current?.getContext('2d');
+
+    if (ctx) {
+      const url = ctx.canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'converter.png';
+      link.href = url;
+      link.click();
+    }
+  }
+  function WantedWidthChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setWantedWidth(parseInt(event.target.value));
+  }
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (!event.target.files)
+      return;
+
+    const fileURL = URL.createObjectURL(event.target.files[0]);
+    const ctx = previewRef.current?.getContext('2d');
+    console.log(fileURL);
+
+    const img = new Image();
+    
+    img.src = fileURL;
+
+    img.onload = () => {
+      if (ctx) {
+        const scale = wantedWidth/img.width;
+        const newWidth = img.width * scale;
+        const newHeight = img.height * scale;
+
+        ctx.canvas.width = newWidth;
+        ctx.canvas.height = newHeight;
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        const imgData = ctx.getImageData(0, 0, newWidth, newHeight);
+        const pData = imgData.data
+        const imgArray = OneDimensionToImageArray(pData, imgData.width, imgData.height);
+
+        const transformedArray = ImgToPalette(imgArray, imgData.width, imgData.height);
+        const transformedImg = ImageArrayToOneDimension(transformedArray, imgData.width, imgData.height, pData.length);
+        
+        for (var i = 0; i < pData.length; i++) {
+          pData[i] = transformedImg[i];
+        }
+
+        ctx.clearRect(0, 0, imgData.width, imgData.height);
+        ctx.putImageData(imgData, 0, 0);
+      }
+    }
+  }
+
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -708,9 +845,37 @@ function CanvasComponent() {
           </ModalContent>
         </ModalBackdrop>
       )}
+      {showConverter && (
+        <ModalBackdrop onClick = {() => setShowConverter(false)}>
+          <ModalContent onClick = {(e) => e.stopPropagation()}>
+            <CloseButton onClick = {() => setShowConverter(false)}>
+              <XCircle color = "#000" />
+            </CloseButton>
+            <h3> Converter - Convert your picture!</h3>
+            <hr/> Width of the final image: 
+            <input type="text" id="wantedWidth" defaultValue="50" onChange={WantedWidthChange}/>
+            <br/>
+            Upload your image  
+            <input type='file' id='file' ref={inputFileRef} style={{display: 'none'}} onChange={handleChange}/>
+            <button onClick={UploadImage} type="button">Upload</button>
+            <hr/>
+            <canvas 
+            // @ts-ignore
+            ref={previewRef} 
+            id="preview"
+            />
+            <hr/>
+            <button onClick={DownloadImage} type="button">Download?</button>
+          </ModalContent>
+        </ModalBackdrop>
+      )}
+
       <ButtonList>
         <div onClick={() => activateModal(ModalTypes.INFOS)}>
           <HelpCircle color="#000" />
+        </div>
+        <div onClick = {() => setShowConverter(true)}>
+          <Upload color = "#000" />
         </div>
       </ButtonList>
       <Palette>
