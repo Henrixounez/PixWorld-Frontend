@@ -4,13 +4,15 @@ import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
 
 export interface ReduxState {
-  playersNb: number
+  playersNb: number;
+  cursorPos: {x: number, y: number};
 }
 
 export let store: Store<ReduxState, ActionTypes> | undefined;
 
 export const initialState: ReduxState = {
   playersNb: 0,
+  cursorPos: { x: 0, y: 0 },
 };
 
 const reducer = (state = initialState, action: ActionTypes) => {

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { HelpCircle, XCircle } from 'react-feather';
 import styled from 'styled-components'
 import { store } from '../store';
-import { SET_NB_PLAYERS } from '../store/actions/infos';
+import { SET_CURSOR_POS, SET_NB_PLAYERS } from '../store/actions/infos';
+import CursorPosition from './cursorPosition';
 import palette from './palette';
 import PlayerCounter from './playerCounter';
 
@@ -431,8 +432,9 @@ class CanvasController {
         x: e.clientX,
         y: e.clientY
       };
+      const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+      store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true) {
-        const { coordX, coordY } = this.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
         this.placePixel(coordX, coordY, this.selectedColor);
       } else {
         this.render();
@@ -608,8 +610,8 @@ class CanvasController {
     const linesH = Math.ceil(height / pixelSize) + 2;
     const linesV = Math.ceil(width / pixelSize) + 2;
 
+    ctx.strokeStyle = "#2222227E";
     for (let i = centerCoord.y - linesH; i < centerCoord.y + linesH; i++) {
-      ctx.strokeStyle = "#666";
       ctx.lineWidth = i % 10 === 0 ? 2 : 1;
       ctx.beginPath();
       const posY = centerPoint.posY + (i - centerCoord.y) * pixelSize;
@@ -618,7 +620,6 @@ class CanvasController {
       ctx.stroke();
     }
     for (let i = centerCoord.x - linesV; i < centerCoord.x + linesV; i++) {
-      ctx.strokeStyle = "#666";
       ctx.lineWidth = i % 10 === 0 ? 2 : 1;
       ctx.beginPath();
       const posX = centerPoint.posX + (i - centerCoord.x) * pixelSize;
@@ -728,6 +729,7 @@ function CanvasComponent() {
         ))}
       </Palette>
       <PlayerCounter/>
+      <CursorPosition/>
       <Canvas
         // @ts-ignore
         ref={canvasRef}
