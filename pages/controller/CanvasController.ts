@@ -1,9 +1,11 @@
 import { API_URL } from "../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../constants/painting";
 
+import Chunk from "./Chunk";
 import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
-import Chunk from "./Chunk";
+import OverlayController from "./OverlayController";
+import { store } from "../../store";
 
 export class CanvasController {
   canvas: HTMLCanvasElement;
@@ -14,6 +16,7 @@ export class CanvasController {
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
+  overlayController: OverlayController;
 
   constructor() {
     this.size = {
@@ -27,12 +30,14 @@ export class CanvasController {
 
     this.interactionController = new InteractionController(this);
     this.connectionController = new ConnectionController(this);
+    this.overlayController = new OverlayController(this);
     this.loadNeighboringChunks();
   }
 
   destructor() {
-    console.log('destructor');
     this.interactionController.destructor();
+    this.connectionController.destructor();
+    this.overlayController.destructor();
   }
 
   // Utils //
@@ -103,11 +108,17 @@ export class CanvasController {
     await Promise.all(chunkLoading);
     this.render();
   }
-  placePixel = (coordX: number, coordY: number, color: string, send = true) => {
+  placePixel = (coordX: number, coordY: number, _color: string, send = true) => {
     const ctx = this.canvas.getContext('2d');
+    let color = _color;
 
     if (!ctx)
       return;
+    
+    if (store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
+      const overlayPos = store.getState().overlay.position;
+      color = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
+    }
 
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
@@ -171,6 +182,7 @@ export class CanvasController {
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
     this.drawGrid(ctx);
+    this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
     if (this.position.zoom > 4) {
