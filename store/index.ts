@@ -12,6 +12,7 @@ export interface ReduxState {
   currentModal: ModalTypes;
   cooldown: number;
   chatMessages: { author: string, msg: string }[];
+  gridActive: boolean;
   overlay: {
     activate: boolean;
     image: string;
@@ -32,6 +33,7 @@ export const initialState: ReduxState = {
   currentModal: ModalTypes.NONE,
   cooldown: 0,
   chatMessages: [],
+  gridActive: true,
   overlay: {
     activate: false,
     image: "",

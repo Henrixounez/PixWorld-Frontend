@@ -3,12 +3,14 @@ import * as Infos from './actions/infos';
 import * as Painting from './actions/painting';
 import * as Overlay from './actions/overlay';
 import * as Chat from './actions/chat';
+import * as Parameters from './actions/parameters'
 
 export type ActionTypes =
   Infos.Actions |
   Painting.Actions |
   Overlay.Actions |
   Chat.Actions;
+  Parameters.Actions;
 
 export interface Dispatch {
   action: string,
@@ -21,6 +23,7 @@ const allDispatches: Array<Dispatch> = [
   Painting.dispatches,
   Overlay.dispatches,
   Chat.dispatches,
+  Parameters.dispatches
 ].flat();
 
 export function reducer(state: ReduxState, action: ActionTypes) {

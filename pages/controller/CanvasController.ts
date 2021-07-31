@@ -110,6 +110,9 @@ export class CanvasController {
     this.render();
   }
   placePixel = (coordX: number, coordY: number, _color: string, send = true) => {
+    if (this.position.zoom > 10) {
+      return;
+    }
     const ctx = this.canvas.getContext('2d');
     let color = _color;
 
@@ -200,7 +203,7 @@ export class CanvasController {
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
-    if (this.position.zoom > 4) {
+    if (this.position.zoom > 4 || !store?.getState().gridActive) {
       return;
     }
 

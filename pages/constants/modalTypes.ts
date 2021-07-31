@@ -2,7 +2,8 @@ enum ModalTypes {
   NONE,
   INFOS,
   PROBLEM,
-  CONVERTER
+  CONVERTER,
+  PARAMETERS
 };
 
 export default ModalTypes;
