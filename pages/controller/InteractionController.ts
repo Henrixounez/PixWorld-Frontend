@@ -1,5 +1,6 @@
 import { store } from "../../store";
 import { SET_CURSOR_POS } from "../../store/actions/infos";
+import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_SELECTED_COLOR } from "../../store/actions/painting";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
@@ -32,9 +33,9 @@ export default class InteractionController {
     this.canvas.addEventListener('touchcancel', this.touchCancel);
     this.canvas.addEventListener('touchleave', this.touchLeave);
     this.canvas.addEventListener('touchmove', this.touchMove);
-    document.addEventListener('keypress', this.keypress);
-    document.addEventListener('keydown', this.keydown);
-    document.addEventListener('keyup', this.keyup);
+    this.canvas.addEventListener('keypress', this.keypress);
+    this.canvas.addEventListener('keydown', this.keydown);
+    this.canvas.addEventListener('keyup', this.keyup);
     window.addEventListener('resize', this.resize);
   }
 
@@ -51,9 +52,9 @@ export default class InteractionController {
     this.canvas.removeEventListener('touchcancel', this.touchCancel);
     this.canvas.removeEventListener('touchleave', this.touchLeave);
     this.canvas.removeEventListener('touchmove', this.touchMove);
-    document.removeEventListener('keypress', this.keypress);
-    document.removeEventListener('keydown', this.keydown);
-    document.removeEventListener('keyup', this.keyup);
+    this.canvas.removeEventListener('keypress', this.keypress);
+    this.canvas.removeEventListener('keydown', this.keydown);
+    this.canvas.removeEventListener('keyup', this.keyup);
     window.removeEventListener('resize', this.resize);
   }
 
@@ -116,8 +117,6 @@ export default class InteractionController {
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true) {
         this.canvasController.placePixel(coordX, coordY, this.currentColor);
-      } else {
-        this.canvasController.render();
       }
     }
   }
@@ -127,8 +126,12 @@ export default class InteractionController {
       this.isMoving = false;
     } else {
       if (e.button === 0) {
-        const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-        this.canvasController.placePixel(coordX, coordY, this.currentColor);
+        if (store?.getState().overlay.positionMouse) {
+          store.dispatch({ type: SET_OVERLAY_POSITION_MOUSE, payload: false });
+        } else {
+          const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
+          this.canvasController.placePixel(coordX, coordY, this.currentColor);
+        }
       }
     }
     this.isMouseDown = false
@@ -204,6 +207,8 @@ export default class InteractionController {
       case 'ArrowRight':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
+      case 'o':
+        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
     }
   }
   keyup = (e: KeyboardEvent) => {

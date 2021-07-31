@@ -8,7 +8,7 @@ const Palette = styled.div`
   position: fixed;
   right: 10px;
   bottom: 10px;
-  padding: 5px;
+  padding: 3px;
   background-color: #FFF;
   border: 1px solid #000;
   overflow: hidden;
@@ -33,13 +33,16 @@ const PaletteButton = styled.div<{selected: boolean}>`
   min-height: 25px;
   cursor: pointer;
   transition: 0.2s;
+  box-sizing: border-box;
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
     box-shadow: 0px 0px 5px #444;
   }
   ${({ selected }) => selected && `
-    transform: scale(1.2);
+    transform: scale(1.1);
     box-shadow: 0px 0px 5px #444;
+    border: 1px solid #FFF;
+    z-index: 10;
   `}
 `;
 

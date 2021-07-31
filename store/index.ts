@@ -10,6 +10,14 @@ export interface ReduxState {
   cursorPos: {x: number, y: number};
   selectedColor: string;
   currentModal: ModalTypes;
+  overlay: {
+    activate: boolean;
+    image: string;
+    transparency: number;
+    position: { x: number, y: number };
+    positionMouse: boolean;
+    autoColor: boolean;
+  }
 }
 
 export let store: Store<ReduxState, ActionTypes> | undefined;
@@ -19,6 +27,14 @@ export const initialState: ReduxState = {
   cursorPos: { x: 0, y: 0 },
   selectedColor: palette[0],
   currentModal: ModalTypes.NONE,
+  overlay: {
+    activate: false,
+    image: "",
+    transparency: 0.5,
+    position: { x: 0, y: 0 },
+    positionMouse: false,
+    autoColor: false,
+  }
 };
 
 const reducer = (state = initialState, action: ActionTypes) => {

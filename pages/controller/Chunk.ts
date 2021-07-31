@@ -31,7 +31,6 @@ export default class Chunk {
       return '#000000';
     const data = ctx.getImageData(x, y, 1, 1).data;
     return ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
-
   }
   placePixel(x: number, y: number, color: string) {
     const ctx = this.canvas.getContext('2d');

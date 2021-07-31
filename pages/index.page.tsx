@@ -5,6 +5,7 @@ import CursorPosition from './ui/CursorPosition';
 import Modal from './ui/Modal';
 import PaletteList from './ui/PaletteList';
 import PlayerCounter from './ui/PlayerCounter';
+import Overlay from './ui/Overlay';
 
 const Container = styled.div`
   width: 100vw;
@@ -18,6 +19,7 @@ export default function Home() {
     <Container>
       <Modal/>
       <ButtonList/>
+      <Overlay/>
       <PaletteList/>
       <PlayerCounter/>
       <CursorPosition/>

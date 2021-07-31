@@ -20,6 +20,7 @@ function CanvasComponent() {
       }}
       ref={canvasRef}
       id="canvas"
+      tabIndex={1}
     />
   );
 }
