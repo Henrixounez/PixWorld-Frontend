@@ -118,7 +118,10 @@ export class CanvasController {
     
     if (send && store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
       const overlayPos = store.getState().overlay.position;
-      color = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
+      const overlayColor = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
+      if (!overlayColor)
+        return;
+      color = overlayColor;
     }
 
     const chunkX = Math.floor(coordX / CHUNK_SIZE);

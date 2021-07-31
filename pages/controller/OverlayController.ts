@@ -103,6 +103,10 @@ export default class OverlayController {
       return '#000000';
     const data = ctx.getImageData(x, y, 1, 1).data;
     const palette = getRGBPalette();
+
+    if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 0)
+      return null;
+
     const color = FindNearestColor([data[0], data[1], data[2]], palette);
     return ('#' + this.toHex(color[0]) + this.toHex(color[1]) + this.toHex(color[2])).toUpperCase();
   }
