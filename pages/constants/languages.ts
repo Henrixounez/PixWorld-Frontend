@@ -1,4 +1,4 @@
-export const languages = ['en', 'fr'];
+export const languages = ['en', 'fr', 'pt-br'];
 export const languagesModules = [
   'common',
   'infos',
