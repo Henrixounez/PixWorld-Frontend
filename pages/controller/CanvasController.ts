@@ -156,9 +156,10 @@ export class CanvasController {
     }
 
     const lastColor = this.placePixel(coordX, coordY, color);
-    this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
-    if (lastColor)
+    if (lastColor) {
       this.waitingPixels[`${coordX};${coordY}`] = lastColor;
+      this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
+    }
   }
   restorePixel = (coordX: number, coordY: number) => {
     const color = this.waitingPixels[`${coordX};${coordY}`];
