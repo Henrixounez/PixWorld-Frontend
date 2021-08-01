@@ -177,7 +177,7 @@ export class CanvasController {
     const oldZoom = this.position.zoom;
     const newZoom = this.position.zoom + delta;
 
-    if (newZoom > 1 && newZoom < 50) {
+    if (newZoom >= 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
       this.position.zoom = newZoom;
       if (store?.getState().zoomTowardCursor) {
@@ -224,7 +224,7 @@ export class CanvasController {
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
-    if (this.position.zoom > 4 || !store?.getState().gridActive) {
+    if (this.position.zoom > 6 || !store?.getState().gridActive) {
       return;
     }
 
@@ -252,6 +252,26 @@ export class CanvasController {
       ctx.moveTo(posX, 0);
       ctx.lineTo(posX, height);
       ctx.stroke();
+    }
+    this.drawSquare(ctx);
+  }
+  drawSquare = (ctx: CanvasRenderingContext2D) => {
+    const pos = store?.getState().cursorPos;
+
+    if (pos) {
+      const pixelSize = PIXEL_SIZE / this.position.zoom;
+      const { posX, posY } = this.coordinatesOnCanvas(pos.x, pos.y);
+      const color = this.getColorOnCoordinates(pos.x, pos.y);
+      const BORDER_WIDTH = 3;
+
+      ctx.fillStyle = store?.getState().selectedColor || "#FFFFFF";
+      ctx.strokeStyle = "#000000";
+      ctx.fillRect(posX, posY, pixelSize, pixelSize);
+      ctx.strokeRect(posX, posY, pixelSize, pixelSize);
+      console.log(color);
+      ctx.fillStyle = color;
+      ctx.fillRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2)
+      ctx.strokeRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2);
     }
   }
   drawChunks = (ctx: CanvasRenderingContext2D) => {

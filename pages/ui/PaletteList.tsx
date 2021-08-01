@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { ReduxState } from '../../store';
 import { SET_SELECTED_COLOR } from '../../store/actions/painting';
 import palette from '../constants/palette';
+import { getCanvasController } from '../controller/CanvasController';
 
 const Palette = styled.div`
   position: fixed;
@@ -64,7 +65,8 @@ export default function PaletteList() {
             dispatch({
               type: SET_SELECTED_COLOR,
               payload: color,
-            })
+            });
+            getCanvasController()?.canvas.focus();
           }}
         />
       ))}

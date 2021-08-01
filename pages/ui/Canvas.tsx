@@ -16,7 +16,8 @@ function CanvasComponent() {
   return (
     <canvas
       style={{
-        zIndex: -1
+        zIndex: -1,
+        outline: 'none',
       }}
       ref={canvasRef}
       id="canvas"

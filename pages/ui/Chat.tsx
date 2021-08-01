@@ -92,7 +92,6 @@ export default function Chat() {
   const sendMessage = () => {
     setMessage('');
     getCanvasController()?.connectionController.sendToWs('sendMessage', message);
-    inputRef.current?.blur();
   };
 
   useEffect(() => {
