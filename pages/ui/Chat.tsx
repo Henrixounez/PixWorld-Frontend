@@ -12,6 +12,7 @@ const ChatButton = styled.div`
   font-size: 1rem;
   height: 35px;
   width: 35px;
+  transition: .2s;
 
   background-color: #FFFD;
   border: 1px solid #000;
@@ -20,8 +21,16 @@ const ChatButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  user-select: none;
   &:hover {
     background-color: #FFFA;
+  }
+
+  @media (max-height: 800px) {
+    right: 75px;
+  }
+  @media (max-height: 400px) {
+    right: 150px;
   }
 `;
 const ChatWindow = styled.div<{show: boolean}>`
@@ -32,6 +41,7 @@ const ChatWindow = styled.div<{show: boolean}>`
   height: 200px;
   width: 300px;
   max-width: 80vw;
+  transition: .2s;
 
   background-color: #FFFD;
   border: 1px solid #000;
@@ -44,6 +54,12 @@ const ChatWindow = styled.div<{show: boolean}>`
   ${({ show }) => !show && `
     display: none;
   `}
+  @media (max-height: 800px) {
+    right: 75px;
+  }
+  @media (max-height: 400px) {
+    right: 150px;
+  }
 `;
 const ChatText = styled.div`
   height: 85%;
