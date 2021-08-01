@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from 'next-i18next';
 import palette from "../../constants/palette";
 
 function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
@@ -74,6 +75,7 @@ function ImgToPalette(data: number[][][], width: number, height: number) {
 }
 
 export default function ModalConverter() {
+  const { t } = useTranslation('converter');
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const [wantedWidth, setWantedWidth] = useState(50);
@@ -156,22 +158,22 @@ export default function ModalConverter() {
   return (
     <>
       <h3>
-        Converter - Convert your picture!
+        {t('title')}
       </h3>
       <hr/>
-      Width of the final image: 
+      {t('widthText')}
       <input type="number" id="wantedWidth" defaultValue="50" min="1" onChange={WantedWidthChange}/>
       <br/>
-      Upload your image  
+      {t('uploadText')}
       <input type='file' id='file' ref={inputFileRef} style={{display: 'none'}} onChange={handleChange}/>
       <button onClick={UploadImage} type="button">
-        Upload
+        {t('uploadBtn')}
       </button>
       <hr/>
-      <canvas  ref={previewRef} id="preview"/>
+      <canvas ref={previewRef} id="preview"/>
       <hr/>
       <button onClick={DownloadImage} type="button">
-        Download?
+        {t('downloadBtn')}
       </button>
     </>
   );

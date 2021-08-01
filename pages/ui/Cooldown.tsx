@@ -33,7 +33,8 @@ export default function Cooldown() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch({ type: SET_COOLDOWN, payload: cooldown - 1});
+      if (cooldown > 0)
+        dispatch({ type: SET_COOLDOWN, payload: cooldown - 1});
     }, 1000);
     return () => {
       clearInterval(interval);

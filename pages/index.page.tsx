@@ -1,4 +1,8 @@
 import styled from 'styled-components'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetStaticPropsContext } from 'next';
+
+import { languagesModules } from './constants/languages';
 import Canvas from './ui/Canvas';
 import ButtonList from './ui/ButtonList';
 import CursorPosition from './ui/CursorPosition';
@@ -30,4 +34,12 @@ export default function Home() {
       <Canvas />
     </Container>
   )
+}
+
+export async function getStaticProps(ctx: GetStaticPropsContext & { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(ctx.locale, languagesModules)),
+    },
+  };
 }

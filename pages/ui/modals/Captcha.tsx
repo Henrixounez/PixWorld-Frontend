@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useTranslation } from 'next-i18next';
+
 import { API_URL } from "../../constants/api";
 import { useDispatch } from 'react-redux';
 import { SET_MODAL } from '../../../store/actions/infos';
@@ -55,6 +57,7 @@ const SendButton = styled.button`
 `;
 
 export default function Captcha() {
+  const { t } = useTranslation('captcha');
   const dispatch = useDispatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [captchaURL, setCaptchaURL] = useState('');
@@ -86,10 +89,10 @@ export default function Captcha() {
   return (
     <>
       <Container>
-        <h1>Captcha - Are you a robot ? 🤖</h1>
+        <h1>{t('title')} 🤖</h1>
         <p>
-          Enter the characters from the image below.<br/>
-          <span>(Characters are case insensitive, p and P is the same)</span>
+          {t('subtitle')}<br/>
+          <span>{t('tips')}</span>
         </p>
         <img
           src={captchaURL}
@@ -98,13 +101,13 @@ export default function Captcha() {
         <FormRow onSubmit={sendCaptcha}>
           <input
             type="text"
-            placeholder="Captcha Value"
+            placeholder={t('input')}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             ref={inputRef}
           />
           <SendButton type="submit">
-            Send
+            {t('send')}
           </SendButton>
         </FormRow>
       </Container>

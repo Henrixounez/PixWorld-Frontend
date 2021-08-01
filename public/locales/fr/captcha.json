@@ -1,0 +1,7 @@
+{
+  "title": "Captcha - Êtes vous un robot ?",
+  "subtitle": "Écrivez les caractères de l'image en dessous.",
+  "tips": "(Les caractères n'ont pas de casse, p et P sont les mêmes)",
+  "input": "Valeur Captcha",
+  "send": "Envoyer"
+}
