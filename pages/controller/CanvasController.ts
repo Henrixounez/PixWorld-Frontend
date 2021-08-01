@@ -268,7 +268,6 @@ export class CanvasController {
       ctx.strokeStyle = "#000000";
       ctx.fillRect(posX, posY, pixelSize, pixelSize);
       ctx.strokeRect(posX, posY, pixelSize, pixelSize);
-      console.log(color);
       ctx.fillStyle = color;
       ctx.fillRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2)
       ctx.strokeRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2);
