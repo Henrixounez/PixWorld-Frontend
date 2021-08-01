@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { ReduxState } from "../../store"
-import { useEffect } from 'react';
-import { SET_COOLDOWN } from '../../store/actions/infos';
+import { useEffect, useState } from 'react';
 
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
@@ -28,22 +27,30 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
 `;
 
 export default function Cooldown() {
-  const dispatch = useDispatch();
-  const cooldown = useSelector((state: ReduxState) => state.cooldown);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+  const cooldownUntil = useSelector((state: ReduxState) => state.cooldown);
+
+  function calculateDiff() {
+    const diff = Math.round((cooldownUntil - Date.now()) / 1000);
+    setCooldownLeft(diff < 0 ? 0 : diff);
+    if (diff > 0) {
+      document.title = `PixWorld | ${diff}`;
+    } else {
+      document.title = 'PixWorld';
+    }
+  }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (cooldown > 0)
-        dispatch({ type: SET_COOLDOWN, payload: cooldown - 1});
-    }, 1000);
+    calculateDiff();
+    const interval = setInterval(() => calculateDiff(), 1000);
     return () => {
       clearInterval(interval);
     }
-  }, [cooldown]);
+  }, [cooldownUntil]);
 
   return (
-    <CooldownContainer show={cooldown > 0} limit={cooldown > MAX_COOLDOWN - COOLDOWN_TIME}>
-      {cooldown}
+    <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME}>
+      {cooldownLeft}
     </CooldownContainer>
   );
 }
