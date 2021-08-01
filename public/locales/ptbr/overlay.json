@@ -1,0 +1,10 @@
+{
+  "title": "Exibir Imagem",
+  "input": "Parâmetros",
+  "inputUrl": "URL da Imagem",
+  "transparency": "Transparência",
+  "position": "Posição",
+  "positionMouse": "Posicionar com mouse",
+  "autoColor": "Auto-Cor",
+  "tainted": "A URL da Imagem está protegida, fazendo com que a opção de Auto-Cor não funcione.\nUse sites que não suportem pedidos CORS(ex: imgur, dropbox)."
+}
