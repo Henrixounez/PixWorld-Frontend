@@ -66,6 +66,7 @@ export default function PaletteList() {
               type: SET_SELECTED_COLOR,
               payload: color,
             });
+            getCanvasController()?.render();
             getCanvasController()?.canvas.focus();
           }}
         />

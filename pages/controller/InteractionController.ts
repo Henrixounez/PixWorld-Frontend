@@ -115,11 +115,10 @@ export default class InteractionController {
       };
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
-      if (this.shiftPressed === true) {
+      if (this.shiftPressed === true)
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
-      } else if (this.canvasController.position.zoom <= 6) {
+      if (this.canvasController.position.zoom <= 6)
         this.canvasController.render();
-      }
     }
   }
   mouseUp = (e: MouseEvent) => {
