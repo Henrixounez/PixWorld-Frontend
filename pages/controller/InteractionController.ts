@@ -185,6 +185,7 @@ export default class InteractionController {
       case 'Control':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
         this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
+        this.canvasController.render();
         break;
     }
   }
