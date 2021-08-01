@@ -110,6 +110,9 @@ export class CanvasController {
     this.render();
   }
   placePixel = (coordX: number, coordY: number, _color: string, send = true) => {
+    if (this.position.zoom > 10) {
+      return;
+    }
     const ctx = this.canvas.getContext('2d');
     let color = _color;
 
@@ -160,10 +163,12 @@ export class CanvasController {
     if (newZoom > 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
       this.position.zoom = newZoom;
-      const translateX = (focalX - this.position.x) * changeInZoom;
-      const transtateY = (focalY - this.position.y) * changeInZoom;
-      this.position.x += translateX;
-      this.position.y += transtateY;
+      if (store?.getState().zoomTowardCursor) {
+        const translateX = (focalX - this.position.x) * changeInZoom;
+        const transtateY = (focalY - this.position.y) * changeInZoom;
+        this.position.x += translateX;
+        this.position.y += transtateY;
+      }
       this.render();
     }
   }
@@ -200,7 +205,7 @@ export class CanvasController {
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
-    if (this.position.zoom > 4) {
+    if (this.position.zoom > 4 || !store?.getState().gridActive) {
       return;
     }
 

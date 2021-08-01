@@ -7,6 +7,7 @@ import ModalTypes from '../constants/modalTypes';
 import ModalInfos from './modals/Infos';
 import ModalProblem from './modals/Problem';
 import ModalConverter from './modals/Converter';
+import ModalParameters from './modals/Parameters';
 
 const ModalBackdrop = styled.div`
   position: absolute;
@@ -60,6 +61,7 @@ const modalComponents = {
   [ModalTypes.INFOS]: <ModalInfos/>,
   [ModalTypes.PROBLEM]: <ModalProblem/>,
   [ModalTypes.CONVERTER]: <ModalConverter/>,
+  [ModalTypes.PARAMETERS]: <ModalParameters/>
 }
 
 export default function Modal() {
