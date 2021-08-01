@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { MessageSquare } from 'react-feather';
 import React, { useEffect, useRef, useState } from 'react';
-import { getCanvasController } from '../controller/CanvasController';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'next-i18next';
+
+import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState } from '../../store';
 
 const ChatButton = styled.div`
@@ -97,6 +99,7 @@ const SendButton = styled.div`
 `;
 
 export default function Chat() {
+  const { t } = useTranslation('common');
   const [showMessages, setShowMessages] = useState(false);
   const [message, setMessage] = useState('');
   const messageList = useSelector((state: ReduxState) => state.chatMessages);
@@ -142,7 +145,7 @@ export default function Chat() {
             }}
           />
           <SendButton onClick={sendMessage}>
-            Send
+            {t('chatSend')}
           </SendButton>
         </ChatInteraction>
       </ChatWindow>

@@ -51,7 +51,6 @@ export default class ConnectionController {
           break;
         case 'captchaNeeded':
           store?.dispatch({ type: SET_MODAL, payload: ModalTypes.CAPTCHA });
-          store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
           this.canvasController.restorePixel(data.pos.x, data.pos.y);
           break;
       }

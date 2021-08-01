@@ -1,14 +1,17 @@
+import { useTranslation } from 'next-i18next';
+
 export default function ModalInfos() {
+  const { t } = useTranslation('infos');
+
   return (
     <>
-      <h3>Welcome on PixWorld - Bienvenue sur PixWorld</h3>
+      <h3>{t('title')}</h3>
       <hr/>
-      Place pixels where you want on this canvas !<br/>
-      Placez des pixels où vous voulez sur cette carte !
+      {t('text')}<br/>
       <hr/>
-      Website made by Henrixounez & MXS<br/>
-      Available Open Source on Github: <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
-      Join our <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
+      {t('madeBy')}<br/>
+      {t('os')} <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
+      {t('discord')} <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
     </>
   );
 }
