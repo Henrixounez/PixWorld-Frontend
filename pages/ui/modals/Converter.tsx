@@ -115,7 +115,6 @@ export default function ModalConverter() {
       const newHeight = img.height * scale;
 
       if (newHeight >= 1) {
-        console.log(newWidth, newHeight);
         ctx.canvas.width = newWidth;
         ctx.canvas.height = newHeight;
         ctx.drawImage(img, 0, 0, newWidth, newHeight);

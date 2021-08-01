@@ -59,7 +59,7 @@ export default class OverlayController {
 
 
   render(ctx: CanvasRenderingContext2D) {
-    if (this.imgUrl && this.activate) {
+    if (this.imgUrl && this.activate && this.canvas.height > 0) {
       ctx.imageSmoothingEnabled = false;
       ctx.globalAlpha = this.transparency;
       const pixelSize = PIXEL_SIZE / this.canvasController.position.zoom;
@@ -100,14 +100,16 @@ export default class OverlayController {
     const ctx = this.canvas.getContext('2d');
 
     if (!ctx)
-      return '#000000';
+      return null;
     const data = ctx.getImageData(x, y, 1, 1).data;
     const palette = getRGBPalette();
+    palette.push([0, 0, 0, 0]);
 
-    if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 0)
+    const color = FindNearestColor([data[0], data[1], data[2], data[3]], palette);
+
+    if (color[0] === 0 && color[1] === 0 && color[2] === 0 && color[3] === 0)
       return null;
 
-    const color = FindNearestColor([data[0], data[1], data[2]], palette);
     return ('#' + this.toHex(color[0]) + this.toHex(color[1]) + this.toHex(color[2])).toUpperCase();
   }
 }
