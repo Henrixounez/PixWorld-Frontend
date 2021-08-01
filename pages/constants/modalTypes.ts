@@ -3,7 +3,8 @@ enum ModalTypes {
   INFOS,
   PROBLEM,
   CONVERTER,
-  PARAMETERS
+  PARAMETERS,
+  CAPTCHA,
 };
 
 export default ModalTypes;
