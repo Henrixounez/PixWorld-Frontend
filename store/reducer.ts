@@ -9,7 +9,7 @@ export type ActionTypes =
   Infos.Actions |
   Painting.Actions |
   Overlay.Actions |
-  Chat.Actions;
+  Chat.Actions |
   Parameters.Actions;
 
 export interface Dispatch {

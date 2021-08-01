@@ -16,9 +16,7 @@ export interface SetZoomTowardCursorAction {
     payload: boolean;
 }
 
-export type Actions = SetGridActiveAction;
-
-export type Action = SetZoomTowardCursorAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
