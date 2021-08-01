@@ -20,6 +20,7 @@ export type Actions = SetGridActiveAction | SetZoomTowardCursorAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
+    localStorage.setItem('gridActive', String(action.payload));
     return {
         ...state,
         gridActive: action.payload
@@ -27,6 +28,7 @@ export function setGridActive(state: ReduxState, action: SetGridActiveAction): R
 }
 
 export function setZoomTowardCursor(state: ReduxState, action: SetZoomTowardCursorAction): ReduxState {
+    localStorage.setItem('zoomTowardCursor', String(action.payload));
     return {
         ...state,
         zoomTowardCursor: action.payload

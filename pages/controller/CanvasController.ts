@@ -6,6 +6,7 @@ import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
+import { SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 
 export class CanvasController {
   canvas: HTMLCanvasElement;
@@ -32,6 +33,7 @@ export class CanvasController {
     this.interactionController = new InteractionController(this);
     this.connectionController = new ConnectionController(this);
     this.overlayController = new OverlayController(this);
+    this.loadFromLocalStorage();
     this.loadNeighboringChunks();
   }
 
@@ -39,6 +41,16 @@ export class CanvasController {
     this.interactionController.destructor();
     this.connectionController.destructor();
     this.overlayController.destructor();
+  }
+
+  loadFromLocalStorage() {
+    const gridActive = localStorage.getItem('gridActive');
+    if (gridActive)
+      store?.dispatch({ type: SET_GRID_ACTIVE, payload: gridActive === "true" });
+
+    const zoomTowardCursor = localStorage.getItem('zoomTowardCursor')
+    if (zoomTowardCursor)
+      store?.dispatch({ type: SET_ZOOM_TOWARD_CURSOR, payload: zoomTowardCursor === "true" });
   }
 
   // Utils //
