@@ -51,6 +51,10 @@ export class CanvasController {
     const zoomTowardCursor = localStorage.getItem('zoomTowardCursor')
     if (zoomTowardCursor)
       store?.dispatch({ type: SET_ZOOM_TOWARD_CURSOR, payload: zoomTowardCursor === "true" });
+
+    const position = localStorage.getItem('position')
+    if (position)
+      this.position = JSON.parse(position);
   }
 
   // Utils //
@@ -182,12 +186,14 @@ export class CanvasController {
         this.position.x += translateX;
         this.position.y += transtateY;
       }
+      localStorage.setItem('position', JSON.stringify(this.position));
       this.render();
     }
   }
   changePosition = (deltaX: number, deltaY: number) => {
     this.position.x += deltaX;
     this.position.y += deltaY;
+    localStorage.setItem('position', JSON.stringify(this.position));
     this.loadNeighboringChunks();
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
