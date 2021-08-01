@@ -4,14 +4,17 @@ import { ReduxState } from "../../store"
 import { useEffect } from 'react';
 import { SET_COOLDOWN } from '../../store/actions/infos';
 
-const CooldownContainer = styled.div<{show: boolean}>`
+const COOLDOWN_TIME = 4;
+const MAX_COOLDOWN = 60;
+
+const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
   position: fixed;
   top: 10px;
   left: calc(50vw - 25px);
   width: 50px;
   font-size: 1rem;
   height: 35px;
-  background-color: #FFFD;
+  background-color: ${({ limit })=> limit ? "#FFA9A9cc" : "#FFFD" };
   border: 1px solid #000;
   padding: 0 10px;
   gap: 10px;
@@ -38,7 +41,7 @@ export default function Cooldown() {
   }, [cooldown]);
 
   return (
-    <CooldownContainer show={cooldown > 0}>
+    <CooldownContainer show={cooldown > 0} limit={cooldown > MAX_COOLDOWN - COOLDOWN_TIME}>
       {cooldown}
     </CooldownContainer>
   );
