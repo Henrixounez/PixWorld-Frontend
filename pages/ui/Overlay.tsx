@@ -17,11 +17,19 @@ const OverlayContainer = styled.div`
   text-align: center;
   gap: 10px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: .2s;
 
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  @media (max-height: 450px) {
+    flex-direction: row;
+    right: 10px;
+    max-width: 50vw;
+  }
+
 `;
 const ActivateButton = styled.div`
   cursor: pointer;
