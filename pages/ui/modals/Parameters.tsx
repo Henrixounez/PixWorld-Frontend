@@ -4,7 +4,7 @@ import { useRouter } from 'next/dist/client/router';
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from 'universal-cookie';
 
-import { languages } from '../../constants/languages';
+import { languages, languagesDisplay } from '../../constants/languages';
 import { SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
 import { getCanvasController } from "../../controller/CanvasController";
@@ -64,8 +64,8 @@ export default function ModalParameters() {
                     router.push(router.pathname, router.asPath, { locale: e.target.value });
                 }}>
                     {languages.map((l, i) => (
-                        <option key={i}>
-                            {l}
+                        <option key={i} value={l}>
+                            {languagesDisplay[i]}
                         </option>
                     ))}
                 </select>
