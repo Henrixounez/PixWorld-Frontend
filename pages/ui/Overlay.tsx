@@ -111,7 +111,7 @@ export default function Overlay() {
           { open && (
             <>
               {t('input')}
-              <input type="url" id="url-input" onChange={openUrl} placeholder="Image URL" />
+              <input type="url" id="url-input" onChange={openUrl} placeholder={t('inputUrl')} />
               <input type="file" id="file-input" onChange={openFile}/>
               <br/>
               {t('transparency')}
