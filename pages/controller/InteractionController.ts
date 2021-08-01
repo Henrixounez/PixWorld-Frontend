@@ -116,7 +116,7 @@ export default class InteractionController {
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true) {
-        this.canvasController.placePixel(coordX, coordY, this.currentColor);
+        this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
       }
     }
   }
@@ -130,7 +130,7 @@ export default class InteractionController {
           store.dispatch({ type: SET_OVERLAY_POSITION_MOUSE, payload: false });
         } else {
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-          this.canvasController.placePixel(coordX, coordY, this.currentColor);
+          this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
       }
     }
@@ -178,7 +178,7 @@ export default class InteractionController {
         if (this.haveMouseOver) {
           this.shiftPressed = true;
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-          this.canvasController.placePixel(coordX, coordY, this.currentColor);
+          this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
         break;
       case 'Control':

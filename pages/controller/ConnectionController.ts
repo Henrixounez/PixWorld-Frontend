@@ -33,7 +33,7 @@ export default class ConnectionController {
           store?.dispatch({ type: SET_CHAT_MESSAGE, payload: data.chatMessages });
           break;
         case 'placePixel':
-          this.canvasController.placePixel(data.x, data.y, data.color, false);
+          this.canvasController.placePixel(data.x, data.y, data.color);
           break;
         case 'playerNb':
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data });

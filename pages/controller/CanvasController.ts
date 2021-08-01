@@ -121,24 +121,7 @@ export class CanvasController {
     await Promise.all(chunkLoading);
     this.render();
   }
-  placePixel = (coordX: number, coordY: number, _color: string, send = true) => {
-    if (this.position.zoom > 10) {
-      return;
-    }
-    const ctx = this.canvas.getContext('2d');
-    let color = _color;
-
-    if (!ctx)
-      return;
-    
-    if (send && store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
-      const overlayPos = store.getState().overlay.position;
-      const overlayColor = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
-      if (!overlayColor)
-        return;
-      color = overlayColor;
-    }
-
+  placePixel = (coordX: number, coordY: number, color: string) => {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
@@ -152,18 +135,35 @@ export class CanvasController {
 
       if (currentColor !== color) {
         this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, color);
-        if (send) {
-          this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
-          this.waitingPixels[`${coordX};${coordY}`] = currentColor;
-        }
         this.render();
+        return currentColor;
       }
     }
+    return null;
+  }
+  placeUserPixel = (coordX: number, coordY: number, _color: string) => {
+    if (this.position.zoom > 10) {
+      return;
+    }
+    let color = _color;
+
+    if (store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
+      const overlayPos = store.getState().overlay.position;
+      const overlayColor = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
+      if (!overlayColor)
+        return;
+      color = overlayColor;
+    }
+
+    const lastColor = this.placePixel(coordX, coordY, color);
+    this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
+    if (lastColor)
+      this.waitingPixels[`${coordX};${coordY}`] = lastColor;
   }
   restorePixel = (coordX: number, coordY: number) => {
     const color = this.waitingPixels[`${coordX};${coordY}`];
     delete this.waitingPixels[`${coordX};${coordY}`];
-    this.placePixel(coordX, coordY, color, false);
+    this.placePixel(coordX, coordY, color);
   }
   confirmPixel = (coordX: number, coordY: number) => {
     delete this.waitingPixels[`${coordX};${coordY}`];
