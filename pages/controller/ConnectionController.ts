@@ -1,4 +1,5 @@
 import { store } from "../../store";
+import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
 import { WS_URL } from "../constants/api";
 import ModalTypes from "../constants/modalTypes";
@@ -29,6 +30,7 @@ export default class ConnectionController {
           this.canvasController.loadNeighboringChunks();
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });
+          store?.dispatch({ type: SET_CHAT_MESSAGE, payload: data.chatMessages });
           break;
         case 'placePixel':
           this.canvasController.placePixel(data.x, data.y, data.color, false);
@@ -43,6 +45,9 @@ export default class ConnectionController {
         case 'refusePixel':
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
           this.canvasController.restorePixel(data.pos.x, data.pos.y);
+          break;
+        case 'chatMessage':
+          store?.dispatch({ type: ADD_CHAT_MESSAGE, payload: data });
           break;
       }
     }

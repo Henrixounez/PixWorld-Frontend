@@ -7,6 +7,7 @@ import PaletteList from './ui/PaletteList';
 import PlayerCounter from './ui/PlayerCounter';
 import Overlay from './ui/Overlay';
 import Cooldown from './ui/Cooldown';
+import Chat from './ui/Chat';
 
 const Container = styled.div`
   width: 100vw;
@@ -23,6 +24,7 @@ export default function Home() {
       <Overlay/>
       <Cooldown/>
       <PaletteList/>
+      <Chat/>
       <PlayerCounter/>
       <CursorPosition/>
       <Canvas />

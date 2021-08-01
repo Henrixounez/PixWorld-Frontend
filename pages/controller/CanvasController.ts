@@ -243,6 +243,9 @@ export class CanvasController {
 }
 let canvasController: CanvasController | null = null;
 
+export function getCanvasController() {
+  return canvasController;
+}
 export function initCanvasController() {
   canvasController = new CanvasController();
   canvasController.render();
@@ -251,5 +254,3 @@ export function destructCanvasController() {
   canvasController?.destructor();
   canvasController = null;
 }
-
-export default canvasController;

@@ -11,6 +11,7 @@ export interface ReduxState {
   selectedColor: string;
   currentModal: ModalTypes;
   cooldown: number;
+  chatMessages: { author: string, msg: string }[];
   overlay: {
     activate: boolean;
     image: string;
@@ -30,6 +31,7 @@ export const initialState: ReduxState = {
   selectedColor: palette[0],
   currentModal: ModalTypes.NONE,
   cooldown: 0,
+  chatMessages: [],
   overlay: {
     activate: false,
     image: "",
