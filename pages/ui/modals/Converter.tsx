@@ -32,38 +32,38 @@ function hexToRgb(hex: string) {
   return [
     parseInt(result![1], 16),
     parseInt(result![2], 16),
-    parseInt(result![3], 16)]
+    parseInt(result![3], 16),
+    255,
+  ]
 }
 
 export function getRGBPalette() {
-  let newPalette = Array<number[]>(palette.length);
-  for (let i = 0; i < palette.length; i++) {
-    newPalette[i] = hexToRgb(palette[i]);
-  }
-  return newPalette;
+  return palette.map((p) => hexToRgb(p));
 }
 
 export function FindNearestColor(pixel: number[], pal: number[][]) {
-  let r = pixel[0];
-  let g = pixel[1];
-  let b = pixel[2];
+  const r = pixel[0];
+  const g = pixel[1];
+  const b = pixel[2];
+  const a = pixel[3];
 
-  let colorDiff = new Array<number[]>();
-  for (let i = 0; i < pal.length; i++) {
-    let cr = pal[i][0];
-    let cg = pal[i][1];
-    let cb = pal[i][2];
+  const colorDiff = pal.map((p) => {
+    const cr = p[0];
+    const cg = p[1];
+    const cb = p[2];
+    const ca = p[3];
 
-    let diff = Math.sqrt(Math.pow(Math.abs(r - cr), 2) + Math.pow(Math.abs(g - cg), 2) + Math.pow(Math.abs(b - cb), 2));
-    colorDiff[i] = [diff, cr, cg, cb]
-  }
-  let nearest = colorDiff.sort(function(a, b) { return a[0] - b[0]; });
-  return [nearest[0][1], nearest[0][2], nearest[0][3], 255];
+    const diff = Math.hypot(Math.abs(r - cr), Math.abs(g - cg), Math.abs(b - cb), Math.abs(a - ca));
+    return [diff, cr, cg, cb, ca]
+  })
+  const nearest = colorDiff.sort(function(a, b) { return a[0] - b[0]; })[0];
+  return [nearest[1], nearest[2], nearest[3], nearest[4]];
 }
 
 function ImgToPalette(data: number[][][], width: number, height: number) {
   let cData = data;
   let rgbPalette = getRGBPalette();
+  rgbPalette.push([0, 0, 0, 0]);
 
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
