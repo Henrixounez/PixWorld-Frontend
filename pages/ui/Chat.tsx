@@ -110,7 +110,7 @@ export default function Chat() {
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
             <ChatMessage key={i}>
-              <span>
+              <span style={{ color: msg.color }}>
                 {msg.author}
               </span>
               : {msg.msg}

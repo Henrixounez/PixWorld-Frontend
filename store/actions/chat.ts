@@ -7,11 +7,11 @@ export const ADD_CHAT_MESSAGE = 'ADD_CHAT_MESSAGE';
 /* Types */
 export interface SetChatMessageAction {
   type: typeof SET_CHAT_MESSAGE;
-  payload: { author: string, msg: string }[];
+  payload: { author: string, msg: string, color: string }[];
 }
 export interface AddChatMessageAction {
   type: typeof ADD_CHAT_MESSAGE;
-  payload: { author: string, msg: string };
+  payload: { author: string, msg: string, color: string };
 }
 
 export type Actions = SetChatMessageAction | AddChatMessageAction;

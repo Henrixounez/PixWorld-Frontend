@@ -11,7 +11,7 @@ export interface ReduxState {
   selectedColor: string;
   currentModal: ModalTypes;
   cooldown: number;
-  chatMessages: { author: string, msg: string }[];
+  chatMessages: { author: string, msg: string, color: string }[];
   gridActive: boolean;
   zoomTowardCursor: boolean;
   overlay: {
