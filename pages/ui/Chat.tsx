@@ -42,7 +42,7 @@ const ChatWindow = styled.div<{show: boolean}>`
   font-size: .8rem;
 
   ${({ show }) => !show && `
-    opacity: 0;
+    display: none;
   `}
 `;
 const ChatText = styled.div`
