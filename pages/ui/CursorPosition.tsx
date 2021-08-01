@@ -18,6 +18,7 @@ const Pos = styled.div`
   align-items: center;
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
 `;
 
 export default function CursorPosition() {

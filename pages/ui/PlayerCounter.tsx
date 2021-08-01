@@ -16,6 +16,7 @@ const Counter = styled.div`
   display: flex;
   align-items: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
 `;
 
 export default function PlayerCounter() {

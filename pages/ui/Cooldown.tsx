@@ -21,6 +21,7 @@ const CooldownContainer = styled.div<{show: boolean}>`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .5s;
   opacity: ${({ show }) => show ? '1' : '0'};
+  user-select: none;
 `;
 
 export default function Cooldown() {

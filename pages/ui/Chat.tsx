@@ -65,9 +65,6 @@ const ChatInteraction = styled.div`
   }
 `;
 const ChatMessage = styled.div`
-  span {
-    color: crimson;
-  }
 `;
 const SendButton = styled.div`
   display: flex;
@@ -80,6 +77,7 @@ const SendButton = styled.div`
   &:hover {
     background-color: #EEE;
   }
+  user-select: none;
 `;
 
 export default function Chat() {
@@ -98,7 +96,7 @@ export default function Chat() {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [messageList]);
+  }, [messageList, chatRef, showMessages]);
 
   return (
     <>
