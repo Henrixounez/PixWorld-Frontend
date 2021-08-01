@@ -12,13 +12,21 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-  gap: 2rem;
+  height: 80%;
+  margin: 10% 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  justify-content: space-around;
+
+  @media (max-height: 800px) {
+    font-size: 0.8rem;
+    height: 90%;
+    margin: 5% 0;
+  }
 
   img {
     border: 1px solid #000;
+    max-width: 60vw;
+    max-height: 30vh;
   }
   h1 {
     margin: 0;
