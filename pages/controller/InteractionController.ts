@@ -73,6 +73,7 @@ export default class InteractionController {
   // Setters
   setSelectedColor = (color: string) => {
     store?.dispatch({ type: SET_SELECTED_COLOR, payload: color });
+    this.canvasController.render();
   }
 
 
@@ -150,7 +151,10 @@ export default class InteractionController {
   auxclick = (e: MouseEvent) => {
     if (e.button === 1) {
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-      this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
+      const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+      if (newColor)
+        this.setSelectedColor(newColor);
       e.stopPropagation();
     }
   }
@@ -184,8 +188,10 @@ export default class InteractionController {
         break;
       case 'Control':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-        this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
-        this.canvasController.render();
+        const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+        if (newColor)
+          this.setSelectedColor(newColor);
         break;
     }
   }
@@ -224,7 +230,10 @@ export default class InteractionController {
   // Touch
   onLongTouch = (e: TouchEvent) => {
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.touches[0].clientX, e.touches[0].clientY);
-    this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
+    const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+    if (newColor)
+      this.setSelectedColor(newColor);
   }
   touchStart = (e: TouchEvent) => {
     this.isMouseDown = true;
