@@ -37,13 +37,13 @@ export default function PlayerCounter() {
     <Counter>
       <Users height="20px" />
       {playerNb}
-      { pixelNb && (
+      { pixelNb ? (
         <>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           {pixelNbRounded(pixelNb)}
           <Edit3 height="20px" />
         </>
-      )}
+      ) : null}
     </Counter>
   );
 }
