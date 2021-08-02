@@ -16,6 +16,7 @@ export interface ReduxState {
   gridActive: boolean;
   zoomTowardCursor: boolean;
   activity: boolean;
+  showChat: boolean;
   overlay: {
     activate: boolean;
     image: string;
@@ -40,6 +41,7 @@ export const initialState: ReduxState = {
   gridActive: true,
   zoomTowardCursor: true,
   activity: true,
+  showChat: true,
   overlay: {
     activate: false,
     image: "",
