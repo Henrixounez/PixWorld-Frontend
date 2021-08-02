@@ -1,8 +1,9 @@
+import axios from "axios";
 import { store } from "../../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
-import { SET_NB_PIXELS } from "../../store/actions/user";
-import { WS_URL } from "../constants/api";
+import { SET_NB_PIXELS, SET_USER } from "../../store/actions/user";
+import { API_URL, WS_URL } from "../constants/api";
 import ModalTypes from "../constants/modalTypes";
 import { CanvasController } from "./CanvasController";
 
@@ -14,6 +15,7 @@ export default class ConnectionController {
     this.canvasController = canvasController;
     this.ws = new WebSocket(`${WS_URL}/pix/connect`);
     this.ws.onopen = () => {
+      this.getMe();
     }
     this.ws.onclose = (e) => {
       if (!e.wasClean)
@@ -62,6 +64,24 @@ export default class ConnectionController {
   destructor() {
     this.ws.close();
   }
+
+  getMe = async () => {
+    const token = localStorage.getItem('token');
+
+    if (!token || store?.getState().user)
+      return;
+    try {
+      const res = await axios.get(`${API_URL}/user/me`, { headers: { 'Authorization': token }});
+      localStorage.setItem('token', res.headers['authorization']);
+      store?.dispatch({
+        type: SET_USER,
+        payload: res.data
+      });
+    } catch (e) {
+      if (e.response?.status === 401)
+        localStorage.removeItem('token');
+    }
+  };
 
   sendToWs = (type: string, data: any) => {
     const key = (window as Window & typeof globalThis & {key?: string}).key;
