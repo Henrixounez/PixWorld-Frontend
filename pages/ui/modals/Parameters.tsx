@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from 'universal-cookie';
 
 import { languages, languagesDisplay } from '../../constants/languages';
-import { SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
 import { getCanvasController } from "../../controller/CanvasController";
 
@@ -31,29 +31,27 @@ export default function ModalParameters() {
     const dispatch = useDispatch();
     const gridActive = useSelector((state: ReduxState) => state.gridActive);
     const zoomTowardCursor = useSelector((state: ReduxState) => state.zoomTowardCursor);
+    const activity = useSelector((state: ReduxState) => state.activity);
 
-    const changeGridActive = () => {
-        dispatch({type: SET_GRID_ACTIVE, payload: !gridActive});
-        getCanvasController()?.render();
-    }
-
-    const changeZoomTowardCursor = () => {
-        dispatch({type: SET_ZOOM_TOWARD_CURSOR, payload: !zoomTowardCursor});
-    }
     return (
         <>
             <h3>
                 {t('title')}
             </h3>
             <hr/>
-            <InputRow onClick={changeGridActive}>
+            <InputRow onClick={() => { dispatch({type: SET_GRID_ACTIVE, payload: !gridActive}); getCanvasController()?.render(); }}>
                 {t('grid')}
                 <input type="checkbox" className="checkbox" id="gridActive" checked={gridActive} readOnly/>
             </InputRow>
             <hr/>
-            <InputRow onClick={changeZoomTowardCursor}>
+            <InputRow onClick={() => dispatch({type: SET_ZOOM_TOWARD_CURSOR, payload: !zoomTowardCursor})}>
                 {t('zoomCursor')}
                 <input type="checkbox" className="checkbox" id="zoomTowardCursor" checked={zoomTowardCursor} readOnly/>
+            </InputRow>
+            <hr/>
+            <InputRow onClick={() => dispatch({type: SET_ACTIVITY, payload: !activity})}>
+                {t('activity')}
+                <input type="checkbox" className="checkbox" id="activity" checked={activity} readOnly/>
             </InputRow>
             <hr/>
             <InputRow>

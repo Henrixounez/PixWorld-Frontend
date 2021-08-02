@@ -2,5 +2,6 @@
   "title": "Paramètres",
   "grid": "Grille activée",
   "zoomCursor": "Zoom vers le curseur",
-  "language": "Selectionner langue"
+  "language": "Selectionner langue",
+  "activity": "Montrer l'Activité des Pixels"
 }

@@ -6,7 +6,12 @@ import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
-import { SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+
+const ACTIVITY_DURATION_MS = 1000;
+const ACTIVITY_REFRESH_MS = 25;
+const ACTIVITY_MAX_RADIUS = 10;
+const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
 export class CanvasController {
   canvas: HTMLCanvasElement;
@@ -15,6 +20,8 @@ export class CanvasController {
   chunks: Record<string, Chunk> = {};
   boundingChunks = [[0, 0], [0, 0]];
   waitingPixels: Record<string, string> = {};
+  pixelActivity: { x: number, y: number, frame: number}[] = [];
+  activityInterval: NodeJS.Timeout;
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
@@ -35,12 +42,20 @@ export class CanvasController {
     this.overlayController = new OverlayController(this);
     this.loadFromLocalStorage();
     this.loadNeighboringChunks();
+
+    this.activityInterval = setInterval(() => {
+      if (this.pixelActivity.length && store?.getState().activity)
+        this.render();
+      else
+        this.pixelActivity = [];
+    }, ACTIVITY_REFRESH_MS);
   }
 
   destructor() {
     this.interactionController.destructor();
     this.connectionController.destructor();
     this.overlayController.destructor();
+    clearInterval(this.activityInterval);
   }
 
   loadFromLocalStorage() {
@@ -52,6 +67,10 @@ export class CanvasController {
     if (zoomTowardCursor)
       store?.dispatch({ type: SET_ZOOM_TOWARD_CURSOR, payload: zoomTowardCursor === "true" });
 
+    const activity = localStorage.getItem('activity');
+    if (activity)
+      store?.dispatch({ type: SET_ACTIVITY, payload: activity === "true" });
+  
     const position = localStorage.getItem('position')
     if (position)
       this.position = JSON.parse(position);
@@ -221,6 +240,7 @@ export class CanvasController {
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
     this.drawGrid(ctx);
+    this.drawActivity(ctx);
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
@@ -282,6 +302,20 @@ export class CanvasController {
 
       ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
     });
+  }
+  drawActivity = (ctx: CanvasRenderingContext2D) => {
+    ctx.fillStyle = "#FF000066";
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    this.pixelActivity = this.pixelActivity.map(({ x, y, frame }) => {
+      if (frame <= ACTIVITY_FRAME_NB) {
+        const { posX, posY } = this.coordinatesOnCanvas(x, y);
+        ctx.beginPath();
+        ctx.arc(posX + pixelSize / 2, posY + pixelSize / 2, pixelSize * frame / (ACTIVITY_FRAME_NB / ACTIVITY_MAX_RADIUS), 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      return { x, y, frame: frame + 1 };
+    });
+    this.pixelActivity = this.pixelActivity.filter((e) => e.frame <= ACTIVITY_FRAME_NB + 1);
   }
 }
 let canvasController: CanvasController | null = null;

@@ -35,6 +35,7 @@ export default class ConnectionController {
           break;
         case 'placePixel':
           this.canvasController.placePixel(data.x, data.y, data.color);
+          this.canvasController.pixelActivity.push({ x: data.x, y: data.y, frame: 0 });
           break;
         case 'playerNb':
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data });
