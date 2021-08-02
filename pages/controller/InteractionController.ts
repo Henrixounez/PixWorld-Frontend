@@ -2,6 +2,7 @@ import { store } from "../../store";
 import { SET_CURSOR_POS } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_SELECTED_COLOR } from "../../store/actions/painting";
+import { SET_HISTORY_MODE_ACTIVE } from "../../store/actions/history";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
@@ -181,6 +182,9 @@ export default class InteractionController {
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
+        break;
+      case 'h':
+        store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().historyMode})
         break;
       case 'Control':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);

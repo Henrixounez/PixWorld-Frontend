@@ -14,6 +14,8 @@ export interface ReduxState {
   chatMessages: { author: string, msg: string, color: string }[];
   gridActive: boolean;
   zoomTowardCursor: boolean;
+  historyMode: boolean;
+  historyDate: string;
   overlay: {
     activate: boolean;
     image: string;
@@ -36,6 +38,8 @@ export const initialState: ReduxState = {
   chatMessages: [],
   gridActive: true,
   zoomTowardCursor: true,
+  historyMode: false,
+  historyDate: new Date().toISOString().substr(0, 10),
   overlay: {
     activate: false,
     image: "",

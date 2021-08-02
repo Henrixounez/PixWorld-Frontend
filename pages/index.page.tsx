@@ -8,6 +8,7 @@ import PlayerCounter from './ui/PlayerCounter';
 import Overlay from './ui/Overlay';
 import Cooldown from './ui/Cooldown';
 import Chat from './ui/Chat';
+import HistoryMode from './ui/HistoryMode';
 
 const Container = styled.div`
   width: 100vw;
@@ -28,6 +29,7 @@ export default function Home() {
       <PlayerCounter/>
       <CursorPosition/>
       <Canvas />
+      <HistoryMode/>
     </Container>
   )
 }
