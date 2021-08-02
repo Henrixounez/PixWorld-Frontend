@@ -35,9 +35,6 @@ export default function ModalParameters() {
 
     return (
         <>
-            <h3>
-                {t('title')}
-            </h3>
             <hr/>
             <InputRow onClick={() => { dispatch({type: SET_GRID_ACTIVE, payload: !gridActive}); getCanvasController()?.render(); }}>
                 {t('grid')}

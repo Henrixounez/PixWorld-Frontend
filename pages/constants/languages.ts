@@ -6,5 +6,7 @@ export const languagesModules = [
   'converter',
   'parameters',
   'overlay',
-  'captcha'
+  'captcha',
+  'problem',
+  'stats',
 ];

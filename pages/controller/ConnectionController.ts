@@ -42,7 +42,7 @@ export default class ConnectionController {
           break;
         case 'confirmPixel':
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
-          store?.dispatch({ type: SET_NB_PIXELS, payload: data.totalPixels });
+          store?.dispatch({ type: SET_NB_PIXELS, payload: { totalPixels: data.totalPixels, dailyPixels: data.dailyPixels }});
           this.canvasController.confirmPixel(data.pos.x, data.pos.y);
           break;
         case 'refusePixel':

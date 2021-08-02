@@ -1,13 +1,19 @@
+import { useTranslation } from "next-i18next";
+
 export default function ModalProblem() {
+  const { t } = useTranslation('problem');
+
   return (
     <>
-      <h3>Connection lost with the server - Connexion perdue avec le serveur</h3>
+      <h3>
+        {t('connectionLost')}
+      </h3>
       <hr/>
-      Please refresh the page - Veuillez rafraichir la page
+      {t('refresh')}
       <br/>
       <br/>
       <button onClick={() => location.reload()}>
-        Refresh - Rafraichir
+        {t('refreshBtn')}
       </button>
     </>
   );

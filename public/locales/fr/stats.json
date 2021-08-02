@@ -1,0 +1,18 @@
+{
+  "title": "Statistiques",
+  "profile": {
+    "title": "Profil",
+    "pixelsToday": "Pixels Aujourd'hui",
+    "pixelsTotal": "Pixels Total",
+    "loggedAs": "Connecté en tant que",
+    "logout": "Déconnexion"
+  },
+  "ranking": {
+    "title": "Rangs",
+    "username": "Utilisateur",
+    "pixels": "Pixels",
+    "totalRanking": "Total",
+    "dailyRanking": "Journalier",
+    "reset": "Les rangs journaliers sont réinitialisés tout les jours à 00:00 UTC."
+  }
+}

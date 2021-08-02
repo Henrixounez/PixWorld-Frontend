@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 import { XCircle } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'next-i18next';
+
 import { ReduxState } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
@@ -29,9 +31,12 @@ const ModalContent = styled.div`
   background-color: white;
   box-sizing: border-box;
   padding: 2.5rem;
+  padding-bottom: 0;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   line-height: 1.5rem;
+  display: flex;
+  flex-direction: column;
   hr {
     margin: 2rem 0;
   }
@@ -49,6 +54,19 @@ const ModalContent = styled.div`
     }
   }
 `;
+const ContentContainer = styled.div`
+  max-height: calc(80vh - 2.5rem);
+  overflow: auto;
+  padding-bottom: 2.5rem;
+`;
+const ModalTitle = styled.div`
+  margin: 0;
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+`;
 const CloseButton = styled.div`
   position: absolute;
   top: 10px;
@@ -61,18 +79,19 @@ const CloseButton = styled.div`
 `;
 
 const modalComponents = {
-  [ModalTypes.NONE]: null,
-  [ModalTypes.INFOS]: <ModalInfos/>,
-  [ModalTypes.PROBLEM]: <ModalProblem/>,
-  [ModalTypes.CONVERTER]: <ModalConverter/>,
-  [ModalTypes.PARAMETERS]: <ModalParameters/>,
-  [ModalTypes.CAPTCHA]: <Captcha/>,
-  [ModalTypes.STATS]: <ModalStats/>,
-  [ModalTypes.LOGIN]: <ModalLogin/>,
-  [ModalTypes.REGISTER]: <ModalRegister/>,
+  [ModalTypes.NONE]: { title: '', component: null },
+  [ModalTypes.INFOS]: { title: 'infos:title', component: <ModalInfos/> },
+  [ModalTypes.PROBLEM]: { title: 'problem:title', component: <ModalProblem/> },
+  [ModalTypes.CONVERTER]: { title: 'converter:title', component: <ModalConverter/> },
+  [ModalTypes.PARAMETERS]: { title: 'parameters:title', component: <ModalParameters/> },
+  [ModalTypes.CAPTCHA]: { title: '', component: <Captcha/> },
+  [ModalTypes.STATS]: { title: 'stats:title', component: <ModalStats/> },
+  [ModalTypes.LOGIN]: { title: '', component: <ModalLogin/> },
+  [ModalTypes.REGISTER]: { title: '', component: <ModalRegister/> },
 }
 
 export default function Modal() {
+  const { t } = useTranslation();
   const currentModal = useSelector((state: ReduxState) => state.currentModal);
   const dispatch = useDispatch();
 
@@ -82,10 +101,17 @@ export default function Modal() {
   return (
     <ModalBackdrop onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
-          <XCircle color="#000" />
-        </CloseButton>
-        {modalComponents[currentModal]}
+        <div style={{ height: "2.5rem" }}>
+          <ModalTitle>
+            {t(modalComponents[currentModal].title)}
+          </ModalTitle>
+          <CloseButton onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
+            <XCircle color="#000" />
+          </CloseButton>
+        </div>
+        <ContentContainer>
+          {modalComponents[currentModal].component}
+        </ContentContainer>
       </ModalContent>
     </ModalBackdrop>
   );
