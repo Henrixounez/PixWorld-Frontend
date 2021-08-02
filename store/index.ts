@@ -27,6 +27,8 @@ export interface ReduxState {
     y: number,
     zoom: number,
   }
+  historyMode: boolean;
+  historyDate: string;
   overlay: {
     activate: boolean;
     image: string;
@@ -68,6 +70,8 @@ export const initialState: ReduxState = {
     y: 0,
     zoom: 1,
   },
+  historyMode: false,
+  historyDate: new Date().toISOString().substr(0, 10),
   overlay: {
     activate: false,
     image: "",
