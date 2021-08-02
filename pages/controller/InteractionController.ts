@@ -229,6 +229,9 @@ export default class InteractionController {
 
   // Touch
   onLongTouch = (e: TouchEvent) => {
+    if (this.longTouchTimeout === null)
+      return;
+
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.touches[0].clientX, e.touches[0].clientY);
     const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
 
@@ -238,6 +241,8 @@ export default class InteractionController {
   touchStart = (e: TouchEvent) => {
     this.isMouseDown = true;
     this.longTouchTimeout = setTimeout(() => this.onLongTouch(e), 500);
+    e.stopPropagation();
+    e.preventDefault();
   }
   touchEnd = () => {
     this.pinchDistance = 0;
@@ -258,10 +263,6 @@ export default class InteractionController {
   touchMove = (e: TouchEvent) => {
     const touches = e.touches;
 
-    if (this.longTouchTimeout)
-      clearTimeout(this.longTouchTimeout);
-    this.longTouchTimeout = null;
-
     e.preventDefault();
     const touch = touches[0];
     if (!this.isMoving) {
@@ -272,18 +273,27 @@ export default class InteractionController {
       this.isMoving = true;
     }
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
-    this.startMove = {
-      x: touch.clientX,
-      y: touch.clientY,
-    }
-    if (touches.length === 2) {
-      const distX = touches[0].clientX - touches[1].clientX;
-      const distY = touches[0].clientY - touches[1].clientY;
-      const pinchDistance = Math.hypot(distX, distY);
-      if (this.pinchDistance !== 0)
-        this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
-      this.pinchDistance = pinchDistance;
+    const movDiff = Math.hypot(this.startMove.x - touch.clientX, this.startMove.y - touch.clientY);
+
+    if (movDiff > 0) {
+      if (this.longTouchTimeout) {
+        clearTimeout(this.longTouchTimeout);
+      }
+      this.longTouchTimeout = null;
+
+      this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
+      this.startMove = {
+        x: touch.clientX,
+        y: touch.clientY,
+      }
+      if (touches.length === 2) {
+        const distX = touches[0].clientX - touches[1].clientX;
+        const distY = touches[0].clientY - touches[1].clientY;
+        const pinchDistance = Math.hypot(distX, distY);
+        if (this.pinchDistance !== 0)
+          this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
+        this.pinchDistance = pinchDistance;
+      }
     }
   }
 }
