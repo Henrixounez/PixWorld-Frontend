@@ -7,6 +7,7 @@ import { API_URL } from "../../constants/api";
 import { useDispatch } from 'react-redux';
 import { SET_MODAL } from '../../../store/actions/infos';
 import ModalTypes from '../../constants/modalTypes';
+import { getCanvasController } from '../../controller/CanvasController';
 
 const Container = styled.div`
   display: flex;
@@ -75,6 +76,7 @@ export default function Captcha() {
     e.preventDefault()
     try {
       await axios.post(API_URL + '/captcha/verify', { text: value });
+      getCanvasController()?.canvas.focus();
       dispatch({ type: SET_MODAL, payload: ModalTypes.NONE });
     } catch (err) {
       refreshCaptcha();
