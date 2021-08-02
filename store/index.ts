@@ -4,6 +4,7 @@ import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
 import palette from '../pages/constants/palette';
 import ModalTypes from '../pages/constants/modalTypes';
+import { User } from './actions/user';
 
 export interface ReduxState {
   playersNb: number;
@@ -23,6 +24,7 @@ export interface ReduxState {
     autoColor: boolean;
     tainted: boolean;
   }
+  user?: User,
 }
 
 export let store: Store<ReduxState, ActionTypes> | undefined;
@@ -44,7 +46,8 @@ export const initialState: ReduxState = {
     positionMouse: false,
     autoColor: false,
     tainted: false,
-  }
+  },
+  user: undefined,
 };
 
 const reducer = (state = initialState, action: ActionTypes) => {

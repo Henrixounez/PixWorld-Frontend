@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { HelpCircle, Upload, Sliders } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
@@ -35,6 +35,9 @@ export default function ButtonList() {
     <ButtonListContainer>
       <div onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })}>
         <HelpCircle color="#000" />
+      </div>
+      <div onClick = {() => dispatch({ type: SET_MODAL, payload: ModalTypes.STATS })}>
+        <User color = "#000" />
       </div>
       <div onClick = {() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })}>
         <Upload color = "#000" />
