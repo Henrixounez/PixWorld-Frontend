@@ -163,7 +163,7 @@ export default function Chat() {
                 }}
               />
               <SendButton onClick={sendMessage}>
-                {t('chatSend')}
+                {t('send')}
               </SendButton>
             </>
           ) : (
