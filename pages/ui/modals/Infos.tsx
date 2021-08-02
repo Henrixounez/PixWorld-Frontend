@@ -5,8 +5,6 @@ export default function ModalInfos() {
 
   return (
     <>
-      <h3>{t('title')}</h3>
-      <hr/>
       {t('text')}<br/>
       <hr/>
       {t('madeBy')}<br/>

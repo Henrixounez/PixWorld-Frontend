@@ -1,0 +1,18 @@
+{
+  "title": "Stats",
+  "profile": {
+    "title": "Profile",
+    "pixelsToday": "Pixels Today",
+    "pixelsTotal": "Pixels Total",
+    "loggedAs": "Logged as",
+    "logout": "Logout"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "username": "Username",
+    "pixels": "Pixels",
+    "totalRanking": "Total",
+    "dailyRanking": "Daily",
+    "reset": "Daily rankings are reset everyday at 00:00 UTC."
+  }
+}

@@ -157,10 +157,6 @@ export default function ModalConverter() {
 
   return (
     <>
-      <h3>
-        {t('title')}
-      </h3>
-      <hr/>
       {t('widthText')}
       <input type="number" id="wantedWidth" defaultValue="50" min="1" onChange={WantedWidthChange}/>
       <br/>

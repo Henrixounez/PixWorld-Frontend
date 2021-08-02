@@ -4,6 +4,7 @@ import { getCanvasController } from "../../pages/controller/CanvasController";
 export interface User {
   username: string;
   totalPixels: number;
+  dailyPixels: number;
 }
 
 /* Actions */
@@ -17,7 +18,10 @@ export interface SetUserAction {
 }
 export interface SetNbPixelsAction {
   type: typeof SET_NB_PIXELS;
-  payload: number;
+  payload: {
+    totalPixels: number;
+    dailyPixels: number;
+  };
 }
 
 export type Actions = SetUserAction | SetNbPixelsAction;
@@ -39,7 +43,8 @@ export function setNbPixels(state: ReduxState, action: SetNbPixelsAction): Redux
       ...state,
       user: {
         ...state.user,
-        totalPixels: action.payload,
+        totalPixels: action.payload.totalPixels,
+        dailyPixels: action.payload.dailyPixels,
       }
     };
   } else {
