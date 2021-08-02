@@ -6,7 +6,7 @@ import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 
 const ACTIVITY_DURATION_MS = 1000;
 const ACTIVITY_REFRESH_MS = 25;
@@ -71,7 +71,11 @@ export class CanvasController {
     const activity = localStorage.getItem('activity');
     if (activity)
       store?.dispatch({ type: SET_ACTIVITY, payload: activity === "true" });
-  
+
+    const showChat = localStorage.getItem('showChat');
+    if (showChat)
+      store?.dispatch({ type: SET_SHOW_CHAT, payload: showChat === "true" });
+    
     const position = localStorage.getItem('position')
     if (position)
       this.position = JSON.parse(position);

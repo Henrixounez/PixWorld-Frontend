@@ -9,4 +9,5 @@ export const languagesModules = [
   'captcha',
   'problem',
   'stats',
+  'chat',
 ];
