@@ -239,12 +239,15 @@ export default class InteractionController {
       this.setSelectedColor(newColor);
   }
   touchStart = (e: TouchEvent) => {
-    this.isMouseDown = true;
     this.longTouchTimeout = setTimeout(() => this.onLongTouch(e), 500);
     e.stopPropagation();
     e.preventDefault();
   }
-  touchEnd = () => {
+  touchEnd = (e: TouchEvent) => {
+    if (!this.isMoving) {
+      const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+    }
     this.pinchDistance = 0;
     if (this.longTouchTimeout)
       clearTimeout(this.longTouchTimeout);
@@ -254,28 +257,29 @@ export default class InteractionController {
     this.isMoving = false;
     this.isMouseDown = false
   }
-  touchCancel = () => {
-    this.touchEnd();
+  touchCancel = (e: TouchEvent) => {
+    this.touchEnd(e);
   }
-  touchLeave = () => {
-    this.touchEnd();
+  touchLeave = (e: Event) => {
+    this.touchEnd(e as TouchEvent);
   }
   touchMove = (e: TouchEvent) => {
     const touches = e.touches;
 
     e.preventDefault();
     const touch = touches[0];
-    if (!this.isMoving) {
+    if (!this.isMouseDown) {
       this.startMove = {
         x: touch.clientX,
         y: touch.clientY,
-      }
-      this.isMoving = true;
+      };
+      this.isMouseDown = true;
     }
     const pixelSize = PIXEL_SIZE / this.position.zoom;
     const movDiff = Math.hypot(this.startMove.x - touch.clientX, this.startMove.y - touch.clientY);
 
     if (movDiff > 0) {
+      this.isMoving = true;
       if (this.longTouchTimeout) {
         clearTimeout(this.longTouchTimeout);
       }
