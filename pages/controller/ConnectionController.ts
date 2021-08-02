@@ -1,6 +1,7 @@
 import { store } from "../../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
+import { SET_NB_PIXELS } from "../../store/actions/user";
 import { WS_URL } from "../constants/api";
 import ModalTypes from "../constants/modalTypes";
 import { CanvasController } from "./CanvasController";
@@ -40,6 +41,7 @@ export default class ConnectionController {
           break;
         case 'confirmPixel':
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
+          store?.dispatch({ type: SET_NB_PIXELS, payload: data.totalPixels });
           this.canvasController.confirmPixel(data.pos.x, data.pos.y);
           break;
         case 'refusePixel':

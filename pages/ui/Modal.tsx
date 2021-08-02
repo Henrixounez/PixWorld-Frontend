@@ -9,6 +9,9 @@ import ModalProblem from './modals/Problem';
 import ModalConverter from './modals/Converter';
 import ModalParameters from './modals/Parameters';
 import Captcha from './modals/Captcha';
+import ModalStats from './modals/Stats';
+import ModalLogin from './modals/Login';
+import ModalRegister from './modals/Register';
 
 const ModalBackdrop = styled.div`
   position: absolute;
@@ -64,6 +67,9 @@ const modalComponents = {
   [ModalTypes.CONVERTER]: <ModalConverter/>,
   [ModalTypes.PARAMETERS]: <ModalParameters/>,
   [ModalTypes.CAPTCHA]: <Captcha/>,
+  [ModalTypes.STATS]: <ModalStats/>,
+  [ModalTypes.LOGIN]: <ModalLogin/>,
+  [ModalTypes.REGISTER]: <ModalRegister/>,
 }
 
 export default function Modal() {
