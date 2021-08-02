@@ -36,6 +36,7 @@ export class CanvasController {
     canvas.width = this.size.width;
     canvas.height = this.size.height;
     this.canvas = canvas;
+    this.canvas.focus();
 
     this.interactionController = new InteractionController(this);
     this.connectionController = new ConnectionController(this);
