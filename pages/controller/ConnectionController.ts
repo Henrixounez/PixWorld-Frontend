@@ -11,14 +11,14 @@ export default class ConnectionController {
   canvasController: CanvasController;
   ws: WebSocket;
 
-  constructor(canvasController: CanvasController) {
+  constructor(canvasController: CanvasController, wsHash: string) {
     this.canvasController = canvasController;
-    this.ws = new WebSocket(`${WS_URL}/pix/connect`);
+    this.ws = new WebSocket(`${WS_URL}/pix/connect?hash=${wsHash}`);
     this.ws.onopen = () => {
       this.getMe();
     }
     this.ws.onclose = (e) => {
-      if (!e.wasClean)
+      if (!e.wasClean || e.code === 1013)
         setTimeout(() => store?.dispatch({ type: SET_MODAL, payload: ModalTypes.PROBLEM }), 2000);
     }
     this.ws.onerror = () => {

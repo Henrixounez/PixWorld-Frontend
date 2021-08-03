@@ -27,7 +27,7 @@ export class CanvasController {
   connectionController: ConnectionController;
   overlayController: OverlayController;
 
-  constructor() {
+  constructor(wsHash: string) {
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -39,7 +39,7 @@ export class CanvasController {
     this.canvas.focus();
 
     this.interactionController = new InteractionController(this);
-    this.connectionController = new ConnectionController(this);
+    this.connectionController = new ConnectionController(this, wsHash);
     this.overlayController = new OverlayController(this);
     this.loadFromLocalStorage();
     this.loadNeighboringChunks();
@@ -328,8 +328,8 @@ let canvasController: CanvasController | null = null;
 export function getCanvasController() {
   return canvasController;
 }
-export function initCanvasController() {
-  canvasController = new CanvasController();
+export function initCanvasController(wsHash: string) {
+  canvasController = new CanvasController(wsHash);
   canvasController.render();
 }
 export function destructCanvasController() {

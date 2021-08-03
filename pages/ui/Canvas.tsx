@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { destructCanvasController, initCanvasController } from '../controller/CanvasController';
 
-function CanvasComponent() {
+function CanvasComponent({ wsHash }: { wsHash: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {
-      initCanvasController();
+      initCanvasController(wsHash);
       return () => {
         destructCanvasController();
       }

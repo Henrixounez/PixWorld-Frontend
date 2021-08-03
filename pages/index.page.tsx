@@ -1,6 +1,7 @@
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import styled from 'styled-components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import crypto from 'crypto';
 
 import { languagesModules } from './constants/languages';
 import Canvas from './ui/Canvas';
@@ -20,7 +21,8 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-export default function Home() {
+export default function Home({ wsHash }: { wsHash: string }) {
+
   return (
     <Container>
       <Modal/>
@@ -31,14 +33,24 @@ export default function Home() {
       <Chat/>
       <PlayerCounter/>
       <CursorPosition/>
-      <Canvas />
+      <Canvas wsHash={wsHash} />
     </Container>
   )
-}
+};
 
-export async function getStaticProps(ctx: GetStaticPropsContext & { locale: string }) {
+const ENCRYPTION_KEY = process.env.WS_HASH_KEY!;
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext & { locale: string }) {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  const text = `${Date.now()}`;
+
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+
   return {
     props: {
+      wsHash: iv.toString('hex') + ':' + encrypted.toString('hex'),
       ...(await serverSideTranslations(ctx.locale, languagesModules)),
     },
   };
