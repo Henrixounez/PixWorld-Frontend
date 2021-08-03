@@ -9,6 +9,7 @@ import OverlayController from "./OverlayController";
 import { store } from "../../store";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
 
 const ACTIVITY_DURATION_MS = 1000;
 const ACTIVITY_REFRESH_MS = 25;
@@ -98,6 +99,15 @@ export class CanvasController {
     const position = localStorage.getItem('position')
     if (position)
       store?.dispatch({ type: SET_POSITION, payload: JSON.parse(position) });
+
+    const overlayActive = localStorage.getItem('overlayActive')
+    if (overlayActive)
+      store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: JSON.parse(overlayActive) });
+
+    const overlayOpen = localStorage.getItem('overlayOpen')
+    if (overlayOpen)
+      store?.dispatch({ type: SET_OVERLAY_OPEN, payload: JSON.parse(overlayOpen) });
+      
   }
 
   // Utils //

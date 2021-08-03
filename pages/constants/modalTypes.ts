@@ -8,6 +8,7 @@ enum ModalTypes {
   STATS,
   LOGIN,
   REGISTER,
+  OVERLAY,
 };
 
 export default ModalTypes;

@@ -32,6 +32,7 @@ export interface ReduxState {
     positionMouse: boolean;
     autoColor: boolean;
     tainted: boolean;
+    open: boolean;
   },
   alert: {
     show: boolean;
@@ -69,6 +70,7 @@ export const initialState: ReduxState = {
     positionMouse: false,
     autoColor: false,
     tainted: false,
+    open: false,
   },
   alert: {
     show: false,
