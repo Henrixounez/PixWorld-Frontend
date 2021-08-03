@@ -17,7 +17,7 @@ const Position = styled.span`
 `;
 const Mention = styled.span<{color: string, isMe: boolean}>`
   ${( { isMe, color }) => `${isMe ? 'background-color' : 'color'}: ${color}`};
-  ${( { isMe }) => `${isMe ? 'color' : 'background-color'}: #FFF`};
+  ${( { isMe }) => `${isMe ? 'color' : 'background-color'}: ${isMe ? '#FFF' : 'transparent'}`};
   padding: 0 2px;
 `;
 const Greentext = styled.span`
