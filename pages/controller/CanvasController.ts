@@ -1,5 +1,6 @@
 import { API_URL } from "../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../constants/painting";
+import { Unsubscribe } from "redux";
 
 import Chunk from "./Chunk";
 import InteractionController from "./InteractionController";
@@ -7,6 +8,7 @@ import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_POSITION } from "../../store/actions/painting";
 
 const ACTIVITY_DURATION_MS = 1000;
 const ACTIVITY_REFRESH_MS = 25;
@@ -22,6 +24,7 @@ export class CanvasController {
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
   activityInterval: NodeJS.Timeout;
+  unsubscribe: Unsubscribe;
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
@@ -44,6 +47,18 @@ export class CanvasController {
     this.loadFromLocalStorage();
     this.loadNeighboringChunks();
 
+    this.unsubscribe = store!.subscribe(() => {
+      if (store) {
+        const state = store.getState();
+        if (state.position.x !== this.position.x || state.position.y !== this.position.y) {
+          this.setPosition(state.position.x, state.position.y);
+        }
+        if (state.position.zoom !== this.position.zoom) {
+          this.setZoom(state.position.zoom);
+        }
+      }
+    });
+
     this.activityInterval = setInterval(() => {
       if (this.pixelActivity.length && store?.getState().activity)
         this.render();
@@ -57,6 +72,7 @@ export class CanvasController {
     this.connectionController.destructor();
     this.overlayController.destructor();
     clearInterval(this.activityInterval);
+    this.unsubscribe();
   }
 
   loadFromLocalStorage() {
@@ -77,8 +93,10 @@ export class CanvasController {
       store?.dispatch({ type: SET_SHOW_CHAT, payload: showChat === "true" });
     
     const position = localStorage.getItem('position')
-    if (position)
+    if (position) {
       this.position = JSON.parse(position);
+      store?.dispatch({ type: SET_POSITION, payload: this.position });
+    }
   }
 
   // Utils //
@@ -203,21 +221,31 @@ export class CanvasController {
 
     if (newZoom >= 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
-      this.position.zoom = newZoom;
+      this.setZoom(newZoom);
       if (store?.getState().zoomTowardCursor) {
         const translateX = (focalX - this.position.x) * changeInZoom;
         const transtateY = (focalY - this.position.y) * changeInZoom;
-        this.position.x += translateX;
-        this.position.y += transtateY;
+        this.changePosition(translateX, transtateY);
       }
       localStorage.setItem('position', JSON.stringify(this.position));
       this.render();
     }
   }
+  setZoom = (zoom: number) => {
+    this.position.zoom = zoom;
+    store?.dispatch({ type: SET_POSITION, payload: this.position });
+    this.loadNeighboringChunks();
+  }
+  setPosition = (x: number, y: number) => {
+    this.position.x = x;
+    this.position.y = y;
+    store?.dispatch({ type: SET_POSITION, payload: this.position });
+    this.loadNeighboringChunks();
+  }
   changePosition = (deltaX: number, deltaY: number) => {
     this.position.x += deltaX;
     this.position.y += deltaY;
-    localStorage.setItem('position', JSON.stringify(this.position));
+    store?.dispatch({ type: SET_POSITION, payload: this.position });
     this.loadNeighboringChunks();
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
