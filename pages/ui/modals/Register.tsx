@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useTranslation } from 'next-i18next';
 import { FormEvent, useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import {
 } from './Login';
 
 export default function ModalRegister() {
+  const { t } = useTranslation('auth');
   const dispatch = useDispatch();
   const user = useSelector((state: ReduxState) => state.user);
   const [email, setEmail] = useState('');
@@ -48,11 +50,10 @@ export default function ModalRegister() {
 
   return (
     <Container>
-      <h1>User Registration</h1>
       <form onSubmit={register}>
         <InputRow>
           <input
-            placeholder='Email'
+            placeholder={t('register.email')}
             type='email'
             name='email'
             autoComplete='email'
@@ -63,7 +64,7 @@ export default function ModalRegister() {
         </InputRow>
         <InputRow>
           <input
-            placeholder='Username'
+            placeholder={t('register.username')}
             type='text'
             name='username'
             required
@@ -73,7 +74,7 @@ export default function ModalRegister() {
         </InputRow>
         <InputRow>
           <input
-            placeholder='Password'
+            placeholder={t('register.password')}
             autoComplete='new-password'
             aria-autocomplete='list'
             required
@@ -91,10 +92,10 @@ export default function ModalRegister() {
           </Error>
         )}
         <SubmitBtn>
-          Register
+          {t('register.registerBtn')}
         </SubmitBtn>
         <Switch>
-          Have an account ?&nbsp;
+          {t('register.haveAccount')}&nbsp;
           <a
             href=''
             onClick={(e) => {
@@ -102,7 +103,7 @@ export default function ModalRegister() {
               dispatch({ type: SET_MODAL, payload: ModalTypes.LOGIN });
             }}
           >
-            Login
+            {t('register.goToLogin')}
           </a>
         </Switch>
       </form>

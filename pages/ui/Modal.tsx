@@ -86,8 +86,8 @@ const modalComponents = {
   [ModalTypes.PARAMETERS]: { title: 'parameters:title', component: <ModalParameters/> },
   [ModalTypes.CAPTCHA]: { title: '', component: <Captcha/> },
   [ModalTypes.STATS]: { title: 'stats:title', component: <ModalStats/> },
-  [ModalTypes.LOGIN]: { title: '', component: <ModalLogin/> },
-  [ModalTypes.REGISTER]: { title: '', component: <ModalRegister/> },
+  [ModalTypes.LOGIN]: { title: 'auth:login:title', component: <ModalLogin/> },
+  [ModalTypes.REGISTER]: { title: 'auth:register:title', component: <ModalRegister/> },
 }
 
 export default function Modal() {

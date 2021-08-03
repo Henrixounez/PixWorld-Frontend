@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useTranslation } from 'next-i18next';
 import { FormEvent, useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,6 +55,7 @@ export const Switch = styled.div`
 
 export default function ModalLogin() {
   const dispatch = useDispatch();
+  const { t } = useTranslation('auth');
   const user = useSelector((state: ReduxState) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -88,13 +90,12 @@ export default function ModalLogin() {
 
   return (
     <Container>
-      <h1>User Access</h1>
       <form onSubmit={login}>
         <InputRow>
         </InputRow>
         <InputRow>
           <input
-            placeholder='Username'
+            placeholder={t('login.username')}
             type='text'
             name='username'
             value={username}
@@ -104,7 +105,7 @@ export default function ModalLogin() {
         <InputRow>
           <input
             placeholder='Password'
-            autoComplete='password'
+            autoComplete={t('login.password')}
             aria-autocomplete='list'
             type={showPassword ? 'text' : 'password'}
             value={password}
@@ -120,10 +121,10 @@ export default function ModalLogin() {
           </Error>
         )}
         <SubmitBtn>
-          Login
+          {t('login.loginBtn')}
         </SubmitBtn>
         <Switch>
-          No account ?&nbsp;
+          {t('login.noAccount')}&nbsp;
           <a
             href=''
             onClick={(e) => {
@@ -131,7 +132,7 @@ export default function ModalLogin() {
               dispatch({ type: SET_MODAL, payload: ModalTypes.REGISTER });
             }}
           >
-            Register
+            {t('login.goToRegister')}
           </a>
         </Switch>
       </form>
