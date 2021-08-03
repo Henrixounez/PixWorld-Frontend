@@ -19,6 +19,7 @@ const OverlayRow = styled.div`
   justify-content: space-between;
   width: 90%;
   gap: 1rem;
+  flex-wrap: wrap;
 
   input {
     width: 50%;
@@ -47,11 +48,13 @@ const AddNew = styled.div<{error: boolean}>`
   align-items: center;
   gap: 1rem;
   margin-top: 4rem;
+  justify-content: center;
 
   input {
     padding: 0.5rem 1rem;
     border: 1px solid;
     border-radius: 2px;
+    max-width: 30vw;
     border-color: ${({ error }) => error ? '#FF0000' : 'initial'};
   }
   svg {
