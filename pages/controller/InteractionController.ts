@@ -158,7 +158,7 @@ export default class InteractionController {
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-    this.canvasController.changeZoom(e.deltaY < 0 ? -1 : 1, coordX, coordY);
+    this.canvasController.changeZoom(e.deltaY < 0 ? -2 : 2, coordX, coordY);
   }
 
 
@@ -196,10 +196,10 @@ export default class InteractionController {
   keypress = (e: KeyboardEvent) => {
     switch (e.code) {
       case 'KeyE':
-        this.canvasController.changeZoom(-1, this.position.x, this.position.y);
+        this.canvasController.changeZoom(-2, this.position.x, this.position.y);
         break;
       case 'KeyQ':
-        this.canvasController.changeZoom(1, this.position.x, this.position.y);
+        this.canvasController.changeZoom(2, this.position.x, this.position.y);
         break;
       case 'KeyO':
         store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
