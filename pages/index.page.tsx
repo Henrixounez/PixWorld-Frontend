@@ -42,8 +42,9 @@ export default function Home({ wsHash }: { wsHash: string }) {
 export async function getServerSideProps(ctx: GetServerSidePropsContext & { locale: string }) {
   const ENCRYPTION_KEY = process.env.WS_HASH_KEY!;
   const iv = crypto.randomBytes(16);
+  const id = crypto.randomBytes(16).toString('hex');
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  const text = `${Date.now()}`;
+  const text = `${Date.now()}-${id}`;
 
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
