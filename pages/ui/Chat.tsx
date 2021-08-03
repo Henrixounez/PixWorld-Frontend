@@ -9,6 +9,9 @@ import { ReduxState } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
 import { SET_SHOW_CHAT } from '../../store/actions/parameters';
+import formatChatText, { FormatType } from './ChatFormatting';
+import { SET_POSITION } from '../../store/actions/painting';
+import { ADD_CHAT_MESSAGE } from '../../store/actions/chat';
 
 const ChatButton = styled.div`
   position: fixed;
@@ -119,13 +122,53 @@ export default function Chat() {
   const messageList = useSelector((state: ReduxState) => state.chatMessages);
   const user = useSelector((state: ReduxState) => state.user);
   const showChat = useSelector((state: ReduxState) => state.showChat);
+  const position = useSelector((state: ReduxState) => state.position);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const messageToWs = (text: string) => {
+    getCanvasController()?.connectionController.sendToWs('sendMessage', text);
+  }
   const sendMessage = () => {
+    const cmd = message.split(' ')[0];
+    switch (cmd) {
+      case '/here':
+        messageToWs(`#p(${Math.round(position.x)},${Math.round(position.y)})`);
+        break;
+      case '/help':
+        dispatch({
+          type: ADD_CHAT_MESSAGE,
+          payload: {
+            author: 'PixWorld Help',
+            color: 'green',
+            msg: `
+> == Commands ==
+> /help : Show this help
+> /here : Share your position
+> == Other ==
+> Click on someone name to mention
+            ` }});
+        break;
+      default:
+        messageToWs(message);
+        break;
+    }
     setMessage('');
-    getCanvasController()?.connectionController.sendToWs('sendMessage', message);
   };
+
+  const textClick = (type: FormatType, text: string) => {
+    switch (type) {
+      case FormatType.POSITION:
+        const regex = /#p\((-?\d*),(-?\d*)\)/;
+        const res = text.match(regex);
+        if (res && res[1] && res[2]) {
+          const x = Number(res[1]);
+          const y = Number(res[2]);
+          dispatch({ type: SET_POSITION, payload: { ...position, x, y }})
+        }
+      break;
+    }
+  }
 
   useEffect(() => {
     if (chatRef.current) {
@@ -142,10 +185,10 @@ export default function Chat() {
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
             <ChatMessage key={i}>
-              <span style={{ color: msg.color }}>
+              <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
                 {msg.author}
               </span>
-              : {msg.msg}
+              : {formatChatText(msg.msg, textClick)}
             </ChatMessage>
           ))}
         </ChatText>
