@@ -1,7 +1,8 @@
 import { store } from "../../store";
-import { SET_CURSOR_POS } from "../../store/actions/infos";
+import { SET_ALERT, SET_CURSOR_POS } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
-import { SET_SELECTED_COLOR } from "../../store/actions/painting";
+import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_ACTIVITY, SET_GRID_ACTIVE } from "../../store/actions/parameters";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
@@ -73,7 +74,6 @@ export default class InteractionController {
   // Setters
   setSelectedColor = (color: string) => {
     store?.dispatch({ type: SET_SELECTED_COLOR, payload: color });
-    this.canvasController.render();
   }
 
 
@@ -86,7 +86,7 @@ export default class InteractionController {
     };
     this.canvas.width = this.canvasController.size.width;
     this.canvas.height = this.canvasController.size.height;
-    this.canvasController.render();
+    store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
   }
 
 
@@ -118,8 +118,6 @@ export default class InteractionController {
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true)
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
-      if (this.canvasController.position.zoom <= 6)
-        this.canvasController.render();
     }
   }
   mouseUp = (e: MouseEvent) => {
@@ -196,27 +194,43 @@ export default class InteractionController {
     }
   }
   keypress = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'e':
+    switch (e.code) {
+      case 'KeyE':
         this.canvasController.changeZoom(-1, this.position.x, this.position.y);
         break;
-      case 'a':
+      case 'KeyQ':
         this.canvasController.changeZoom(1, this.position.x, this.position.y);
         break;
-      case 'ArrowUp':
+      case 'KeyO':
+        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+        break;
+      case 'KeyG':
+        store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
+        break;
+      case 'KeyX':
+        store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
+        break;
+      case 'KeyC':
+        if (navigator.clipboard) {
+          const pos = store!.getState().cursorPos;
+          const txt = `#p(${Math.round(pos.x)},${Math.round(pos.y)})`;
+          navigator.clipboard.writeText(txt);
+          store?.dispatch({ type: SET_ALERT, payload: { show: true, text: "Copied to clipboard", color: "#FFFD" }})
+        }
+        break;
+      case 'KeyW':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
         break;
-      case 'ArrowDown':
+      case 'KeyS':
         this.canvasController.changePosition(0, 4 * this.position.zoom);
         break;
-      case 'ArrowLeft':
+      case 'KeyA':
         this.canvasController.changePosition(-4 * this.position.zoom, 0);
         break;
-      case 'ArrowRight':
+      case 'KeyD':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
-      case 'o':
-        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+  
     }
   }
   keyup = (e: KeyboardEvent) => {

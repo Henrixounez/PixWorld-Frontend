@@ -7,7 +7,6 @@ import Cookies from 'universal-cookie';
 import { languages, languagesDisplay } from '../../constants/languages';
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
-import { getCanvasController } from "../../controller/CanvasController";
 
 const InputRow = styled.div`
   cursor: pointer;
@@ -36,7 +35,7 @@ export default function ModalParameters() {
     return (
         <>
             <hr/>
-            <InputRow onClick={() => { dispatch({type: SET_GRID_ACTIVE, payload: !gridActive}); getCanvasController()?.render(); }}>
+            <InputRow onClick={() => dispatch({type: SET_GRID_ACTIVE, payload: !gridActive})}>
                 {t('grid')}
                 <input type="checkbox" className="checkbox" id="gridActive" checked={gridActive} readOnly/>
             </InputRow>

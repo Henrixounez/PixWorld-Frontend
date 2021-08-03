@@ -8,7 +8,7 @@ import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
-import { SET_POSITION } from "../../store/actions/painting";
+import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 
 const ACTIVITY_DURATION_MS = 1000;
 const ACTIVITY_REFRESH_MS = 25;
@@ -17,7 +17,6 @@ const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
 export class CanvasController {
   canvas: HTMLCanvasElement;
-  position = { x: 0, y: 0, zoom: 50 };
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
   boundingChunks = [[0, 0], [0, 0]];
@@ -45,25 +44,25 @@ export class CanvasController {
     this.connectionController = new ConnectionController(this, wsHash);
     this.overlayController = new OverlayController(this);
     this.loadFromLocalStorage();
-    this.loadNeighboringChunks();
 
     this.unsubscribe = store!.subscribe(() => {
       if (store) {
         const state = store.getState();
-        if (state.position.x !== this.position.x || state.position.y !== this.position.y) {
-          this.setPosition(state.position.x, state.position.y);
-        }
-        if (state.position.zoom !== this.position.zoom) {
-          this.setZoom(state.position.zoom);
+        if (state.shouldLoadChunks)
+          this.loadNeighboringChunks();
+        if (state.shouldRender) {
+          this.render();
         }
       }
     });
 
     this.activityInterval = setInterval(() => {
-      if (this.pixelActivity.length && store?.getState().activity)
-        this.render();
-      else
+      if (this.pixelActivity.length && store?.getState().activity) {
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+      } else if (this.pixelActivity.length) {
         this.pixelActivity = [];
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+      }
     }, ACTIVITY_REFRESH_MS);
   }
 
@@ -73,6 +72,10 @@ export class CanvasController {
     this.overlayController.destructor();
     clearInterval(this.activityInterval);
     this.unsubscribe();
+  }
+
+  get position() {
+    return store?.getState().position!;
   }
 
   loadFromLocalStorage() {
@@ -93,10 +96,8 @@ export class CanvasController {
       store?.dispatch({ type: SET_SHOW_CHAT, payload: showChat === "true" });
     
     const position = localStorage.getItem('position')
-    if (position) {
-      this.position = JSON.parse(position);
-      store?.dispatch({ type: SET_POSITION, payload: this.position });
-    }
+    if (position)
+      store?.dispatch({ type: SET_POSITION, payload: JSON.parse(position) });
   }
 
   // Utils //
@@ -146,7 +147,7 @@ export class CanvasController {
           const chunk = new Chunk({x: chunkX, y: chunkY});
           chunk.loadImage(img);
           this.chunks[`${chunkX};${chunkY}`] = chunk;
-          this.render();
+          store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
           resolve(true);
         }
       })
@@ -156,6 +157,7 @@ export class CanvasController {
     const width = this.size.width;
     const height = this.size.height;
 
+    store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: false });
     const chunkNbX = Math.ceil(width / CHUNK_SIZE) + 2;
     const chunkNbY = Math.ceil(height / CHUNK_SIZE) + 2;
     const chunkLoading = [];
@@ -165,7 +167,6 @@ export class CanvasController {
       }
     }
     await Promise.all(chunkLoading);
-    this.render();
   }
   placePixel = (coordX: number, coordY: number, color: string) => {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -181,7 +182,7 @@ export class CanvasController {
 
       if (currentColor !== color) {
         this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, color);
-        this.render();
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
         return currentColor;
       }
     }
@@ -221,32 +222,23 @@ export class CanvasController {
 
     if (newZoom >= 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
-      this.setZoom(newZoom);
       if (store?.getState().zoomTowardCursor) {
         const translateX = (focalX - this.position.x) * changeInZoom;
         const transtateY = (focalY - this.position.y) * changeInZoom;
         this.changePosition(translateX, transtateY);
       }
+      this.setZoom(newZoom);
       localStorage.setItem('position', JSON.stringify(this.position));
-      this.render();
     }
   }
   setZoom = (zoom: number) => {
-    this.position.zoom = zoom;
-    store?.dispatch({ type: SET_POSITION, payload: this.position });
-    this.loadNeighboringChunks();
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, zoom } });
   }
   setPosition = (x: number, y: number) => {
-    this.position.x = x;
-    this.position.y = y;
-    store?.dispatch({ type: SET_POSITION, payload: this.position });
-    this.loadNeighboringChunks();
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x, y } });
   }
   changePosition = (deltaX: number, deltaY: number) => {
-    this.position.x += deltaX;
-    this.position.y += deltaY;
-    store?.dispatch({ type: SET_POSITION, payload: this.position });
-    this.loadNeighboringChunks();
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x: this.position.x + deltaX, y: this.position.y + deltaY } });
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -270,6 +262,7 @@ export class CanvasController {
     if (!ctx)
       return;
 
+    store?.dispatch({ type: SET_SHOULD_RENDER, payload: false });
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
     this.drawGrid(ctx);
@@ -358,7 +351,6 @@ export function getCanvasController() {
 }
 export function initCanvasController(wsHash: string) {
   canvasController = new CanvasController(wsHash);
-  canvasController.render();
 }
 export function destructCanvasController() {
   canvasController?.destructor();

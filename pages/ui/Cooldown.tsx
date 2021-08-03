@@ -29,6 +29,7 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
 export default function Cooldown() {
   const [cooldownLeft, setCooldownLeft] = useState(0);
   const cooldownUntil = useSelector((state: ReduxState) => state.cooldown);
+  const [display, setDisplay] = useState(false);
 
   function calculateDiff() {
     const diff = Math.round((cooldownUntil - Date.now()) / 1000);
@@ -41,16 +42,31 @@ export default function Cooldown() {
   }
 
   useEffect(() => {
-    calculateDiff();
+    const timeout = cooldownLeft === 0 ? setTimeout(() => setDisplay(false), 1000) : undefined;
+ 
+    return () => {
+      if (timeout)
+        clearTimeout(timeout);
+    };
+}, [cooldownLeft]);
+
+  useEffect(() => {
+    setDisplay(true);
+    const timeout = setTimeout(() => calculateDiff(), 0);
     const interval = setInterval(() => calculateDiff(), 1000);
     return () => {
+      clearTimeout(timeout);
       clearInterval(interval);
     }
   }, [cooldownUntil]);
 
   return (
-    <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME}>
-      {cooldownLeft}
-    </CooldownContainer>
+    <>
+      { display ? (
+        <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME}>
+          {cooldownLeft}
+        </CooldownContainer>
+      ) : null }
+    </>
   );
 }

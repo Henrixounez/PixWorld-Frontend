@@ -1,6 +1,7 @@
 import { Unsubscribe } from "redux";
 import { store } from "../../store";
 import { SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_POSITION, SET_OVERLAY_TAINTED } from "../../store/actions/overlay";
+import { SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { PIXEL_SIZE } from "../constants/painting";
 import { FindNearestColor, getRGBPalette } from "../ui/modals/Converter";
 import { CanvasController } from "./CanvasController";
@@ -8,9 +9,6 @@ import { CanvasController } from "./CanvasController";
 export default class OverlayController {
   canvasController: CanvasController;
   imgUrl: string;
-  position: { x: number, y: number };
-  activate: boolean;
-  transparency: number;
   unsubscribe: Unsubscribe;
   canvas: HTMLCanvasElement;
 
@@ -20,10 +18,6 @@ export default class OverlayController {
     this.canvas = document.createElement('canvas');
     this.canvas.width = 0;
     this.canvas.height = 0;
-
-    this.position = store?.getState().overlay.position || { x: 0, y: 0 };
-    this.transparency = store?.getState().overlay.transparency || 50;
-    this.activate = false;
 
     this.imgUrl = store?.getState().overlay.image || "";
     if (this.imgUrl)
@@ -35,21 +29,8 @@ export default class OverlayController {
         const imgUrl = state.overlay.image;
         if (imgUrl !== this.imgUrl && imgUrl)
           this.setImage(imgUrl);
-        if (this.activate !== state.overlay.activate) {
-          this.activate = state.overlay.activate || false;
-          this.canvasController.render();
-        }
-        if (this.transparency !== state.overlay.transparency) {
-          this.transparency = state.overlay.transparency;
-          this.canvasController.render();
-        }
-        if (this.position.x !== state.overlay.position.x || this.position.y !== state.overlay.position.y) {
-          this.position = state.overlay.position;
-          this.canvasController.render();
-        }
-        if (state.overlay.positionMouse && (this.position.x !== state.cursorPos.x || this.position.y !== state.cursorPos.y)) {
+        if (state.overlay.positionMouse && (state.overlay.position.x !== state.cursorPos.x || state.overlay.position.y !== state.cursorPos.y))
           store.dispatch({ type: SET_OVERLAY_POSITION, payload: state.cursorPos });
-        }
       }
     })
   }
@@ -57,6 +38,15 @@ export default class OverlayController {
     this.unsubscribe();
   }
 
+  get activate() {
+    return store!.getState().overlay.activate;
+  }
+  get position() {
+    return store!.getState().overlay.position;
+  }
+  get transparency() {
+    return store!.getState().overlay.transparency;
+  }
 
   render(ctx: CanvasRenderingContext2D) {
     if (this.imgUrl && this.activate && this.canvas.height > 0) {
@@ -80,7 +70,7 @@ export default class OverlayController {
       if (ctx) {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(img, 0, 0);
-        this.canvasController.render();
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
       }
       try {
         ctx?.getImageData(0, 0, 1, 1);

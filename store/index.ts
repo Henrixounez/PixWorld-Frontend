@@ -17,6 +17,8 @@ export interface ReduxState {
   zoomTowardCursor: boolean;
   activity: boolean;
   showChat: boolean;
+  shouldRender: boolean;
+  shouldLoadChunks: boolean;
   position: {
     x: number,
     y: number,
@@ -30,7 +32,12 @@ export interface ReduxState {
     positionMouse: boolean;
     autoColor: boolean;
     tainted: boolean;
-  }
+  },
+  alert: {
+    show: boolean;
+    text?: string;
+    color?: string;
+  },
   user?: User,
 }
 
@@ -47,6 +54,8 @@ export const initialState: ReduxState = {
   zoomTowardCursor: true,
   activity: true,
   showChat: true,
+  shouldRender: true,
+  shouldLoadChunks: true,
   position: {
     x: 0,
     y: 0,
@@ -60,6 +69,11 @@ export const initialState: ReduxState = {
     positionMouse: false,
     autoColor: false,
     tainted: false,
+  },
+  alert: {
+    show: false,
+    text: undefined,
+    color: undefined,
   },
   user: undefined,
 };
