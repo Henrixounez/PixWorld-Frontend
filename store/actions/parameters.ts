@@ -32,6 +32,7 @@ export function setGridActive(state: ReduxState, action: SetGridActiveAction): R
     localStorage.setItem('gridActive', String(action.payload));
     return {
         ...state,
+        shouldRender: true,
         gridActive: action.payload
     };
 }
@@ -46,6 +47,7 @@ export function setActivity(state: ReduxState, action: SetActivityAction): Redux
     localStorage.setItem('activity', String(action.payload));
     return {
         ...state,
+        shouldRender: true,
         activity: action.payload
     };
 }

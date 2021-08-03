@@ -6,6 +6,7 @@ export const SET_NB_PLAYERS = 'SET_NB_PLAYERS';
 export const SET_CURSOR_POS = 'SET_CURSOR_POS';
 export const SET_MODAL = 'SET_MODAL';
 export const SET_COOLDOWN = 'SET_COOLDOWN';
+export const SET_ALERT = 'SET_ALERT';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -24,8 +25,16 @@ export interface SetCooldownAction {
   type: typeof SET_COOLDOWN;
   payload: number;
 }
+export interface SetAlertAction {
+  type: typeof SET_ALERT;
+  payload: {
+    show: boolean;
+    text?: string;
+    color?: string;
+  };
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -37,6 +46,7 @@ export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): Red
 export function setCursorPos(state: ReduxState, action: SetCursorPosAction): ReduxState {
   return {
     ...state,
+    shouldRender: state.gridActive ? true : state.shouldRender,
     cursorPos: action.payload,
   };
 }
@@ -50,6 +60,12 @@ export function setCooldown(state: ReduxState, action: SetCooldownAction): Redux
   return {
     ...state,
     cooldown: action.payload,
+  };
+}
+export function setAlert(state: ReduxState, action: SetAlertAction): ReduxState {
+  return {
+    ...state,
+    alert: action.payload,
   };
 }
 
@@ -71,4 +87,8 @@ export const dispatches = [
     action: SET_COOLDOWN,
     function: setCooldown,
   },
+  {
+    action: SET_ALERT,
+    function: setAlert
+  }
 ];

@@ -46,15 +46,17 @@ export type Actions = SetOverlayActivateAction | SetOverlayImageAction | SetOver
 export function setOverlayActivate(state: ReduxState, action: SetOverlayActivateAction): ReduxState {
   return {
     ...state,
+    shouldRender: true,
     overlay: {
       ...state.overlay,
-      activate: action.payload
+      activate: action.payload,
     },
   };
 }
 export function setOverlayImage(state: ReduxState, action: SetOverlayImageAction): ReduxState {
   return {
     ...state,
+    shouldRender: true,
     overlay: {
       ...state.overlay,
       image: action.payload,
@@ -64,6 +66,7 @@ export function setOverlayImage(state: ReduxState, action: SetOverlayImageAction
 export function setOverlayTransparency(state: ReduxState, action: SetOverlayTransparencyAction): ReduxState {
   return {
     ...state,
+    shouldRender: true,
     overlay: {
       ...state.overlay,
       transparency: action.payload,
@@ -73,6 +76,7 @@ export function setOverlayTransparency(state: ReduxState, action: SetOverlayTran
 export function setOverlayPosition(state: ReduxState, action: SetOverlayPositionAction): ReduxState {
   return {
     ...state,
+    shouldRender: true,
     overlay: {
       ...state.overlay,
       position: action.payload,

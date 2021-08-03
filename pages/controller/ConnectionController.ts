@@ -2,6 +2,7 @@ import axios from "axios";
 import { store } from "../../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
+import { SET_SHOULD_LOAD_CHUNKS } from "../../store/actions/painting";
 import { SET_NB_PIXELS, SET_USER } from "../../store/actions/user";
 import { API_URL, WS_URL } from "../constants/api";
 import ModalTypes from "../constants/modalTypes";
@@ -30,7 +31,7 @@ export default class ConnectionController {
       switch (type) {
         case 'init':
           this.canvasController.boundingChunks = data.boundingChunks;
-          this.canvasController.loadNeighboringChunks();
+          store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });
           store?.dispatch({ type: SET_CHAT_MESSAGE, payload: data.chatMessages });

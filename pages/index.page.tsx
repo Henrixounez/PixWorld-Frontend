@@ -13,6 +13,7 @@ import PlayerCounter from './ui/PlayerCounter';
 import Overlay from './ui/Overlay';
 import Cooldown from './ui/Cooldown';
 import Chat from './ui/Chat';
+import Alert from './ui/Alert';
 
 const Container = styled.div`
   width: 100vw;
@@ -33,6 +34,7 @@ export default function Home({ wsHash }: { wsHash: string }) {
       <Chat/>
       <PlayerCounter/>
       <CursorPosition/>
+      <Alert/>
       <Canvas wsHash={wsHash} />
     </Container>
   )
