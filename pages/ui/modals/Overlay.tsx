@@ -51,13 +51,11 @@ const AddNew = styled.div<{error: boolean}>`
   justify-content: center;
 
   input {
-    padding: 0.5rem 1rem;
-    border: 1px solid;
-    border-radius: 2px;
     max-width: 30vw;
     border-color: ${({ error }) => error ? '#FF0000' : 'initial'};
   }
   svg {
+    cursor: pointer;
     transition: .2s;
     &:hover {
       transform: scale(1.1);
