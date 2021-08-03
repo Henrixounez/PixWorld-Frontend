@@ -2,6 +2,7 @@ import { ReduxState } from "..";
 
 /* Actions */
 export const SET_OVERLAY_ACTIVATE = 'SET_ACTIVATE_OVERLAY';
+export const SET_OVERLAY_OPEN = 'SET_OVERLAY_OPEN';
 export const SET_OVERLAY_IMAGE = 'SET_OVERLAY_IMAGE';
 export const SET_OVERLAY_TRANSPARENCY = 'SET_OVERLAY_TRANSPARENCY';
 export const SET_OVERLAY_POSITION = 'SET_OVERLAY_POSITION';
@@ -12,6 +13,10 @@ export const SET_OVERLAY_TAINTED = 'SET_OVERLAY_TAINTED';
 /* Types */
 export interface SetOverlayActivateAction {
   type: typeof SET_OVERLAY_ACTIVATE;
+  payload: boolean;
+}
+export interface SetOverlayOpenAction {
+  type: typeof SET_OVERLAY_OPEN;
   payload: boolean;
 }
 export interface SetOverlayImageAction {
@@ -40,16 +45,27 @@ export interface SetOverlayTaintedAction {
 }
 
 
-export type Actions = SetOverlayActivateAction | SetOverlayImageAction | SetOverlayTransparencyAction | SetOverlayPositionAction | SetOverlayPositionMouseAction | SetOverlayAutoColorAction | SetOverlayTaintedAction;
+export type Actions = SetOverlayActivateAction | SetOverlayOpenAction | SetOverlayImageAction | SetOverlayTransparencyAction | SetOverlayPositionAction | SetOverlayPositionMouseAction | SetOverlayAutoColorAction | SetOverlayTaintedAction;
 
 /* Functions */
 export function setOverlayActivate(state: ReduxState, action: SetOverlayActivateAction): ReduxState {
+  localStorage.setItem('overlayActive', String(action.payload));
   return {
     ...state,
     shouldRender: true,
     overlay: {
       ...state.overlay,
       activate: action.payload,
+    },
+  };
+}
+export function setOverlayOpen(state: ReduxState, action: SetOverlayOpenAction): ReduxState {
+  localStorage.setItem('overlayOpen', String(action.payload));
+  return {
+    ...state,
+    overlay: {
+      ...state.overlay,
+      open: action.payload,
     },
   };
 }
@@ -116,6 +132,10 @@ export const dispatches = [
   {
     action: SET_OVERLAY_IMAGE,
     function: setOverlayImage,
+  },
+  {
+    action: SET_OVERLAY_OPEN,
+    function: setOverlayOpen,
   },
   {
     action: SET_OVERLAY_ACTIVATE,

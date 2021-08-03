@@ -58,9 +58,11 @@ export default class OverlayController {
       ctx.globalAlpha = 1;
     }
   }
-  setImage(imgUrl: string) {
+  setImage(imgUrl: string, reloadTry: boolean = false) {
     this.imgUrl = imgUrl;
-    const img = new Image();    
+    const img = new Image();
+    if (!reloadTry)
+      img.crossOrigin = "anonymous";
     img.src = imgUrl;
     img.onload = () => {
       const ctx = this.canvas.getContext('2d');
@@ -79,6 +81,10 @@ export default class OverlayController {
         store?.dispatch({ type: SET_OVERLAY_AUTOCOLOR, payload: false });
         store?.dispatch({ type: SET_OVERLAY_TAINTED, payload: true });
       }
+    }
+    img.onerror = () => {
+      if (!reloadTry)
+        this.setImage(imgUrl, true);
     }
   }
 

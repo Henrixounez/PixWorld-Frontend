@@ -6,5 +6,7 @@
   "position": "Position",
   "positionMouse": "Positionner avec la souris",
   "autoColor": "Couleurs Automatiques",
-  "tainted": "L'URL de l'image est protégée, l'option de Couleur Automatique n'est donc pas disponible.\nUtilisez des sites qui ne supportent pas les requêtes CORS (ex: imgur, dropbox)."
+  "tainted": "L'URL de l'image est protégée, l'option de Couleur Automatique n'est donc pas disponible.\nUtilisez des sites qui ne supportent pas les requêtes CORS (ex: imgur, dropbox).",
+  "options": "Options de calque",
+  "saveBtn": "Sauvegarder configuration actuelle"
 }

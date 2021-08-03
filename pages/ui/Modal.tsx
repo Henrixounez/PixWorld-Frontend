@@ -14,6 +14,7 @@ import Captcha from './modals/Captcha';
 import ModalStats from './modals/Stats';
 import ModalLogin from './modals/Login';
 import ModalRegister from './modals/Register';
+import ModalOverlay from './modals/Overlay';
 
 const ModalBackdrop = styled.div`
   position: absolute;
@@ -88,6 +89,7 @@ const modalComponents = {
   [ModalTypes.STATS]: { title: 'stats:title', component: <ModalStats/> },
   [ModalTypes.LOGIN]: { title: 'auth:login:title', component: <ModalLogin/> },
   [ModalTypes.REGISTER]: { title: 'auth:register:title', component: <ModalRegister/> },
+  [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/> },
 }
 
 export default function Modal() {
