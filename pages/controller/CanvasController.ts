@@ -166,18 +166,23 @@ export class CanvasController {
       return;
 
     const img = new Image();
+    const bgImg = new Image();
     try {
       await new Promise((resolve) => {
         img.onerror = () => {
           resolve(true);
         }
         img.src = `${API_URL}/chunk/${chunkX}/${chunkY}`;
+        bgImg.src = `${API_URL}/chunk/bg/${chunkX}/${chunkY}`;
+
         img.onload = () => {
-          const chunk = new Chunk({x: chunkX, y: chunkY});
-          chunk.loadImage(img);
-          this.chunks[`${chunkX};${chunkY}`] = chunk;
-          store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-          resolve(true);
+          bgImg.onload = () => {
+            const chunk = new Chunk({x: chunkX, y: chunkY});
+            chunk.loadImage(img, bgImg);
+            this.chunks[`${chunkX};${chunkY}`] = chunk;
+            store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+            resolve(true);
+          }
         }
       })
     } catch (e) {}
