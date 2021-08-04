@@ -3,5 +3,6 @@
   "widthText": "Width of the final image: ",
   "uploadText": "Upload your image: ",
   "uploadBtn": "Select",
-  "downloadBtn": "Download"
+  "downloadBtn": "Download",
+  "addGrid": "Add grid (Not for 1:1 template)"
 }
