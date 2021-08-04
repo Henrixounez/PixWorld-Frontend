@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { useRef } from 'react';
 import { XCircle } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
@@ -18,6 +19,8 @@ import ModalOverlay from './modals/Overlay';
 
 const ModalBackdrop = styled.div`
   position: absolute;
+  top: 0;
+  right: 0;
   width: 100vw;
   height: 100vh;
   z-index: 100;
@@ -26,12 +29,13 @@ const ModalBackdrop = styled.div`
 const ModalContent = styled.div`
   position: relative;
   margin: 10vh auto;
+  z-index: 1000;
   width: 80vw;
   height: 80vh;
   max-width: 800px;
   background-color: white;
   box-sizing: border-box;
-  padding: 2.5rem;
+  padding: 2.5rem 0;
   padding-bottom: 0;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
@@ -53,6 +57,12 @@ const ModalContent = styled.div`
     &:hover {
       box-shadow: 2px 2px 3px #000;
     }
+  }
+
+  @media(max-width: 500px) {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
   }
 `;
 const ContentContainer = styled.div`
@@ -96,6 +106,8 @@ export default function Modal() {
   const { t } = useTranslation();
   const currentModal = useSelector((state: ReduxState) => state.currentModal);
   const dispatch = useDispatch();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const touchStart = useRef(0);
 
   if (currentModal === ModalTypes.NONE)
     return null;
@@ -111,7 +123,17 @@ export default function Modal() {
             <XCircle color="#000" />
           </CloseButton>
         </div>
-        <ContentContainer>
+        <ContentContainer
+          ref={containerRef}
+          onTouchStart={(e) => touchStart.current = e.changedTouches[0].clientY }
+          onTouchMove={(e) => {
+            if (containerRef.current) {
+              const delta = touchStart.current - e.changedTouches[0].clientY;
+              containerRef.current.scrollBy(0, delta)
+              touchStart.current = e.changedTouches[0].clientY;
+            }
+          }}  
+        >
           {modalComponents[currentModal].component}
         </ContentContainer>
       </ModalContent>
