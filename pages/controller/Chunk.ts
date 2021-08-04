@@ -37,8 +37,10 @@ export default class Chunk {
       const img = new Image();
       let firstLoad = false;
       img.onload = () => {
-        if (firstLoad)
+        if (firstLoad) {
+          img.onload = null;
           return resolve(img);
+        }
         this.displayImg(img);
         firstLoad = true;
       }
