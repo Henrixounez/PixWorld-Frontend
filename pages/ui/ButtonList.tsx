@@ -24,7 +24,7 @@ const Button = styled.div`
   box-sizing: border-box;
   min-width: 40px;
   height: 40px;
-  padding: 8px;
+  padding: 8px 7px;
   display: flex;
   align-items: center;
   justify-content: center;
