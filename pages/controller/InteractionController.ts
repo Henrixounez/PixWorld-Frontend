@@ -1,5 +1,5 @@
 import { store } from "../../store";
-import { SET_ALERT, SET_CURSOR_POS } from "../../store/actions/infos";
+import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_ACTIVITY, SET_GRID_ACTIVE } from "../../store/actions/parameters";
@@ -16,7 +16,7 @@ export default class InteractionController {
   startMove = { x: 0, y: 0 };
   pinchDistance = 0;
   longTouchTimeout: NodeJS.Timeout | null = null;
-  haveMouseOver = false;
+  haveMouseOver = true;
   cursorPosition = { x: 0, y: 0 };
 
   constructor(canvasController: CanvasController) {
@@ -164,7 +164,7 @@ export default class InteractionController {
 
   // Keyboard
   keydown = (e: KeyboardEvent) => {
-    switch (e.key) {
+    switch (e.code) {
       case 'ArrowUp':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
         break;
@@ -177,19 +177,22 @@ export default class InteractionController {
       case 'ArrowRight':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
-      case 'Shift':
+      case 'ShiftLeft':
         if (this.haveMouseOver) {
           this.shiftPressed = true;
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
         break;
-      case 'Control':
+      case 'ControlLeft':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
         const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
 
         if (newColor)
           this.setSelectedColor(newColor);
+        break;
+      case 'KeyF':
+        store?.dispatch({ type: SET_SEARCH, payload: !store.getState().searchActive });
         break;
     }
   }
