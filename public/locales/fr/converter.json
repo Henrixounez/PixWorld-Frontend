@@ -3,5 +3,6 @@
   "widthText": "Largeur de l'image : ",
   "uploadText": "Téléchargez votre image : ",
   "uploadBtn": "Choisir",
-  "downloadBtn": "Télécharger"
+  "downloadBtn": "Télécharger",
+  "addGrid": "Ajouter grille (Pas pour un modèle 1:1)"
 }
