@@ -19,6 +19,7 @@ export interface ReduxState {
   showChat: boolean;
   shouldRender: boolean;
   shouldLoadChunks: boolean;
+  searchActive: boolean;
   position: {
     x: number,
     y: number,
@@ -57,6 +58,7 @@ export const initialState: ReduxState = {
   showChat: true,
   shouldRender: true,
   shouldLoadChunks: true,
+  searchActive: false,
   position: {
     x: 0,
     y: 0,

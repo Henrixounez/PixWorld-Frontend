@@ -7,6 +7,7 @@ export const SET_CURSOR_POS = 'SET_CURSOR_POS';
 export const SET_MODAL = 'SET_MODAL';
 export const SET_COOLDOWN = 'SET_COOLDOWN';
 export const SET_ALERT = 'SET_ALERT';
+export const SET_SEARCH = 'SET_SEARCH';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -33,8 +34,12 @@ export interface SetAlertAction {
     color?: string;
   };
 }
+export interface SetSearchAction {
+  type: typeof SET_SEARCH;
+  payload: boolean;
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction | SetSearchAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -68,6 +73,12 @@ export function setAlert(state: ReduxState, action: SetAlertAction): ReduxState 
     alert: action.payload,
   };
 }
+export function setSearch(state: ReduxState, action: SetSearchAction): ReduxState {
+  return {
+    ...state,
+    searchActive: action.payload,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -90,5 +101,9 @@ export const dispatches = [
   {
     action: SET_ALERT,
     function: setAlert
+  },
+  {
+    action: SET_SEARCH,
+    function: setSearch
   }
 ];
