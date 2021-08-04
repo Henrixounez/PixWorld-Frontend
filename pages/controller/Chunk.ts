@@ -22,6 +22,30 @@ export default class Chunk {
     return data;
   }
 
+  private displayImg(img: HTMLImageElement) {
+    const ctx = this.canvas.getContext('2d');
+    img.setAttribute('crossOrigin', '');
+
+    if (ctx) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0);
+    }
+  }
+
+  fetchImage(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      let firstLoad = false;
+      img.onload = () => {
+        if (firstLoad)
+          return resolve(img);
+        this.displayImg(img);
+        firstLoad = true;
+      }
+      img.src = url;
+    });
+  }
+
   loadImage(img: HTMLImageElement, bg: HTMLImageElement) {
     const ctx = this.canvas.getContext('2d');
     img.setAttribute('crossOrigin', '');

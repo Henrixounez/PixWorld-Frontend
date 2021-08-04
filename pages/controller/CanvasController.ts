@@ -164,28 +164,19 @@ export class CanvasController {
       return;
     if (!reload && this.chunks[`${chunkX};${chunkY}`])
       return;
+    
+    const imgUrl = `${API_URL}/chunk/${chunkX}/${chunkY}`;
+    const bgUrl = `${API_URL}/chunk/bg/${chunkX}/${chunkY}`;
 
-    const img = new Image();
-    const bgImg = new Image();
     try {
-      await new Promise((resolve) => {
-        img.onerror = () => {
-          resolve(true);
-        }
-        img.src = `${API_URL}/chunk/${chunkX}/${chunkY}`;
-        bgImg.src = `${API_URL}/chunk/bg/${chunkX}/${chunkY}`;
-
-        img.onload = () => {
-          bgImg.onload = () => {
-            const chunk = new Chunk({x: chunkX, y: chunkY});
-            chunk.loadImage(img, bgImg);
-            this.chunks[`${chunkX};${chunkY}`] = chunk;
-            store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-            resolve(true);
-          }
-        }
-      })
-    } catch (e) {}
+      const chunk = new Chunk({x: chunkX, y: chunkY});
+      const [img, bg] = await Promise.all([chunk.fetchImage(imgUrl), chunk.fetchImage(bgUrl)]);
+      chunk.loadImage(img, bg);
+      this.chunks[`${chunkX};${chunkY}`] = chunk;
+      store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+    } catch (e) {
+      console.error(e);
+    }
   }
   loadNeighboringChunks = async () => {
     const width = this.size.width;
