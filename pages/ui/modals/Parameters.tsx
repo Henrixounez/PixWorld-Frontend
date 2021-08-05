@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from 'universal-cookie';
 
 import { languages, languagesDisplay } from '../../constants/languages';
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
 
 const InputRow = styled.div`
@@ -32,6 +32,7 @@ export default function ModalParameters() {
     const zoomTowardCursor = useSelector((state: ReduxState) => state.zoomTowardCursor);
     const activity = useSelector((state: ReduxState) => state.activity);
     const notifications = useSelector((state: ReduxState) => state.notifications);
+    const sounds = useSelector((state: ReduxState) => state.sounds);
 
     return (
         <>
@@ -54,6 +55,11 @@ export default function ModalParameters() {
             <InputRow onClick={() => dispatch({type: SET_NOTIFICATIONS, payload: !notifications})}>
                 {t('notifications')}
                 <input type="checkbox" className="checkbox" id="notifications" checked={notifications} readOnly/>
+            </InputRow>
+            <hr/>
+            <InputRow onClick={() => dispatch({type: SET_SOUNDS, payload: !sounds})}>
+                {t('sounds')}
+                <input type="checkbox" className="checkbox" id="sounds" checked={sounds} readOnly/>
             </InputRow>
             <hr/>
             <InputRow>

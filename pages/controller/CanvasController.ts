@@ -6,8 +6,9 @@ import Chunk from "./Chunk";
 import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
+import SoundController, { AudioType } from "./SoundController";
 import { store } from "../../store";
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
 
@@ -29,6 +30,7 @@ export class CanvasController {
   interactionController: InteractionController;
   connectionController: ConnectionController;
   overlayController: OverlayController;
+  soundController: SoundController;
 
   constructor(wsHash: string) {
     this.size = {
@@ -44,6 +46,7 @@ export class CanvasController {
     this.interactionController = new InteractionController(this);
     this.connectionController = new ConnectionController(this, wsHash);
     this.overlayController = new OverlayController(this);
+    this.soundController = new SoundController(this);
     this.loadFromLocalStorage();
 
     this.unsubscribe = store!.subscribe(() => {
@@ -120,6 +123,10 @@ export class CanvasController {
           store?.dispatch({ type: SET_NOTIFICATIONS, payload: false });  
       })();
     }
+
+    const sounds = localStorage.getItem('sounds')
+    if (sounds)
+      store?.dispatch({ type: SET_SOUNDS, payload: sounds === "true" });
   }
 
   // Utils //
@@ -234,9 +241,12 @@ export class CanvasController {
     const color = this.waitingPixels[`${coordX};${coordY}`];
     delete this.waitingPixels[`${coordX};${coordY}`];
     this.placePixel(coordX, coordY, color);
+    this.soundController.playSound(AudioType.BAD);
+    this.interactionController.shiftPressed = false;
   }
   confirmPixel = (coordX: number, coordY: number) => {
     delete this.waitingPixels[`${coordX};${coordY}`];
+    this.soundController.playSound(AudioType.NEUTRAL);
   }
   changeZoom = (delta: number, focalX: number, focalY: number) => {
     const oldZoom = this.position.zoom;

@@ -3,6 +3,8 @@ import { useSelector } from "react-redux"
 import { ReduxState } from "../../store"
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
+import { getCanvasController } from '../controller/CanvasController';
+import { AudioType } from '../controller/SoundController';
 
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
@@ -41,25 +43,27 @@ export default function Cooldown() {
       document.title = `PixWorld | ${diff}`;
     } else {
       document.title = 'PixWorld';
-      if (
-        diff === 0 &&
-        notifications &&
-        window.Notification &&
-        Notification.permission === "granted" &&
-        document.visibilityState === "hidden" &&
-        Date.now() - lastNotifTime > 20 * 1000
-      ) {
-        new Notification(
-          t('cooldown.title'),
-          {
-            body: t('cooldown.body'),
-            renotify: false,
-            requireInteraction: false,
-            silent: false,
-            vibrate: [100, 100],
-          }
-        );
-        setLastNotifTime(Date.now())
+      if (diff === 0) {
+        getCanvasController()?.soundController.playSound(AudioType.GOOD);
+        if (
+          notifications &&
+          window.Notification &&
+          Notification.permission === "granted" &&
+          document.visibilityState === "hidden" &&
+          Date.now() - lastNotifTime > 20 * 1000
+        ) {
+          new Notification(
+            t('cooldown.title'),
+            {
+              body: t('cooldown.body'),
+              renotify: false,
+              requireInteraction: false,
+              silent: false,
+              vibrate: [100, 100],
+            }
+          );
+          setLastNotifTime(Date.now())
+        }
       }
     }
       setCooldownLeft(diff < 0 ? 0 : diff);

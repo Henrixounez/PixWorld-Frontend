@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import { useDispatch, useSelector } from "react-redux"
+import { useTranslation } from 'next-i18next';
 import { ReduxState } from "../../store"
 import { useEffect, useState } from 'react';
 import { SET_ALERT } from '../../store/actions/infos';
+import { getCanvasController } from '../controller/CanvasController';
+import { AudioType } from '../controller/SoundController';
 
 const AlertContainer = styled.div<{show: boolean}>`
   position: fixed;
@@ -25,12 +28,14 @@ const AlertContainer = styled.div<{show: boolean}>`
 `;
 
 export default function Alert() {
+  const { t } = useTranslation('alerts');
   const dispatch = useDispatch();
   const alert = useSelector((state: ReduxState) => state.alert);
   const [display, setDisplay] = useState(false);
 
   useEffect(() => {
     if (alert.show) {
+      getCanvasController()?.soundController.playSound(AudioType.OPTIONS);
       const timeout0 = setTimeout(() => {
         setDisplay(true);
       }, 0);
@@ -51,9 +56,9 @@ export default function Alert() {
 
   return (
     <>
-      { alert.show ? (
+      { alert.show && alert.text ? (
         <AlertContainer show={display}>
-          {alert.text}
+          {t(alert.text)}
         </AlertContainer>
       ) : (
         null
