@@ -2,10 +2,11 @@ import { store } from "../../store";
 import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
-import { SET_ACTIVITY, SET_GRID_ACTIVE } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../../store/actions/parameters";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
+import { AudioType } from "./SoundController";
 
 export default class InteractionController {
   canvasController: CanvasController;
@@ -188,11 +189,15 @@ export default class InteractionController {
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
         const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
 
-        if (newColor)
+        if (newColor && newColor !== store?.getState().selectedColor) {
+          this.canvasController.soundController.playSound(AudioType.OPTIONS);
           this.setSelectedColor(newColor);
+        }
         break;
       case 'KeyF':
         store?.dispatch({ type: SET_SEARCH, payload: !store.getState().searchActive });
+        e.stopPropagation();
+        e.preventDefault();
         break;
     }
   }
@@ -203,23 +208,6 @@ export default class InteractionController {
         break;
       case 'KeyQ':
         this.canvasController.changeZoom(2, this.position.x, this.position.y);
-        break;
-      case 'KeyO':
-        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
-        break;
-      case 'KeyG':
-        store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
-        break;
-      case 'KeyX':
-        store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
-        break;
-      case 'KeyC':
-        if (navigator.clipboard) {
-          const pos = store!.getState().cursorPos;
-          const txt = `#p(${Math.round(pos.x)},${Math.round(pos.y)})`;
-          navigator.clipboard.writeText(txt);
-          store?.dispatch({ type: SET_ALERT, payload: { show: true, text: "Copied to clipboard", color: "#FFFD" }})
-        }
         break;
       case 'KeyW':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
@@ -233,7 +221,32 @@ export default class InteractionController {
       case 'KeyD':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
-  
+      default:
+        switch (e.key) {
+          case 'o':
+            store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+            break;
+          case 'g':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: "#FFFD" }})
+            store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
+            break;
+          case 'x':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: "#FFFD" }})
+            store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
+            break;
+          case 'm':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
+            store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
+            break;
+          case 'c':
+            if (navigator.clipboard) {
+              const pos = store!.getState().cursorPos;
+              const txt = `#p(${Math.round(pos.x)},${Math.round(pos.y)})`;
+              navigator.clipboard.writeText(txt);
+              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+            }
+            break;
+        }
     }
   }
   keyup = (e: KeyboardEvent) => {

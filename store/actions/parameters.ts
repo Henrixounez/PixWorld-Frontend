@@ -6,6 +6,7 @@ export const SET_ZOOM_TOWARD_CURSOR = 'SET_ZOOM_TOWARD_CURSOR';
 export const SET_ACTIVITY = 'SET_ACTIVITY';
 export const SET_SHOW_CHAT = 'SET_SHOW_CHAT';
 export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
+export const SET_SOUNDS = 'SET_SOUNDS';
 
 /* Types */
 
@@ -29,8 +30,12 @@ export interface SetNotificationsAction {
     type: typeof SET_NOTIFICATIONS;
     payload: boolean;
 }
+export interface SetSoundsAction {
+    type: typeof SET_SOUNDS;
+    payload: boolean;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction | SetSoundsAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -86,6 +91,14 @@ export function setNotifications(state: ReduxState, action: SetNotificationsActi
         notifications: finalValue,
     }
 }
+export function setSounds(state: ReduxState, action: SetSoundsAction): ReduxState {
+    localStorage.setItem('sounds', String(action.payload));
+    return {
+        ...state,
+        sounds: action.payload
+    };
+}
+
 
 /* Dispatches */
 export const dispatches = [
@@ -108,5 +121,9 @@ export const dispatches = [
     {
         action: SET_NOTIFICATIONS,
         function: setNotifications
+    },
+    {
+        action: SET_SOUNDS,
+        function: setSounds,
     }
 ]
