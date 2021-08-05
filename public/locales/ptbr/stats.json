@@ -1,0 +1,18 @@
+{
+  "title": "Estatísticas",
+  "profile": {
+    "title": "Perfil",
+    "pixelsToday": "Pixeis colocados hoje",
+    "pixelsTotal": "Pixeis colocados",
+    "loggedAs": "Logado como",
+    "logout": "Sair"
+  },
+  "ranking": {
+    "title": "Classificações",
+    "username": "Usuário",
+    "pixels": "Pixeis",
+    "totalRanking": "Total",
+    "dailyRanking": "Diário",
+    "reset": "Os ranques diários são resetados todos os dias à 00:00 UTC."
+  }
+}

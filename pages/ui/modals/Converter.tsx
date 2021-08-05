@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from 'next-i18next';
 import palette from "../../constants/palette";
 
 function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
@@ -73,16 +74,66 @@ function ImgToPalette(data: number[][][], width: number, height: number) {
   return cData;
 }
 
+class Converter {
+  canvas: HTMLCanvasElement | null = null;
+
+  initCanvas() {
+    if (!this.canvas) {
+      this.canvas = document.createElement('canvas');
+      this.canvas.width = 100;
+      this.canvas.height = 100;
+    }
+  }
+
+  drawImage(img: HTMLImageElement, wantedWidth: number): HTMLCanvasElement {
+    if (!this.canvas)
+      this.initCanvas();
+
+    const ctx = this.canvas!.getContext('2d');
+    
+    if (ctx) {
+      const scale = wantedWidth / img.width;
+      const newWidth = img.width * scale;
+      const newHeight = img.height * scale;
+      ctx.clearRect(0, 0, newWidth, newHeight);
+      ctx.imageSmoothingEnabled = false;
+
+      if (newHeight >= 1) {
+        ctx.canvas.width = newWidth;
+        ctx.canvas.height = newHeight;
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        const imgData = ctx.getImageData(0, 0, newWidth, newHeight);
+        const pData = imgData.data
+        const imgArray = OneDimensionToImageArray(pData, imgData.width, imgData.height);
+
+        const transformedArray = ImgToPalette(imgArray, imgData.width, imgData.height);
+        let transformedImg = ImageArrayToOneDimension(transformedArray, imgData.width, imgData.height, pData.length);
+
+        for (let i = 0; i < pData.length; i++) {
+          pData[i] = transformedImg[i];
+        }
+        ctx.clearRect(0, 0, imgData.width, imgData.height);
+        ctx.putImageData(imgData, 0, 0);
+      }
+    }
+    return this.canvas!;
+  }
+}
+
+let converter = new Converter();
+
 export default function ModalConverter() {
+  const { t } = useTranslation('converter');
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const [wantedWidth, setWantedWidth] = useState(50);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [grid, setGrid] = useState(false);
 
   useEffect(() => {
     if (image)
       displayImg(image);
-  }, [wantedWidth]);
+  }, [wantedWidth, grid]);
 
   const UploadImage = () => {
     if (inputFileRef.current)
@@ -110,28 +161,47 @@ export default function ModalConverter() {
     const ctx = previewRef.current?.getContext('2d');
 
     if (ctx) {
-      const scale = wantedWidth/img.width;
-      const newWidth = img.width * scale;
-      const newHeight = img.height * scale;
+      const scale = wantedWidth / img.width;
+      const newWidth =  (img.width * scale) * (grid ? 5 : 1);
+      const newHeight = (img.height * scale) * (grid ? 5 : 1);
 
       if (newHeight >= 1) {
         ctx.canvas.width = newWidth;
         ctx.canvas.height = newHeight;
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-        const imgData = ctx.getImageData(0, 0, newWidth, newHeight);
-        const pData = imgData.data
-        const imgArray = OneDimensionToImageArray(pData, imgData.width, imgData.height);
+        ctx.imageSmoothingEnabled = false;
+        converter.initCanvas();
+        const imgCanvas = converter.drawImage(img, wantedWidth);
+        ctx.drawImage(imgCanvas, 0, 0, newWidth, newHeight);
 
-        const transformedArray = ImgToPalette(imgArray, imgData.width, imgData.height);
-        const transformedImg = ImageArrayToOneDimension(transformedArray, imgData.width, imgData.height, pData.length);
-        
-        for (let i = 0; i < pData.length; i++) {
-          pData[i] = transformedImg[i];
+        if (grid) {
+          ctx.strokeStyle = "#222222";
+          ctx.lineWidth = 1;
+          for (let i = 0; i < newWidth - newWidth % 5 + 5; i += 5) {
+            ctx.beginPath();
+            ctx.moveTo(i + 0.5, 0);
+            ctx.lineTo(i + 0.5, newHeight);
+            ctx.stroke();
+            if (i % 50 === 0 && i !== 0) {
+              ctx.beginPath();
+              ctx.moveTo(i - 1 + 0.5, 0);
+              ctx.lineTo(i - 1 + 0.5, newHeight);
+              ctx.stroke();  
+            }
+          }
+          for (let i = 0; i < newHeight - newHeight % 5 + 5; i += 5) {
+            ctx.beginPath();
+            ctx.moveTo(0, i + 0.5);
+            ctx.lineTo(newWidth, i + 0.5);
+            ctx.stroke();
+            if (i % 50 === 0 && i !== 0) {
+              ctx.beginPath();
+              ctx.moveTo(0, i - 1 + 0.5);
+              ctx.lineTo(newWidth, i - 1 + 0.5);
+              ctx.stroke();  
+            }
+          }
         }
-
-        ctx.clearRect(0, 0, imgData.width, imgData.height);
-        ctx.putImageData(imgData, 0, 0);
       }
     }
   }
@@ -155,23 +225,23 @@ export default function ModalConverter() {
 
   return (
     <>
-      <h3>
-        Converter - Convert your picture!
-      </h3>
-      <hr/>
-      Width of the final image: 
+      {t('widthText')}
       <input type="number" id="wantedWidth" defaultValue="50" min="1" onChange={WantedWidthChange}/>
       <br/>
-      Upload your image  
+      {t('uploadText')}
       <input type='file' id='file' ref={inputFileRef} style={{display: 'none'}} onChange={handleChange}/>
       <button onClick={UploadImage} type="button">
-        Upload
+        {t('uploadBtn')}
       </button>
+      <div onClick={(e) => { setGrid(!grid); e.stopPropagation(); }}>
+        <span>{t('addGrid')}</span>
+        <input type='checkbox' checked={grid} readOnly />
+      </div>
       <hr/>
-      <canvas  ref={previewRef} id="preview"/>
+      <canvas ref={previewRef} id="preview"/>
       <hr/>
       <button onClick={DownloadImage} type="button">
-        Download?
+        {t('downloadBtn')}
       </button>
     </>
   );

@@ -1,9 +1,13 @@
 import styled from 'styled-components';
 import { useDispatch, useSelector } from "react-redux"
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'react-feather';
-import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_IMAGE, SET_OVERLAY_POSITION, SET_OVERLAY_POSITION_MOUSE, SET_OVERLAY_TRANSPARENCY } from '../../store/actions/overlay';
+import React, { useEffect } from 'react';
+import { Bookmark, ChevronDown, ChevronUp } from 'react-feather';
+import { useTranslation } from 'next-i18next';
+
+import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_IMAGE, SET_OVERLAY_OPEN, SET_OVERLAY_POSITION, SET_OVERLAY_POSITION_MOUSE, SET_OVERLAY_TRANSPARENCY } from '../../store/actions/overlay';
 import { ReduxState } from '../../store';
+import { SET_MODAL } from '../../store/actions/infos';
+import ModalTypes from '../constants/modalTypes';
 
 const OverlayContainer = styled.div`
   position: fixed;
@@ -67,16 +71,61 @@ const TaintedText = styled.span`
   max-width: 220px;
   margin: 0;
 `;
+const SaveRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 80%;
+  gap: 1rem;
+`;
+const OverlayOptions = styled.div`
+  cursor: pointer;
+  border: 1px solid #AAA;
+  border-radius: 2px;
+  padding: .25rem .5rem;
+  transition: .2s;
+
+  &:hover {
+    border: 1px solid #777;
+  }
+`;
+const OverlaySave = styled.div`
+  cursor: pointer;
+  transition: .2s;
+  
+  svg {
+    color: #AAA;
+    transition: .2s;
+  }
+  &:hover {
+    svg {
+      color: #000;
+    }
+    transform: scale(1.1);
+  }
+`;
+
+export interface OverlaySave {
+  image: string;
+  transparency: number;
+  position: {
+    x: number;
+    y: number;
+  };
+  autoColor: boolean;
+}
 
 export default function Overlay() {
+  const { t } = useTranslation('overlay');
   const dispatch = useDispatch();
+  const image = useSelector((state: ReduxState) => state.overlay.image);
   const activate = useSelector((state: ReduxState) => state.overlay.activate);
   const transparency = useSelector((state: ReduxState) => state.overlay.transparency);
   const position = useSelector((state: ReduxState) => state.overlay.position);
   const positionWithMouse = useSelector((state: ReduxState) => state.overlay.positionMouse);
   const autoColor = useSelector((state: ReduxState) => state.overlay.autoColor);
   const tainted = useSelector((state: ReduxState) => state.overlay.tainted);
-  const [open, setOpen] = useState(true);
+  const overlayOpen = useSelector((state: ReduxState) => state.overlay.open);
 
   const openFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files)
@@ -94,6 +143,28 @@ export default function Overlay() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
     fileInput.value = ""
   }
+  const saveOverlay = () => {
+    if (image && image.startsWith('http')) {
+      const currentTxt = localStorage.getItem('savedOverlays') || '[]';
+      const data: Array<OverlaySave> = JSON.parse(currentTxt);
+      const found = data.findIndex((e) => e.image === image);
+      const toAdd = { image, transparency, position, autoColor };
+
+      if (found !== -1)
+        data[found] = toAdd;
+      else
+        data.push(toAdd);
+      
+      localStorage.setItem('savedOverlays', JSON.stringify(data));
+    }
+  }
+
+  useEffect(() => {
+    if (image && image.startsWith('http')) {
+      const urlInput = document.getElementById('url-input') as HTMLInputElement;
+      urlInput.value = image;
+    }
+  }, [image]);
 
   return (
     <OverlayContainer>
@@ -101,17 +172,17 @@ export default function Overlay() {
         dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !activate });
       }}>
         <input type="checkbox" checked={activate} readOnly />
-        Image Overlay
+        {t('title')}
       </ActivateButton>
       { activate && (
         <>
-          { open && (
+          { overlayOpen && (
             <>
-              Input
-              <input type="url" id="url-input" onChange={openUrl} placeholder="Image URL" />
+              {t('input')}
+              <input type="url" id="url-input" onChange={openUrl} placeholder={t('inputUrl')} />
               <input type="file" id="file-input" onChange={openFile}/>
               <br/>
-              Transparency
+              {t('transparency')}
               <RangeSlider>
                 <input type="range" min={0} max={1} step={0.01} onChange={(e) => dispatch({ type: SET_OVERLAY_TRANSPARENCY, payload: Number(e.target.value) })} value={transparency} />
                 <span>
@@ -119,29 +190,39 @@ export default function Overlay() {
                 </span>
               </RangeSlider>
               <br/>
-              Position
+              {t('position')}
               <input type="number" onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: Number(e.target.value), y: position.y }})} value={position.x} />
               <input type="number" onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: position.x, y: Number(e.target.value) }})} value={position.y} />
               <CheckboxRow onClick={() => dispatch({ type: SET_OVERLAY_POSITION_MOUSE, payload: !positionWithMouse })}>
                 <input type="checkbox" checked={positionWithMouse} readOnly />
-                Position with mouse
+                {t('positionMouse')}
               </CheckboxRow>
               <br/>
               { tainted ? (
                 <TaintedText>
-                  The image URL is protected, making the Auto Color feature not available.<br/>
-                  Use sites that do not support CORS requests (eg: imgur, dropbox).
+                  {t('tainted')}
                 </TaintedText>
               ) : (
                 <CheckboxRow onClick={() => dispatch({ type: SET_OVERLAY_AUTOCOLOR, payload: !autoColor })}>
                   <input type="checkbox" checked={autoColor} readOnly />
-                  Auto Color
+                  {t('autoColor')}
                 </CheckboxRow>
               )}
+              <br/>
+              <SaveRow>
+                <OverlayOptions onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.OVERLAY })}>
+                  {t('options')}
+                </OverlayOptions>
+                { image && image.startsWith('http') ? (
+                  <OverlaySave title={t('saveBtn')} onClick={() => saveOverlay()}>
+                    <Bookmark />
+                  </OverlaySave>
+                ) : null }
+              </SaveRow>
             </>
           )}
-          <OpenButton onClick={() => setOpen(!open)}>
-            {open ? 
+          <OpenButton onClick={() => dispatch({ type: SET_OVERLAY_OPEN, payload: !overlayOpen })}>
+            {overlayOpen ? 
               <ChevronUp   height="20px"/> :
               <ChevronDown height="20px"/>
             }

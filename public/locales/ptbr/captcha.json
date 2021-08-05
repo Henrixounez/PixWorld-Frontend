@@ -1,0 +1,7 @@
+{
+  "title": "CAPTCHA - Você é um Robô ?",
+  "subtitle": "Insira os caracteres da imagem abaixo.",
+  "tips": "(Os caracteres são insensiveis, p e P são o mesmo)",
+  "input": "Resposta do CAPTCHA",
+  "send": "Enviar"
+}

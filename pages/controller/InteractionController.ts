@@ -1,11 +1,13 @@
 import { store } from "../../store";
-import { SET_CURSOR_POS } from "../../store/actions/infos";
+import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
-import { SET_SELECTED_COLOR } from "../../store/actions/painting";
+import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../../store/actions/parameters";
 import { SET_HISTORY_MODE_ACTIVE } from "../../store/actions/history";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
+import { AudioType } from "./SoundController";
 
 export default class InteractionController {
   canvasController: CanvasController;
@@ -16,7 +18,7 @@ export default class InteractionController {
   startMove = { x: 0, y: 0 };
   pinchDistance = 0;
   longTouchTimeout: NodeJS.Timeout | null = null;
-  haveMouseOver = false;
+  haveMouseOver = true;
   cursorPosition = { x: 0, y: 0 };
 
   constructor(canvasController: CanvasController) {
@@ -86,7 +88,7 @@ export default class InteractionController {
     };
     this.canvas.width = this.canvasController.size.width;
     this.canvas.height = this.canvasController.size.height;
-    this.canvasController.render();
+    store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
   }
 
 
@@ -118,8 +120,6 @@ export default class InteractionController {
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true)
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
-      if (this.canvasController.position.zoom <= 6)
-        this.canvasController.render();
     }
   }
   mouseUp = (e: MouseEvent) => {
@@ -151,19 +151,22 @@ export default class InteractionController {
   auxclick = (e: MouseEvent) => {
     if (e.button === 1) {
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-      this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
+      const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+      if (newColor)
+        this.setSelectedColor(newColor);
       e.stopPropagation();
     }
   }
   zoom = (e: WheelEvent) => {
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-    this.canvasController.changeZoom(e.deltaY < 0 ? -1 : 1, coordX, coordY);
+    this.canvasController.changeZoom(e.deltaY < 0 ? -2 : 2, coordX, coordY);
   }
 
 
   // Keyboard
   keydown = (e: KeyboardEvent) => {
-    switch (e.key) {
+    switch (e.code) {
       case 'ArrowUp':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
         break;
@@ -176,45 +179,78 @@ export default class InteractionController {
       case 'ArrowRight':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
-      case 'Shift':
+      case 'ShiftLeft':
         if (this.haveMouseOver) {
           this.shiftPressed = true;
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
         break;
-      /*case 'h':
+      case 'KeyH':
         store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().historyMode})
-        break;*/
-      case 'Control':
+        break;
+      case 'ControlLeft':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
-        this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
-        this.canvasController.render();
+        const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+        if (newColor && newColor !== store?.getState().selectedColor) {
+          this.canvasController.soundController.playSound(AudioType.OPTIONS);
+          this.setSelectedColor(newColor);
+        }
+        break;
+      case 'KeyF':
+        store?.dispatch({ type: SET_SEARCH, payload: !store.getState().searchActive });
+        e.stopPropagation();
+        e.preventDefault();
         break;
     }
   }
   keypress = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'e':
-        this.canvasController.changeZoom(-1, this.position.x, this.position.y);
+    switch (e.code) {
+      case 'KeyE':
+        this.canvasController.changeZoom(-2, this.position.x, this.position.y);
         break;
-      case 'a':
-        this.canvasController.changeZoom(1, this.position.x, this.position.y);
+      case 'KeyQ':
+        this.canvasController.changeZoom(2, this.position.x, this.position.y);
         break;
-      case 'ArrowUp':
+      case 'KeyW':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
         break;
-      case 'ArrowDown':
+      case 'KeyS':
         this.canvasController.changePosition(0, 4 * this.position.zoom);
         break;
-      case 'ArrowLeft':
+      case 'KeyA':
         this.canvasController.changePosition(-4 * this.position.zoom, 0);
         break;
-      case 'ArrowRight':
+      case 'KeyD':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
-      case 'o':
-        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+      default:
+        switch (e.key) {
+          case 'o':
+            store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+            break;
+          case 'g':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: "#FFFD" }})
+            store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
+            break;
+          case 'x':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: "#FFFD" }})
+            store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
+            break;
+          case 'm':
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
+            store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
+            break;
+          case 'c':
+            if (navigator.clipboard) {
+              const pos = store!.getState().cursorPos;
+              const txt = `#p(${Math.round(pos.x)},${Math.round(pos.y)})`;
+              navigator.clipboard.writeText(txt);
+              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+            }
+            break;
+        }
     }
   }
   keyup = (e: KeyboardEvent) => {
@@ -227,14 +263,25 @@ export default class InteractionController {
 
   // Touch
   onLongTouch = (e: TouchEvent) => {
+    if (this.longTouchTimeout === null)
+      return;
+
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.touches[0].clientX, e.touches[0].clientY);
-    this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
+    const newColor = this.canvasController.getColorOnCoordinates(coordX, coordY)
+
+    if (newColor)
+      this.setSelectedColor(newColor);
   }
   touchStart = (e: TouchEvent) => {
-    this.isMouseDown = true;
     this.longTouchTimeout = setTimeout(() => this.onLongTouch(e), 500);
+    e.stopPropagation();
+    e.preventDefault();
   }
-  touchEnd = () => {
+  touchEnd = (e: TouchEvent) => {
+    if (!this.isMoving) {
+      const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+    }
     this.pinchDistance = 0;
     if (this.longTouchTimeout)
       clearTimeout(this.longTouchTimeout);
@@ -244,41 +291,47 @@ export default class InteractionController {
     this.isMoving = false;
     this.isMouseDown = false
   }
-  touchCancel = () => {
-    this.touchEnd();
+  touchCancel = (e: TouchEvent) => {
+    this.touchEnd(e);
   }
-  touchLeave = () => {
-    this.touchEnd();
+  touchLeave = (e: Event) => {
+    this.touchEnd(e as TouchEvent);
   }
   touchMove = (e: TouchEvent) => {
     const touches = e.touches;
 
-    if (this.longTouchTimeout)
-      clearTimeout(this.longTouchTimeout);
-    this.longTouchTimeout = null;
-
     e.preventDefault();
     const touch = touches[0];
-    if (!this.isMoving) {
+    if (!this.isMouseDown) {
+      this.startMove = {
+        x: touch.clientX,
+        y: touch.clientY,
+      };
+      this.isMouseDown = true;
+    }
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    const movDiff = Math.hypot(this.startMove.x - touch.clientX, this.startMove.y - touch.clientY);
+
+    if (movDiff > 0) {
+      this.isMoving = true;
+      if (this.longTouchTimeout) {
+        clearTimeout(this.longTouchTimeout);
+      }
+      this.longTouchTimeout = null;
+
+      this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
       this.startMove = {
         x: touch.clientX,
         y: touch.clientY,
       }
-      this.isMoving = true;
-    }
-    const pixelSize = PIXEL_SIZE / this.position.zoom;
-    this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
-    this.startMove = {
-      x: touch.clientX,
-      y: touch.clientY,
-    }
-    if (touches.length === 2) {
-      const distX = touches[0].clientX - touches[1].clientX;
-      const distY = touches[0].clientY - touches[1].clientY;
-      const pinchDistance = Math.hypot(distX, distY);
-      if (this.pinchDistance !== 0)
-        this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
-      this.pinchDistance = pinchDistance;
+      if (touches.length === 2) {
+        const distX = touches[0].clientX - touches[1].clientX;
+        const distY = touches[0].clientY - touches[1].clientY;
+        const pinchDistance = Math.hypot(distX, distY);
+        if (this.pinchDistance !== 0)
+          this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
+        this.pinchDistance = pinchDistance;
+      }
     }
   }
 }

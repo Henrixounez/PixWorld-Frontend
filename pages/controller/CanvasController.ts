@@ -1,26 +1,38 @@
 import { API_URL } from "../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../constants/painting";
+import { Unsubscribe } from "redux";
 
 import Chunk from "./Chunk";
 import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
+import SoundController, { AudioType } from "./SoundController";
 import { store } from "../../store";
-import { SET_GRID_ACTIVE, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
+
+const ACTIVITY_DURATION_MS = 1000;
+const ACTIVITY_REFRESH_MS = 25;
+const ACTIVITY_MAX_RADIUS = 10;
+const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
 export class CanvasController {
   canvas: HTMLCanvasElement;
-  position = { x: 0, y: 0, zoom: 50 };
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
   boundingChunks = [[0, 0], [0, 0]];
   waitingPixels: Record<string, string> = {};
+  pixelActivity: { x: number, y: number, frame: number}[] = [];
+  activityInterval: NodeJS.Timeout;
+  unsubscribe: Unsubscribe;
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
   overlayController: OverlayController;
+  soundController: SoundController;
 
-  constructor() {
+  constructor(wsHash: string) {
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -29,18 +41,45 @@ export class CanvasController {
     canvas.width = this.size.width;
     canvas.height = this.size.height;
     this.canvas = canvas;
+    this.canvas.focus();
 
     this.interactionController = new InteractionController(this);
-    this.connectionController = new ConnectionController(this);
+    this.connectionController = new ConnectionController(this, wsHash);
     this.overlayController = new OverlayController(this);
+    this.soundController = new SoundController(this);
     this.loadFromLocalStorage();
-    this.loadNeighboringChunks();
+
+    this.unsubscribe = store!.subscribe(() => {
+      if (store) {
+        const state = store.getState();
+        if (state.shouldLoadChunks)
+          this.loadNeighboringChunks();
+        if (state.shouldRender) {
+          this.render();
+        }
+      }
+    });
+
+    this.activityInterval = setInterval(() => {
+      if (this.pixelActivity.length && store?.getState().activity) {
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+      } else if (this.pixelActivity.length) {
+        this.pixelActivity = [];
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+      }
+    }, ACTIVITY_REFRESH_MS);
   }
 
   destructor() {
     this.interactionController.destructor();
     this.connectionController.destructor();
     this.overlayController.destructor();
+    clearInterval(this.activityInterval);
+    this.unsubscribe();
+  }
+
+  get position() {
+    return store?.getState().position!;
   }
 
   loadFromLocalStorage() {
@@ -52,9 +91,42 @@ export class CanvasController {
     if (zoomTowardCursor)
       store?.dispatch({ type: SET_ZOOM_TOWARD_CURSOR, payload: zoomTowardCursor === "true" });
 
+    const activity = localStorage.getItem('activity');
+    if (activity)
+      store?.dispatch({ type: SET_ACTIVITY, payload: activity === "true" });
+
+    const showChat = localStorage.getItem('showChat');
+    if (showChat)
+      store?.dispatch({ type: SET_SHOW_CHAT, payload: showChat === "true" });
+    
     const position = localStorage.getItem('position')
     if (position)
-      this.position = JSON.parse(position);
+      store?.dispatch({ type: SET_POSITION, payload: JSON.parse(position) });
+
+    const overlayActive = localStorage.getItem('overlayActive')
+    if (overlayActive)
+      store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: overlayActive === "true" });
+
+    const overlayOpen = localStorage.getItem('overlayOpen')
+    if (overlayOpen)
+      store?.dispatch({ type: SET_OVERLAY_OPEN, payload: overlayOpen === "true" });
+
+    const notifications = localStorage.getItem('notifications')
+    if (notifications) {
+      store?.dispatch({ type: SET_NOTIFICATIONS, payload: notifications === "true" });  
+    } else {
+      (async () => {
+        const res = await Notification.requestPermission();
+        if (res === 'granted')
+          store?.dispatch({ type: SET_NOTIFICATIONS, payload: true });  
+        else
+          store?.dispatch({ type: SET_NOTIFICATIONS, payload: false });  
+      })();
+    }
+
+    const sounds = localStorage.getItem('sounds')
+    if (sounds)
+      store?.dispatch({ type: SET_SOUNDS, payload: sounds === "true" });
   }
 
   // Utils //
@@ -102,6 +174,7 @@ export class CanvasController {
       chunk.loadImage(img, bg);
       this.chunks[`${chunkX};${chunkY}`] = chunk;
       this.render();
+      store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
     } catch (e) {
       console.error(e);
     }
@@ -110,6 +183,7 @@ export class CanvasController {
     const width = this.size.width;
     const height = this.size.height;
 
+    store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: false });
     const chunkNbX = Math.ceil(width / CHUNK_SIZE) + 2;
     const chunkNbY = Math.ceil(height / CHUNK_SIZE) + 2;
     const chunkLoading = [];
@@ -119,7 +193,6 @@ export class CanvasController {
       }
     }
     await Promise.all(chunkLoading);
-    this.render();
   }
   placePixel = (coordX: number, coordY: number, color: string) => {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -135,7 +208,7 @@ export class CanvasController {
 
       if (currentColor !== color) {
         this.chunks[`${chunkX};${chunkY}`].placePixel(px, py, color);
-        this.render();
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
         return currentColor;
       }
     }
@@ -165,9 +238,12 @@ export class CanvasController {
     const color = this.waitingPixels[`${coordX};${coordY}`];
     delete this.waitingPixels[`${coordX};${coordY}`];
     this.placePixel(coordX, coordY, color);
+    this.soundController.playSound(AudioType.BAD);
+    this.interactionController.shiftPressed = false;
   }
   confirmPixel = (coordX: number, coordY: number) => {
     delete this.waitingPixels[`${coordX};${coordY}`];
+    this.soundController.playSound(AudioType.NEUTRAL);
   }
   changeZoom = (delta: number, focalX: number, focalY: number) => {
     const oldZoom = this.position.zoom;
@@ -175,22 +251,23 @@ export class CanvasController {
 
     if (newZoom >= 1 && newZoom < 50) {
       const changeInZoom = (oldZoom - newZoom) / 15;
-      this.position.zoom = newZoom;
       if (store?.getState().zoomTowardCursor) {
         const translateX = (focalX - this.position.x) * changeInZoom;
         const transtateY = (focalY - this.position.y) * changeInZoom;
-        this.position.x += translateX;
-        this.position.y += transtateY;
+        this.changePosition(translateX, transtateY);
       }
+      this.setZoom(newZoom);
       localStorage.setItem('position', JSON.stringify(this.position));
-      this.render();
     }
   }
+  setZoom = (zoom: number) => {
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, zoom } });
+  }
+  setPosition = (x: number, y: number) => {
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x, y } });
+  }
   changePosition = (deltaX: number, deltaY: number) => {
-    this.position.x += deltaX;
-    this.position.y += deltaY;
-    localStorage.setItem('position', JSON.stringify(this.position));
-    this.loadNeighboringChunks();
+    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x: this.position.x + deltaX, y: this.position.y + deltaY } });
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -204,7 +281,7 @@ export class CanvasController {
       const chunk = this.chunks[`${chunkX};${chunkY}`];
       return chunk.getColorAt(px, py);
     } else {
-      return "#000000";
+      return null;
     }
   }
 
@@ -214,9 +291,11 @@ export class CanvasController {
     if (!ctx)
       return;
 
+    store?.dispatch({ type: SET_SHOULD_RENDER, payload: false });
     ctx.clearRect(0, 0, this.size.width, this.size.height);
     this.drawChunks(ctx);
     this.drawGrid(ctx);
+    this.drawActivity(ctx);
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
@@ -264,7 +343,7 @@ export class CanvasController {
       ctx.strokeStyle = "#000000";
       ctx.fillRect(posX, posY, pixelSize, pixelSize);
       ctx.strokeRect(posX, posY, pixelSize, pixelSize);
-      ctx.fillStyle = color;
+      ctx.fillStyle = color || "lightblue";
       ctx.fillRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2)
       ctx.strokeRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2);
     }
@@ -279,15 +358,28 @@ export class CanvasController {
       ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
     });
   }
+  drawActivity = (ctx: CanvasRenderingContext2D) => {
+    ctx.fillStyle = "#FF000066";
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    this.pixelActivity = this.pixelActivity.map(({ x, y, frame }) => {
+      if (frame <= ACTIVITY_FRAME_NB) {
+        const { posX, posY } = this.coordinatesOnCanvas(x, y);
+        ctx.beginPath();
+        ctx.arc(posX + pixelSize / 2, posY + pixelSize / 2, pixelSize * frame / (ACTIVITY_FRAME_NB / ACTIVITY_MAX_RADIUS), 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      return { x, y, frame: frame + 1 };
+    });
+    this.pixelActivity = this.pixelActivity.filter((e) => e.frame <= ACTIVITY_FRAME_NB + 1);
+  }
 }
 let canvasController: CanvasController | null = null;
 
 export function getCanvasController() {
   return canvasController;
 }
-export function initCanvasController() {
-  canvasController = new CanvasController();
-  canvasController.render();
+export function initCanvasController(wsHash: string) {
+  canvasController = new CanvasController(wsHash);
 }
 export function destructCanvasController() {
   canvasController?.destructor();

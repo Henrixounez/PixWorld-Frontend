@@ -5,6 +5,10 @@ enum ModalTypes {
   CONVERTER,
   PARAMETERS,
   CAPTCHA,
+  STATS,
+  LOGIN,
+  REGISTER,
+  OVERLAY,
 };
 
 export default ModalTypes;

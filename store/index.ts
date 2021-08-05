@@ -4,6 +4,7 @@ import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
 import palette from '../pages/constants/palette';
 import ModalTypes from '../pages/constants/modalTypes';
+import { User } from './actions/user';
 
 export interface ReduxState {
   playersNb: number;
@@ -14,6 +15,18 @@ export interface ReduxState {
   chatMessages: { author: string, msg: string, color: string }[];
   gridActive: boolean;
   zoomTowardCursor: boolean;
+  activity: boolean;
+  showChat: boolean;
+  shouldRender: boolean;
+  shouldLoadChunks: boolean;
+  searchActive: boolean;
+  notifications: boolean;
+  sounds: boolean;
+  position: {
+    x: number,
+    y: number,
+    zoom: number,
+  }
   historyMode: boolean;
   historyDate: string;
   overlay: {
@@ -24,7 +37,14 @@ export interface ReduxState {
     positionMouse: boolean;
     autoColor: boolean;
     tainted: boolean;
-  }
+    open: boolean;
+  },
+  alert: {
+    show: boolean;
+    text?: string;
+    color?: string;
+  },
+  user?: User,
 }
 
 export let store: Store<ReduxState, ActionTypes> | undefined;
@@ -38,6 +58,18 @@ export const initialState: ReduxState = {
   chatMessages: [],
   gridActive: true,
   zoomTowardCursor: true,
+  activity: true,
+  showChat: true,
+  shouldRender: true,
+  shouldLoadChunks: true,
+  searchActive: false,
+  notifications: false,
+  sounds: true,
+  position: {
+    x: 0,
+    y: 0,
+    zoom: 1,
+  },
   historyMode: false,
   historyDate: new Date().toISOString().substr(0, 10),
   overlay: {
@@ -48,7 +80,14 @@ export const initialState: ReduxState = {
     positionMouse: false,
     autoColor: false,
     tainted: false,
-  }
+    open: false,
+  },
+  alert: {
+    show: false,
+    text: undefined,
+    color: undefined,
+  },
+  user: undefined,
 };
 
 const reducer = (state = initialState, action: ActionTypes) => {

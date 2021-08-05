@@ -1,9 +1,17 @@
 import styled from 'styled-components';
 import { MessageSquare } from 'react-feather';
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'next-i18next';
+
 import { getCanvasController } from '../controller/CanvasController';
-import { useSelector } from 'react-redux';
 import { ReduxState } from '../../store';
+import { SET_MODAL } from '../../store/actions/infos';
+import ModalTypes from '../constants/modalTypes';
+import { SET_SHOW_CHAT } from '../../store/actions/parameters';
+import formatChatText, { FormatType } from './ChatFormatting';
+import { SET_POSITION } from '../../store/actions/painting';
+import { ADD_CHAT_MESSAGE } from '../../store/actions/chat';
 
 const ChatButton = styled.div`
   position: fixed;
@@ -95,55 +103,117 @@ const SendButton = styled.div`
   }
   user-select: none;
 `;
+const NotConnected = styled.div`
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #428BCA;
+  text-align: center;
+  width: 100%;
+
+  &:hover {
+    color: #226BAA;
+  }
+`;
 
 export default function Chat() {
-  const [showMessages, setShowMessages] = useState(false);
+  const { t } = useTranslation('chat');
+  const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const messageList = useSelector((state: ReduxState) => state.chatMessages);
+  const user = useSelector((state: ReduxState) => state.user);
+  const showChat = useSelector((state: ReduxState) => state.showChat);
+  const position = useSelector((state: ReduxState) => state.position);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const messageToWs = (text: string) => {
+    getCanvasController()?.connectionController.sendToWs('sendMessage', text);
+  }
   const sendMessage = () => {
+    const cmd = message.split(' ')[0];
+    switch (cmd) {
+      case '/here':
+        messageToWs(`#p(${Math.round(position.x)},${Math.round(position.y)})`);
+        break;
+      case '/help':
+        dispatch({
+          type: ADD_CHAT_MESSAGE,
+          payload: {
+            author: 'PixWorld Help',
+            color: 'green',
+            msg: `
+> == Commands ==
+> /help : Show this help
+> /here : Share your position
+> == Other ==
+> Click on someone name to mention
+            ` }});
+        break;
+      default:
+        messageToWs(message);
+        break;
+    }
     setMessage('');
-    getCanvasController()?.connectionController.sendToWs('sendMessage', message);
   };
+
+  const textClick = (type: FormatType, text: string) => {
+    switch (type) {
+      case FormatType.POSITION:
+        const regex = /#p\((-?\d*),(-?\d*)\)/;
+        const res = text.match(regex);
+        if (res && res[1] && res[2]) {
+          const x = Number(res[1]);
+          const y = Number(res[2]);
+          dispatch({ type: SET_POSITION, payload: { ...position, x, y }})
+        }
+      break;
+    }
+  }
 
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [messageList, chatRef, showMessages]);
+  }, [messageList, chatRef, showChat]);
 
   return (
     <>
-      <ChatButton onClick={() => setShowMessages(!showMessages)}>
+      <ChatButton onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
         <MessageSquare height="20px"/>
       </ChatButton>
-      <ChatWindow show={showMessages}>
+      <ChatWindow show={showChat}>
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
             <ChatMessage key={i}>
-              <span style={{ color: msg.color }}>
+              <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
                 {msg.author}
               </span>
-              : {msg.msg}
+              : {formatChatText(msg.msg, textClick)}
             </ChatMessage>
           ))}
         </ChatText>
         <ChatInteraction>
-          <input
-            type="text"
-            ref={inputRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.code === "Enter")
-                sendMessage();
-            }}
-          />
-          <SendButton onClick={sendMessage}>
-            Send
-          </SendButton>
+          { user ? (
+            <>
+              <input
+                type="text"
+                ref={inputRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.code === "Enter")
+                    sendMessage();
+                }}
+              />
+              <SendButton onClick={sendMessage}>
+                {t('send')}
+              </SendButton>
+            </>
+          ) : (
+            <NotConnected onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.LOGIN })}>
+              {t('needConnect')}
+            </NotConnected>
+          )}
         </ChatInteraction>
       </ChatWindow>
     </>
