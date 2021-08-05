@@ -1,10 +1,11 @@
-import { ReduxState } from "..";
+import { ReduxState, store } from "..";
 
 /* Action */
 export const SET_GRID_ACTIVE = 'SET_GRID_ACTIVE';
 export const SET_ZOOM_TOWARD_CURSOR = 'SET_ZOOM_TOWARD_CURSOR';
 export const SET_ACTIVITY = 'SET_ACTIVITY';
 export const SET_SHOW_CHAT = 'SET_SHOW_CHAT';
+export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 
 /* Types */
 
@@ -24,8 +25,12 @@ export interface SetShowChatAction {
     type: typeof SET_SHOW_CHAT;
     payload: boolean;
 }
+export interface SetNotificationsAction {
+    type: typeof SET_NOTIFICATIONS;
+    payload: boolean;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -58,6 +63,29 @@ export function setShowChat(state: ReduxState, action: SetShowChatAction): Redux
         showChat: action.payload
     };
 }
+export function setNotifications(state: ReduxState, action: SetNotificationsAction): ReduxState {
+    let finalValue = action.payload;
+
+    if (action.payload === true) {
+        if (Notification.permission === "denied") {
+            alert('Notifications for this website are blocked, please enable them in your browser.');
+            finalValue = false;
+        } else if (Notification.permission === "default") {
+            (async () => {
+                const res = await Notification.requestPermission();
+                store?.dispatch({ type: SET_NOTIFICATIONS, payload: res === "granted" });
+            })();
+        }
+    } else {
+        finalValue = false;
+    }
+
+    localStorage.setItem('notifications', String(finalValue));
+    return {
+        ...state,
+        notifications: finalValue,
+    }
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -76,5 +104,9 @@ export const dispatches = [
     {
         action: SET_SHOW_CHAT,
         function: setShowChat
+    },
+    {
+        action: SET_NOTIFICATIONS,
+        function: setNotifications
     }
 ]

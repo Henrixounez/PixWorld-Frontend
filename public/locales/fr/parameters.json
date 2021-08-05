@@ -3,5 +3,6 @@
   "grid": "Grille activée",
   "zoomCursor": "Zoom vers le curseur",
   "language": "Selectionner langue",
-  "activity": "Montrer l'Activité des Pixels"
+  "activity": "Montrer l'Activité des Pixels",
+  "notifications": "Activer les notifications"
 }

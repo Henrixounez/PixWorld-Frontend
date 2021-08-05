@@ -7,7 +7,7 @@ import InteractionController from "./InteractionController";
 import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import { store } from "../../store";
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
 
@@ -102,12 +102,24 @@ export class CanvasController {
 
     const overlayActive = localStorage.getItem('overlayActive')
     if (overlayActive)
-      store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: JSON.parse(overlayActive) });
+      store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: overlayActive === "true" });
 
     const overlayOpen = localStorage.getItem('overlayOpen')
     if (overlayOpen)
-      store?.dispatch({ type: SET_OVERLAY_OPEN, payload: JSON.parse(overlayOpen) });
-      
+      store?.dispatch({ type: SET_OVERLAY_OPEN, payload: overlayOpen === "true" });
+
+    const notifications = localStorage.getItem('notifications')
+    if (notifications) {
+      store?.dispatch({ type: SET_NOTIFICATIONS, payload: notifications === "true" });  
+    } else {
+      (async () => {
+        const res = await Notification.requestPermission();
+        if (res === 'granted')
+          store?.dispatch({ type: SET_NOTIFICATIONS, payload: true });  
+        else
+          store?.dispatch({ type: SET_NOTIFICATIONS, payload: false });  
+      })();
+    }
   }
 
   // Utils //

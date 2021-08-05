@@ -30,7 +30,7 @@ const allDispatches: Array<Dispatch> = [
 ].flat();
 
 export function reducer(state: ReduxState, action: ActionTypes) {
-  const dispatchAction = allDispatches.find((e) => e.action === action.type);
+  const dispatchAction = allDispatches.find((e) => e?.action === action.type);
 
   if (dispatchAction)
     return dispatchAction.function(state, action);

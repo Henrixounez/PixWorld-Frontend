@@ -10,5 +10,6 @@ export const languagesModules = [
   'problem',
   'stats',
   'chat',
-  'auth'
+  'auth',
+  'notification',
 ];

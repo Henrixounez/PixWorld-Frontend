@@ -20,6 +20,7 @@ export interface ReduxState {
   shouldRender: boolean;
   shouldLoadChunks: boolean;
   searchActive: boolean;
+  notifications: boolean;
   position: {
     x: number,
     y: number,
@@ -59,6 +60,7 @@ export const initialState: ReduxState = {
   shouldRender: true,
   shouldLoadChunks: true,
   searchActive: false,
+  notifications: false,
   position: {
     x: 0,
     y: 0,
