@@ -183,9 +183,9 @@ export default class InteractionController {
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
         break;
-      case 'h':
+      /*case 'h':
         store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().historyMode})
-        break;
+        break;*/
       case 'Control':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
         this.setSelectedColor(this.canvasController.getColorOnCoordinates(coordX, coordY));
