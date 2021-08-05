@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { ReduxState } from "../../store"
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
@@ -27,23 +28,46 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
 `;
 
 export default function Cooldown() {
+  const { t } = useTranslation('notification');
   const [cooldownLeft, setCooldownLeft] = useState(0);
   const cooldownUntil = useSelector((state: ReduxState) => state.cooldown);
+  const notifications = useSelector((state: ReduxState) => state.notifications);
   const [display, setDisplay] = useState(false);
+  const [lastNotifTime, setLastNotifTime] = useState(0);
 
   function calculateDiff() {
     const diff = Math.round((cooldownUntil - Date.now()) / 1000);
-    setCooldownLeft(diff < 0 ? 0 : diff);
     if (diff > 0) {
       document.title = `PixWorld | ${diff}`;
     } else {
       document.title = 'PixWorld';
+      if (
+        diff === 0 &&
+        notifications &&
+        window.Notification &&
+        Notification.permission === "granted" &&
+        document.visibilityState === "hidden" &&
+        Date.now() - lastNotifTime > 20 * 1000
+      ) {
+        new Notification(
+          t('cooldown.title'),
+          {
+            body: t('cooldown.body'),
+            renotify: false,
+            requireInteraction: false,
+            silent: false,
+            vibrate: [100, 100],
+          }
+        );
+        setLastNotifTime(Date.now())
+      }
     }
+      setCooldownLeft(diff < 0 ? 0 : diff);
   }
 
   useEffect(() => {
     const timeout = cooldownLeft === 0 ? setTimeout(() => setDisplay(false), 1000) : undefined;
- 
+
     return () => {
       if (timeout)
         clearTimeout(timeout);
