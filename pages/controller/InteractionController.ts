@@ -187,7 +187,8 @@ export default class InteractionController {
         }
         break;
       case 'KeyH':
-        store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().historyMode})
+        store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().history.activate});
+        store?.dispatch({type: SET_SHOULD_RENDER, payload: true });
         break;
       case 'ControlLeft':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
