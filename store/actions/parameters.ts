@@ -112,7 +112,8 @@ export function setCanvas(state: ReduxState, action: SetCanvasAction): ReduxStat
     localStorage.setItem('canvas', String(action.payload));
     return {
         ...state,
-        currentCanvas: action.payload
+        shouldLoadChunks: action.payload !== state.currentCanvas,
+        currentCanvas: action.payload,
     };
 }
 export function setDarkMode(state: ReduxState, action: SetDarkModeAction): ReduxState {

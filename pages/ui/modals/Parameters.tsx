@@ -9,7 +9,7 @@ import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICAT
 import { ReduxState } from '../../../store';
 import { SET_HISTORY_MODE_ACTIVE } from '../../../store/actions/history';
 import { getCanvasController } from '../../controller/CanvasController';
-import { SET_SHOULD_LOAD_CHUNKS } from '../../../store/actions/painting';
+import { SET_POSITION } from '../../../store/actions/painting';
 
 const InputRow = styled.div`
   cursor: pointer;
@@ -48,7 +48,7 @@ export default function ModalParameters() {
                 <select name="selectCanvas" id="canvasSelector" value={canvas} onChange={(e) => {
                     getCanvasController()!.clearChunks();
                     dispatch({type: SET_CANVAS, payload: e.target.value});
-                    dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
+                    dispatch({type: SET_POSITION, payload: { x: 0, y: 0, zoom: 1 }});
                 }}>
                     {getCanvasController()?.canvases.map((e, i) => (
                         <option
