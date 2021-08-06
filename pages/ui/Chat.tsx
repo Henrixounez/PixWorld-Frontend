@@ -36,6 +36,10 @@ const ChatButton = styled.div<{darkMode: boolean}>`
     background-color: #FFFA;
   }
 
+  svg {
+    color: black;
+  }
+
   @media (max-height: 800px) {
     right: 75px;
   }
@@ -185,7 +189,7 @@ export default function Chat() {
   return (
     <>
       <ChatButton darkMode={darkMode} onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
-        <MessageSquare height="20px"/>
+        <MessageSquare height="20px" />
       </ChatButton>
       <ChatWindow show={showChat} darkMode={darkMode}>
         <ChatText ref={chatRef}>
