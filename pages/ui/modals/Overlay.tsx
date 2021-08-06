@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Check, Copy, FilePlus, Trash2 } from 'react-feather';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { ReduxState } from '../../../store';
 import { SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_IMAGE, SET_OVERLAY_POSITION, SET_OVERLAY_TRANSPARENCY } from '../../../store/actions/overlay';
 import { OverlaySave } from '../Overlay';
 
@@ -12,7 +13,7 @@ const Container = styled.div`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   gap: 1rem;
 `;
-const OverlayRow = styled.div`
+const OverlayRow = styled.div<{ darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -25,6 +26,7 @@ const OverlayRow = styled.div`
     width: 50%;
   }
   img {
+    filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
     width: 15%;
     max-height: 50px;
     object-fit: scale-down;
@@ -65,6 +67,7 @@ const AddNew = styled.div<{error: boolean}>`
 
 export default function ModalOverlay() {
   const dispatch = useDispatch();
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const [overlays, setOverlays] = useState<Array<OverlaySave>>([]);
   const [newOverlayValue, setNewOverlayValue] = useState('');
   const [errorNew, setErrorNew] = useState(false);
@@ -129,7 +132,7 @@ export default function ModalOverlay() {
   return (
     <Container>
       { overlays.map((o, i) => (
-        <OverlayRow key={i}>
+        <OverlayRow darkMode={darkMode} key={i}>
           <img src={o.image} width="80px"/>
           <input readOnly value={JSON.stringify(o)} />
           <div>
