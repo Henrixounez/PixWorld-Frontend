@@ -9,7 +9,7 @@ import { ReduxState } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
 
-const OverlayContainer = styled.div`
+const OverlayContainer = styled.div<{darkMode: boolean}>`
   position: fixed;
   top: 10px;
   right: 10px;
@@ -22,6 +22,7 @@ const OverlayContainer = styled.div`
   gap: 10px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .2s;
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 
   display: flex;
   flex-wrap: wrap;
@@ -126,6 +127,7 @@ export default function Overlay() {
   const autoColor = useSelector((state: ReduxState) => state.overlay.autoColor);
   const tainted = useSelector((state: ReduxState) => state.overlay.tainted);
   const overlayOpen = useSelector((state: ReduxState) => state.overlay.open);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const openFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files)
@@ -167,7 +169,7 @@ export default function Overlay() {
   }, [image]);
 
   return (
-    <OverlayContainer>
+    <OverlayContainer darkMode={darkMode}>
       <ActivateButton onClick={() => {
         dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !activate });
       }}>

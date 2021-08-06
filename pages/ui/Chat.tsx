@@ -13,7 +13,7 @@ import formatChatText, { FormatType } from './ChatFormatting';
 import { SET_POSITION } from '../../store/actions/painting';
 import { ADD_CHAT_MESSAGE } from '../../store/actions/chat';
 
-const ChatButton = styled.div`
+const ChatButton = styled.div<{darkMode: boolean}>`
   position: fixed;
   bottom: 10px;
   right: 50px;
@@ -23,6 +23,7 @@ const ChatButton = styled.div`
   transition: .2s;
 
   background-color: #FFFD;
+  color: #FFFD;
   border: 1px solid #000;
   box-sizing: border-box;
   display: flex;
@@ -30,6 +31,7 @@ const ChatButton = styled.div`
   justify-content: center;
   cursor: pointer;
   user-select: none;
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
   &:hover {
     background-color: #FFFA;
   }
@@ -41,7 +43,7 @@ const ChatButton = styled.div`
     right: 150px;
   }
 `;
-const ChatWindow = styled.div<{show: boolean}>`
+const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   position: fixed;
   bottom: 50px;
   right: 50px;
@@ -51,6 +53,7 @@ const ChatWindow = styled.div<{show: boolean}>`
   max-width: 80vw;
   transition: .2s;
 
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
   background-color: #FFFD;
   border: 1px solid #000;
   box-sizing: border-box;
@@ -89,6 +92,7 @@ const ChatInteraction = styled.div`
   }
 `;
 const ChatMessage = styled.div`
+
 `;
 const SendButton = styled.div`
   display: flex;
@@ -98,8 +102,9 @@ const SendButton = styled.div`
   border: 1px solid #777;
   border-radius: 2px;
   cursor: pointer;
+  background-color: #FFFD;
   &:hover {
-    background-color: #EEE;
+    background-color:  #FFFA;
   }
   user-select: none;
 `;
@@ -125,6 +130,7 @@ export default function Chat() {
   const position = useSelector((state: ReduxState) => state.position);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const messageToWs = (text: string) => {
     getCanvasController()?.connectionController.sendToWs('sendMessage', text);
@@ -178,13 +184,13 @@ export default function Chat() {
 
   return (
     <>
-      <ChatButton onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
+      <ChatButton darkMode={darkMode} onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
         <MessageSquare height="20px"/>
       </ChatButton>
-      <ChatWindow show={showChat}>
+      <ChatWindow show={showChat} darkMode={darkMode}>
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
-            <ChatMessage key={i}>
+            <ChatMessage key={i} >
               <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
                 {msg.author}
               </span>

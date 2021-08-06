@@ -7,5 +7,6 @@
   "notifications": "Activate notifications",
   "sounds": "Activate sounds",
   "canvas": "Select which canvas you want to draw",
-  "history": "Activate history view"
+  "history": "Activate history view",
+  "darkMode": "Activate dark mode"
 }

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 import { Edit3, Users } from 'react-feather';
 import { ReduxState } from "../../store"
 
-const Counter = styled.div`
+const Counter = styled.div<{darkMode: boolean}>`
   position: fixed;
   bottom: 55px;
   left: 10px;
@@ -17,6 +17,7 @@ const Counter = styled.div`
   align-items: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   user-select: none;
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 
 function pixelNbRounded(p: number) {
@@ -32,9 +33,10 @@ function pixelNbRounded(p: number) {
 export default function PlayerCounter() {
   const playerNb = useSelector((state: ReduxState) => state.playersNb);
   const pixelNb = useSelector((state: ReduxState) => state.user?.totalPixels);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   return (
-    <Counter>
+    <Counter darkMode={darkMode}>
       <Users height="20px" />
       {playerNb}
       { pixelNb ? (

@@ -8,7 +8,7 @@ import { SET_POSITION } from '../../store/actions/painting';
 import { ReduxState } from '../../store';
 import { getCanvasController } from '../controller/CanvasController';
 
-const ButtonListContainer = styled.div`
+const ButtonListContainer = styled.div<{darkMode: boolean}>`
   position: absolute;
   top: 10px;
   left: 10px;
@@ -17,6 +17,7 @@ const ButtonListContainer = styled.div`
   gap: 5px;
   flex-wrap: wrap;
   max-width: calc(50vw - 25px);
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 const Button = styled.div`
   background-color: #FFFD;
@@ -99,9 +100,10 @@ function SearchBtn() {
 
 export default function ButtonList() {
   const dispatch = useDispatch();
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   return (
-    <ButtonListContainer>
+    <ButtonListContainer darkMode={darkMode}>
       <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })}>
         <HelpCircle/>
       </Button>
