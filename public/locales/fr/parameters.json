@@ -6,5 +6,6 @@
   "activity": "Montrer l'Activité des Pixels",
   "notifications": "Activer les notifications",
   "sounds": "Activer les sons",
-  "canvas": "Sélectionner la toile à afficher"
+  "canvas": "Sélectionner la toile à afficher",
+  "history": "Activer la vue historique"
 }

@@ -7,6 +7,7 @@ import Cookies from 'universal-cookie';
 import { languages, languagesDisplay } from '../../constants/languages';
 import { SET_ACTIVITY, SET_CANVAS, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
+import { SET_HISTORY_MODE_ACTIVE } from '../../../store/actions/history';
 
 const InputRow = styled.div`
   cursor: pointer;
@@ -33,6 +34,7 @@ export default function ModalParameters() {
     const activity = useSelector((state: ReduxState) => state.activity);
     const notifications = useSelector((state: ReduxState) => state.notifications);
     const sounds = useSelector((state: ReduxState) => state.sounds);
+    const history = useSelector((state: ReduxState) => state.history.activate);
 
     return (
         <>
@@ -70,6 +72,11 @@ export default function ModalParameters() {
             <InputRow onClick={() => dispatch({type: SET_SOUNDS, payload: !sounds})}>
                 {t('sounds')}
                 <input type="checkbox" className="checkbox" id="sounds" checked={sounds} readOnly/>
+            </InputRow>
+            <hr/>
+            <InputRow onClick={() => dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !history})}>
+                {t('history')}
+                <input type="checkbox" className="checkbox" id="history" checked={history} readOnly/>
             </InputRow>
             <hr/>
             <InputRow>
