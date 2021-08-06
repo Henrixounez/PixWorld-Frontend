@@ -62,7 +62,7 @@ export class CanvasController {
     });
 
     this.activityInterval = setInterval(() => {
-      if (this.pixelActivity.length && store?.getState().activity) {
+      if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
         store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
       } else if (this.pixelActivity.length) {
         this.pixelActivity = [];
