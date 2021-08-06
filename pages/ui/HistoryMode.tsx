@@ -86,7 +86,6 @@ export default function HistoryMode() {
         setHoursFromDate(historyDate);
     }, [historyDate]);
 
-    console.log("r");
     return (
         <HistoryContainer show={active}>
             Select date:

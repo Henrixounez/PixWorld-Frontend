@@ -7,6 +7,7 @@ export const SET_ACTIVITY = 'SET_ACTIVITY';
 export const SET_SHOW_CHAT = 'SET_SHOW_CHAT';
 export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const SET_SOUNDS = 'SET_SOUNDS';
+export const SET_CANVAS = 'SET_CANVAS'
 
 /* Types */
 
@@ -34,8 +35,12 @@ export interface SetSoundsAction {
     type: typeof SET_SOUNDS;
     payload: boolean;
 }
+export interface SetCanvasAction {
+    type: typeof SET_SOUNDS;
+    payload: string;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction | SetSoundsAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -98,6 +103,13 @@ export function setSounds(state: ReduxState, action: SetSoundsAction): ReduxStat
         sounds: action.payload
     };
 }
+export function setCanvas(state: ReduxState, action: SetSoundsAction): ReduxState {
+    localStorage.setItem('sounds', String(action.payload));
+    return {
+        ...state,
+        sounds: action.payload
+    };
+}
 
 
 /* Dispatches */
@@ -125,5 +137,9 @@ export const dispatches = [
     {
         action: SET_SOUNDS,
         function: setSounds,
+    },
+    {
+        action: SET_CANVAS,
+        function: setCanvas
     }
 ]
