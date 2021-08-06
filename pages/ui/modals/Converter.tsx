@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'next-i18next';
 import palette from "../../constants/palette";
+import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { ReduxState } from "../../../store";
+
+const ImagePreviewCanvas = styled.div<{darkMode: boolean}>`
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
+`;
 
 function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
   const array = new Array<number[][]>(height);
@@ -126,6 +133,7 @@ export default function ModalConverter() {
   const { t } = useTranslation('converter');
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const [wantedWidth, setWantedWidth] = useState(50);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [grid, setGrid] = useState(false);
@@ -238,7 +246,9 @@ export default function ModalConverter() {
         <input type='checkbox' checked={grid} readOnly />
       </div>
       <hr/>
-      <canvas ref={previewRef} id="preview"/>
+        <ImagePreviewCanvas darkMode={darkMode}>
+          <canvas ref={previewRef} id="preview"/>
+        </ImagePreviewCanvas>
       <hr/>
       <button onClick={DownloadImage} type="button">
         {t('downloadBtn')}

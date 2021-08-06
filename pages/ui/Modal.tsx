@@ -17,7 +17,7 @@ import ModalLogin from './modals/Login';
 import ModalRegister from './modals/Register';
 import ModalOverlay from './modals/Overlay';
 
-const ModalBackdrop = styled.div`
+const ModalBackdrop = styled.div<{darkMode: boolean}>`
   position: absolute;
   top: 0;
   right: 0;
@@ -25,6 +25,7 @@ const ModalBackdrop = styled.div`
   height: 100vh;
   z-index: 100;
   background-color: #FFFA;
+  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 const ModalContent = styled.div`
   position: relative;
@@ -105,6 +106,7 @@ const modalComponents = {
 export default function Modal() {
   const { t } = useTranslation();
   const currentModal = useSelector((state: ReduxState) => state.currentModal);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const touchStart = useRef(0);
@@ -113,7 +115,7 @@ export default function Modal() {
     return null;
 
   return (
-    <ModalBackdrop onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
+    <ModalBackdrop darkMode={darkMode} onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <div style={{ height: "2.5rem" }}>
           <ModalTitle>
