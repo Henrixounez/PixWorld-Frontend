@@ -5,5 +5,6 @@
   "language": "Select Language",
   "activity": "Show Pixel Activity",
   "notifications": "Activate notifications",
-  "sounds": "Activate sounds"
+  "sounds": "Activate sounds",
+  "canvas": "Select which canvas you want to draw"
 }

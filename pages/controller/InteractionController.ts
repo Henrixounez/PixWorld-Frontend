@@ -3,6 +3,7 @@ import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../../store/actions/parameters";
+import { SET_HISTORY_MODE_ACTIVE } from "../../store/actions/history";
 import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
@@ -184,6 +185,10 @@ export default class InteractionController {
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
+        break;
+      case 'KeyH':
+        store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().history.activate});
+        store?.dispatch({type: SET_SHOULD_RENDER, payload: true });
         break;
       case 'ControlLeft':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);

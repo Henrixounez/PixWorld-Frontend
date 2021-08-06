@@ -21,6 +21,7 @@ export class CanvasController {
   canvas: HTMLCanvasElement;
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
+  historyChunks: Record<string, Chunk> = {};
   boundingChunks = [[0, 0], [0, 0]];
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
@@ -80,6 +81,14 @@ export class CanvasController {
 
   get position() {
     return store?.getState().position!;
+  }
+
+  get currentChunks() {
+    return store?.getState().history.activate ? this.historyChunks : this.chunks;
+  }
+
+  clearHistoryChunks() {
+    this.historyChunks = {};
   }
 
   loadFromLocalStorage() {
@@ -156,31 +165,47 @@ export class CanvasController {
 
     return { coordX, coordY };
   };
+  getChunkUrl = (chunkX: number, chunkY: number, history: boolean) => {
+    const { date, hour } = store!.getState().history;
+
+    if (history) {
+      return {
+        imgUrl: `${API_URL}/history/chunk/${date}/${hour}/${chunkX}/${chunkY}`,
+        bgUrl: `${API_URL}/chunk/bg/${chunkX}/${chunkY}`,
+      }
+    } else {
+      return {
+        imgUrl: `${API_URL}/chunk/${chunkX}/${chunkY}`,
+        bgUrl: `${API_URL}/chunk/bg/${chunkX}/${chunkY}`,
+      }
+    }
+  }
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
     const boundingTL = this.boundingChunks[0];
     const boundingBR = this.boundingChunks[1];
 
     if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
       return;
-    if (!reload && this.chunks[`${chunkX};${chunkY}`])
-      return;
 
-    const img = new Image();
+    const { activate, date, hour } = store!.getState().history;
+
+    if (activate && (date === '' || hour === ''))
+      return;
+    const history = activate;
+
+    const { imgUrl, bgUrl } = this.getChunkUrl(chunkX, chunkY, history);
+
+    if (!reload && this.currentChunks[`${chunkX};${chunkY}`])
+      return;
     try {
-      await new Promise((resolve) => {
-        img.onerror = () => {
-          resolve(true);
-        }
-        img.src = `${API_URL}/chunk/${chunkX}/${chunkY}`;
-        img.onload = () => {
-          const chunk = new Chunk({x: chunkX, y: chunkY});
-          chunk.loadImage(img);
-          this.chunks[`${chunkX};${chunkY}`] = chunk;
-          store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-          resolve(true);
-        }
-      })
-    } catch (e) {}
+      const chunk = new Chunk({x: chunkX, y: chunkY});
+      const [img, bg] = await Promise.all([chunk.fetchImage(imgUrl), chunk.fetchImage(bgUrl)]);
+      chunk.loadImage(img, bg);
+      this.currentChunks[`${chunkX};${chunkY}`] = chunk;
+      store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+    } catch (e) {
+      console.error(e);
+    }
   }
   loadNeighboringChunks = async () => {
     const width = this.size.width;
@@ -218,7 +243,7 @@ export class CanvasController {
     return null;
   }
   placeUserPixel = (coordX: number, coordY: number, _color: string) => {
-    if (this.position.zoom > 10) {
+    if (this.position.zoom > 10 || store?.getState().history.activate) {
       return;
     }
     let color = _color;
@@ -276,12 +301,12 @@ export class CanvasController {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
 
-    if (this.chunks[`${chunkX};${chunkY}`]) {
+    if (this.currentChunks[`${chunkX};${chunkY}`]) {
       let px = coordX % CHUNK_SIZE;
       let py = coordY % CHUNK_SIZE;
       px = px >= 0 ? px : CHUNK_SIZE + px;
       py = py >= 0 ? py : CHUNK_SIZE + py;
-      const chunk = this.chunks[`${chunkX};${chunkY}`];
+      const chunk = this.currentChunks[`${chunkX};${chunkY}`];
       return chunk.getColorAt(px, py);
     } else {
       return null;
@@ -354,10 +379,10 @@ export class CanvasController {
   drawChunks = (ctx: CanvasRenderingContext2D) => {
     ctx.imageSmoothingEnabled = false;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    Object.keys(this.chunks).map((name) => {
-      const chunk = this.chunks[name];
-      const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
+    Object.keys(this.currentChunks).map((name) => {
+      const chunk = this.currentChunks[name];
 
+      const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
       ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
     });
   }

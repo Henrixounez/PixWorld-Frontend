@@ -14,6 +14,7 @@ import Overlay from './ui/Overlay';
 import Cooldown from './ui/Cooldown';
 import Chat from './ui/Chat';
 import Alert from './ui/Alert';
+import HistoryMode from './ui/HistoryMode';
 
 const Container = styled.div`
   width: 100vw;
@@ -36,6 +37,7 @@ export default function Home({ wsHash }: { wsHash: string }) {
       <CursorPosition/>
       <Alert/>
       <Canvas wsHash={wsHash} />
+      <HistoryMode/>
     </Container>
   )
 };

@@ -3,8 +3,9 @@ import * as Infos from './actions/infos';
 import * as Painting from './actions/painting';
 import * as Overlay from './actions/overlay';
 import * as Chat from './actions/chat';
-import * as Parameters from './actions/parameters';
+import * as Parameters from './actions/parameters'
 import * as User from './actions/user';
+import * as HistoryMode from './actions/history';
 
 export type ActionTypes =
   Infos.Actions |
@@ -12,7 +13,8 @@ export type ActionTypes =
   Overlay.Actions |
   Chat.Actions |
   Parameters.Actions |
-  User.Actions;
+  User.Actions |
+  HistoryMode.Actions;
 
 export interface Dispatch {
   action: string,
@@ -27,6 +29,7 @@ const allDispatches: Array<Dispatch> = [
   Chat.dispatches,
   Parameters.dispatches,
   User.dispatches,
+  HistoryMode.dispatches
 ].flat();
 
 export function reducer(state: ReduxState, action: ActionTypes) {
