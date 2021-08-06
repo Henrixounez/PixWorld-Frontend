@@ -27,7 +27,6 @@ export interface ReduxState {
     y: number,
     zoom: number,
   }
-  setCanvas: string;
   history: {
     activate: boolean;
     date: string;
@@ -48,6 +47,7 @@ export interface ReduxState {
     text?: string;
     color?: string;
   },
+  currentCanvas: string;
   user?: User,
 }
 
@@ -74,10 +74,9 @@ export const initialState: ReduxState = {
     y: 0,
     zoom: 1,
   },
-  setCanvas: 'Square',
   history: {
     activate: false,
-    date: new Date().toISOString().substr(0, 10),
+    date: '',
     hour: ''
   },
   overlay: {
@@ -95,6 +94,7 @@ export const initialState: ReduxState = {
     text: undefined,
     color: undefined,
   },
+  currentCanvas: '',
   user: undefined,
 };
 

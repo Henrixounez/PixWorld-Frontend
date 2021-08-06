@@ -36,7 +36,7 @@ export interface SetSoundsAction {
     payload: boolean;
 }
 export interface SetCanvasAction {
-    type: typeof SET_SOUNDS;
+    type: typeof SET_CANVAS;
     payload: string;
 }
 
@@ -103,11 +103,11 @@ export function setSounds(state: ReduxState, action: SetSoundsAction): ReduxStat
         sounds: action.payload
     };
 }
-export function setCanvas(state: ReduxState, action: SetSoundsAction): ReduxState {
-    localStorage.setItem('sounds', String(action.payload));
+export function setCanvas(state: ReduxState, action: SetCanvasAction): ReduxState {
+    localStorage.setItem('canvas', String(action.payload));
     return {
         ...state,
-        sounds: action.payload
+        currentCanvas: action.payload
     };
 }
 

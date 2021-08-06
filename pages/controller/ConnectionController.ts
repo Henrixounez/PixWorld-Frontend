@@ -3,6 +3,7 @@ import { store } from "../../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
 import { SET_SHOULD_LOAD_CHUNKS } from "../../store/actions/painting";
+import { SET_CANVAS } from "../../store/actions/parameters";
 import { SET_NB_PIXELS, SET_USER } from "../../store/actions/user";
 import { API_URL, WS_URL } from "../constants/api";
 import ModalTypes from "../constants/modalTypes";
@@ -30,15 +31,19 @@ export default class ConnectionController {
 
       switch (type) {
         case 'init':
-          this.canvasController.boundingChunks = data.boundingChunks;
+          this.canvasController.canvases = data.canvases;
           store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });
           store?.dispatch({ type: SET_CHAT_MESSAGE, payload: data.chatMessages });
+          if (!store?.getState().currentCanvas)
+            store?.dispatch({ type: SET_CANVAS, payload: this.canvasController.canvases[0].id });
           break;
         case 'placePixel':
-          this.canvasController.placePixel(data.x, data.y, data.color);
-          this.canvasController.pixelActivity.push({ x: data.x, y: data.y, frame: 0 });
+          if (data.canvas === store?.getState().currentCanvas) {
+            this.canvasController.placePixel(data.x, data.y, data.color);
+            this.canvasController.pixelActivity.push({ x: data.x, y: data.y, frame: 0 });
+          }
           break;
         case 'playerNb':
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data });

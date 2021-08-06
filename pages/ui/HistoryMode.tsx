@@ -32,29 +32,41 @@ const HistoryContainer = styled.div`
   }
 `;
 
+function dateFrToEn(date: string) {
+  const [dd, mm, yyyy] = date.split('-');
+  return `${mm}-${dd}-${yyyy}`;
+}
+function dateEnToFr(date: string) {
+  const [yyyy, mm, dd] = date.split('-');
+  return `${dd}-${mm}-${yyyy}`;
+}
+
 export default function HistoryMode() {
   const dispatch = useDispatch();
   const active = useSelector((state: ReduxState) => state.history.activate);
   const historyDate = useSelector((state: ReduxState) => state.history.date);
-  const [minDate, setMinDate] = useState("");
+  const canvas = useSelector((state: ReduxState) => state.currentCanvas);
+  const [minDate, setMinDate] = useState(new Date().toLocaleDateString('fr-FR').replace(/\//g, '-'));
   const [availableHours, setAvailableHours] = useState<string[]>([]);
 
   async function getFirstDate() {
     try {
-      const datesUrl = `${API_URL}/history/dates`;
+      const datesUrl = `${API_URL}/history/dates/${canvas}`;
       const res = await axios(datesUrl);
-      setMinDate(res.data);
+      setMinDate(res.data[0]);
     } catch (err) {
       console.error(err);
     }
     }
 
   async function setHoursFromDate(date: string) {
+    if (!date || date === '')
+      return;
     try {
-      const hoursUrl = `${API_URL}/history/hours/${date}`
+      const hoursUrl = `${API_URL}/history/hours/${date}/${canvas}`
       const res = await axios(hoursUrl);
-      setAvailableHours(res.data);
-      changeHour(res.data[0]);
+      setAvailableHours(res.data || []);
+      changeHour(res.data[0] || '');
     } catch (err) {
       console.error(err);
     }
@@ -63,7 +75,7 @@ export default function HistoryMode() {
   function changeDate(value: string) {
     getCanvasController()?.clearHistoryChunks();
     dispatch({type: SET_HISTORY_HOUR, payload: ''});
-    dispatch({type: SET_HISTORY_DATE, payload: value});
+    dispatch({type: SET_HISTORY_DATE, payload: dateEnToFr(value)});
   }
   function changeHour(value: string) {
     getCanvasController()?.clearHistoryChunks();
@@ -73,7 +85,7 @@ export default function HistoryMode() {
 
   useEffect(() => {
     if (active) {
-      if (minDate === "")
+      if (minDate === '')
         getFirstDate();
       if (!availableHours.length)
         setHoursFromDate(historyDate);
@@ -81,7 +93,7 @@ export default function HistoryMode() {
   }, [active]);
 
   useEffect(() => {
-    if (active)
+    if (active && historyDate !== '')
       setHoursFromDate(historyDate);
   }, [historyDate]);
 
@@ -90,8 +102,19 @@ export default function HistoryMode() {
       {active ? (
         <HistoryContainer>
           Select date:
-          <input type='date' id='dateSelector' min={minDate} max={new Date().toISOString().slice(0, 10)} defaultValue={historyDate} onChange={(e) => changeDate(e.target.value)}/>
-          <select name="hour" id="hourSelect" onChange={(e) => changeHour(e.target.value)}>
+          <input
+            type='date'
+            id='dateSelector'
+            min={new Date(dateFrToEn(minDate)).toISOString().slice(0, 10)}
+            max={new Date().toISOString().slice(0, 10)}
+            defaultValue={minDate}
+            onChange={(e) => changeDate(e.target.value)}
+          />
+          <select
+            name="hour"
+            id="hourSelect"
+            onChange={(e) => changeHour(e.target.value)}
+          >
             {availableHours.map((h, i) => (
               <option key={i} value={h}>
                 {h}

@@ -8,7 +8,7 @@ import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import SoundController, { AudioType } from "./SoundController";
 import { store } from "../../store";
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
+import { SET_ACTIVITY, SET_CANVAS, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
 import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
 
@@ -22,7 +22,7 @@ export class CanvasController {
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
   historyChunks: Record<string, Chunk> = {};
-  boundingChunks = [[0, 0], [0, 0]];
+  canvases: Array<{ name: string, id: string, boundingChunks: [[number, number], [number, number]], locked: boolean }> = [];
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
   activityInterval: NodeJS.Timeout;
@@ -87,8 +87,19 @@ export class CanvasController {
     return store?.getState().history.activate ? this.historyChunks : this.chunks;
   }
 
+  get currentCanvasId() {
+    return store!.getState().currentCanvas;
+  }
+  get currentCanvasIndex() {
+    return this.canvases.findIndex((e) => e.id === store!.getState().currentCanvas);
+  }
+
   clearHistoryChunks() {
     this.historyChunks = {};
+  }
+  clearChunks() {
+    this.chunks = {};
+    this.waitingPixels = {};
   }
 
   loadFromLocalStorage() {
@@ -119,6 +130,10 @@ export class CanvasController {
     const overlayOpen = localStorage.getItem('overlayOpen')
     if (overlayOpen)
       store?.dispatch({ type: SET_OVERLAY_OPEN, payload: overlayOpen === "true" });
+
+    const canvas = localStorage.getItem('canvas')
+    if (canvas)
+      store?.dispatch({ type: SET_CANVAS, payload: canvas });
 
     const notifications = localStorage.getItem('notifications')
     if (notifications) {
@@ -169,20 +184,17 @@ export class CanvasController {
     const { date, hour } = store!.getState().history;
 
     if (history) {
-      return {
-        imgUrl: `${API_URL}/history/chunk/${date}/${hour}/${chunkX}/${chunkY}`,
-        bgUrl: `${API_URL}/chunk/bg/${chunkX}/${chunkY}`,
-      }
+      return `${API_URL}/history/chunk/${date}/${hour}/${this.currentCanvasId}/${chunkX}/${chunkY}`;
     } else {
-      return {
-        imgUrl: `${API_URL}/chunk/${chunkX}/${chunkY}`,
-        bgUrl: `${API_URL}/chunk/bg/${chunkX}/${chunkY}`,
-      }
+      return `${API_URL}/chunk/${this.currentCanvasId}/${chunkX}/${chunkY}`;
     }
   }
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
-    const boundingTL = this.boundingChunks[0];
-    const boundingBR = this.boundingChunks[1];
+    if (this.currentCanvasIndex === -1)
+      return;
+
+    const boundingTL = this.canvases[this.currentCanvasIndex].boundingChunks[0];
+    const boundingBR = this.canvases[this.currentCanvasIndex].boundingChunks[1];
 
     if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
       return;
@@ -193,14 +205,14 @@ export class CanvasController {
       return;
     const history = activate;
 
-    const { imgUrl, bgUrl } = this.getChunkUrl(chunkX, chunkY, history);
+    const imgUrl = this.getChunkUrl(chunkX, chunkY, history);
 
     if (!reload && this.currentChunks[`${chunkX};${chunkY}`])
       return;
     try {
       const chunk = new Chunk({x: chunkX, y: chunkY});
-      const [img, bg] = await Promise.all([chunk.fetchImage(imgUrl), chunk.fetchImage(bgUrl)]);
-      chunk.loadImage(img, bg);
+      const [img] = await Promise.all([chunk.fetchImage(imgUrl)]);
+      chunk.loadImage(img);
       this.currentChunks[`${chunkX};${chunkY}`] = chunk;
       store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
     } catch (e) {
@@ -259,7 +271,7 @@ export class CanvasController {
     const lastColor = this.placePixel(coordX, coordY, color);
     if (lastColor) {
       this.waitingPixels[`${coordX};${coordY}`] = lastColor;
-      this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color });
+      this.connectionController.sendToWs('placePixel', { x: coordX, y: coordY, color, canvas: this.currentCanvasId  });
     }
   }
   restorePixel = (coordX: number, coordY: number) => {
