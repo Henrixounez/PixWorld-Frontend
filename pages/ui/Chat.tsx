@@ -23,7 +23,7 @@ const ChatButton = styled.div<{darkMode: boolean}>`
   transition: .2s;
 
   background-color: #FFFD;
-  color: #FFFD
+  color: #FFFD;
   border: 1px solid #000;
   box-sizing: border-box;
   display: flex;
@@ -175,17 +175,6 @@ export default function Chat() {
       break;
     }
   }
-
-  function invertColor(hexTripletColor: any) {
-    let color = hexTripletColor;
-    color = color.substring(1); // remove #
-    color = parseInt(color, 16); // convert to integer
-    color = 0xFFFFFF ^ color; // invert three bytes
-    color = color.toString(16); // convert to hex
-    color = ("000000" + color).slice(-6); // pad with leading zeros
-    color = "#" + color; // prepend #
-    return color;
-}
 
   useEffect(() => {
     if (chatRef.current) {
