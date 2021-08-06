@@ -51,37 +51,43 @@ export default function HistoryMode() {
             const hoursUrl = `${API_URL}/history/hours/${date}`
             const res = await axios(hoursUrl);
             setAvailableHours(res.data);
+            changeHour(res.data[0]);
         } catch (err) {
             console.error(err);
         }
     }
 
-    function changeDate(event: React.ChangeEvent<HTMLInputElement>) {
+    function changeDate(value: string) {
         getCanvasController()?.clearHistoryChunks();
         dispatch({type: SET_HISTORY_HOUR, payload: ''});
-        dispatch({type: SET_HISTORY_DATE, payload: event.target.value});
+        dispatch({type: SET_HISTORY_DATE, payload: value});
     }
-    function changeHour(event: React.ChangeEvent<HTMLSelectElement>) {
+    function changeHour(value: string) {
         getCanvasController()?.clearHistoryChunks();
-        dispatch({type: SET_HISTORY_HOUR, payload: event.target.value});
+        dispatch({type: SET_HISTORY_HOUR, payload: value});
         dispatch({type: SET_SHOULD_LOAD_CHUNKS, payload: true});
     }
 
     useEffect(() => {
-        if (active && minDate === "")
-            getFirstDate();
+        if (active) {
+            if (minDate === "")
+                getFirstDate();
+            if (!availableHours.length)
+                setHoursFromDate(historyDate);
+        }
     }, [active]);
 
     useEffect(() => {
-        setHoursFromDate(historyDate);
+        if (active)
+            setHoursFromDate(historyDate);
     }, [historyDate]);
 
     return (
         <HistoryContainer show={active}>
             Select date:
-            <input type='date' id='dateSelector' min={minDate} max={new Date().toISOString().slice(0, 10)} defaultValue={historyDate} onChange={changeDate}/>
+            <input type='date' id='dateSelector' min={minDate} max={new Date().toISOString().slice(0, 10)} defaultValue={historyDate} onChange={(e) => changeDate(e.target.value)}/>
             <br/>
-            <select name="hour" id="hourSelect" onChange={changeHour}>
+            <select name="hour" id="hourSelect" onChange={(e) => changeHour(e.target.value)}>
                 {availableHours.map((h, i) => (
                     <option key={i} value={h}>
                         {h}
