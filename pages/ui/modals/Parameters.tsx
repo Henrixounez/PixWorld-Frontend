@@ -8,6 +8,8 @@ import { languages, languagesDisplay } from '../../constants/languages';
 import { SET_ACTIVITY, SET_CANVAS, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
 import { ReduxState } from '../../../store';
 import { SET_HISTORY_MODE_ACTIVE } from '../../../store/actions/history';
+import { getCanvasController } from '../../controller/CanvasController';
+import { SET_SHOULD_LOAD_CHUNKS } from '../../../store/actions/painting';
 
 const InputRow = styled.div`
   cursor: pointer;
@@ -35,17 +37,26 @@ export default function ModalParameters() {
     const notifications = useSelector((state: ReduxState) => state.notifications);
     const sounds = useSelector((state: ReduxState) => state.sounds);
     const history = useSelector((state: ReduxState) => state.history.activate);
+    const canvas = useSelector((state: ReduxState) => state.currentCanvas);
 
     return (
         <>
             <hr/>
             <InputRow>
                 {t('canvas')}
-                <select name="selectCanvas" id="canvasSelector" onChange={(e) => {
+                <select name="selectCanvas" id="canvasSelector" value={canvas} onChange={(e) => {
+                    getCanvasController()!.clearChunks();
                     dispatch({type: SET_CANVAS, payload: e.target.value});
+                    dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
                 }}>
-                    <option value="Square">Square canvas</option>
-                    <option value="World" disabled>World canvas</option>
+                    {getCanvasController()?.canvases.map((e, i) => (
+                        <option
+                            key={i}
+                            value={e.id}
+                        >
+                            {e.name}
+                        </option>
+                    ))}
                 </select>
             </InputRow>
             <hr/>
