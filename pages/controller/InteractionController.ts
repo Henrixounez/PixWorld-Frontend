@@ -245,8 +245,8 @@ export default class InteractionController {
             break;
           case 'c':
             if (navigator.clipboard) {
-              const pos = store!.getState().cursorPos;
-              const txt = window.location.origin + window.location.pathname + `?pos=${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.id}(${Math.round(pos.x)},${Math.round(pos.y)})`;
+              const pos = store!.getState().position;
+              const txt = window.location.origin + window.location.pathname + `?pos=${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},${Math.round(pos.zoom)})`;
               navigator.clipboard.writeText(txt);
               store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
             }
