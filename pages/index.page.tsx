@@ -108,13 +108,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext & { loca
   } catch (err) {}
 
   const posAndOg = ctx.query.pos ? await getPosAndOgImage(canvases, ctx.query.pos as string) : { img: DEFAULT_OG_IMAGE };
+  const wsHash = iv.toString('hex') + ':' + encrypted.toString('hex');
 
   return {
     props: {
       canvases,
       pos: posAndOg.pos || null,
       ogImage: posAndOg.img,
-      wsHash: iv.toString('hex') + ':' + encrypted.toString('hex'),
+      wsHash,
       ...(await serverSideTranslations(ctx.locale, languagesModules)),
     },
   };

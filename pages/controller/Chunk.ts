@@ -15,7 +15,6 @@ export default class Chunk {
   
   private displayImg(img: HTMLImageElement) {
     const ctx = this.canvas.getContext('2d');
-    img.setAttribute('crossOrigin', '');
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
@@ -26,6 +25,7 @@ export default class Chunk {
   fetchImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
       const img = new Image();
+      img.setAttribute('crossOrigin', '');
       let firstLoad = false;
       img.onload = () => {
         if (firstLoad) {
@@ -41,7 +41,6 @@ export default class Chunk {
 
   loadImage(img: HTMLImageElement) {
     const ctx = this.canvas.getContext('2d');
-    img.setAttribute('crossOrigin', '');
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;

@@ -123,7 +123,7 @@ export class CanvasController {
     this.chunks = {};
     this.waitingPixels = {};
     this.historyChunks = {};
-    this.superChunks = this.currentCanvas.superchunkLevels.map(() => ({}));
+    this.superChunks = this.currentCanvas?.superchunkLevels.map(() => ({})) || [];
     store?.dispatch({ type: SET_SHOULD_CLEAR_CHUNKS, payload: false });
   }
 
