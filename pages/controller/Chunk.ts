@@ -26,14 +26,10 @@ export default class Chunk {
     return new Promise((resolve) => {
       const img = new Image();
       img.setAttribute('crossOrigin', '');
-      let firstLoad = false;
       img.onload = () => {
-        if (firstLoad) {
-          img.onload = null;
-          return resolve(img);
-        }
+        img.onload = null;
         this.displayImg(img);
-        firstLoad = true;
+        return resolve(img);
       }
       img.src = url;
     });
