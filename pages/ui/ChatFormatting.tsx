@@ -39,7 +39,7 @@ const formattingTypes = [
   },
   {
     type: FormatType.POSITION,
-    regex: /#p\(-?\d*,-?\d*\)/gm,
+    regex: /#.\(-?\d*,\s*-?\d*,\s*-?\d*\)/gm,
   },
   {
     type: FormatType.MENTION,

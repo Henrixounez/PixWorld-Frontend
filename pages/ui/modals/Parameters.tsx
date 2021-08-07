@@ -46,7 +46,6 @@ export default function ModalParameters() {
             <InputRow>
                 {t('canvas')}
                 <select name="selectCanvas" id="canvasSelector" value={canvas} onChange={(e) => {
-                    getCanvasController()!.clearChunks();
                     dispatch({type: SET_CANVAS, payload: e.target.value});
                     dispatch({type: SET_POSITION, payload: { x: 0, y: 0, zoom: 1 }});
                 }}>
