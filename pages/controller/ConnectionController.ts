@@ -31,7 +31,6 @@ export default class ConnectionController {
 
       switch (type) {
         case 'init':
-          this.canvasController.canvases = data.canvases;
           store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });

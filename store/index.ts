@@ -5,6 +5,7 @@ import { ActionTypes } from './reducer';
 import palette from '../pages/constants/palette';
 import ModalTypes from '../pages/constants/modalTypes';
 import { User } from './actions/user';
+import { Canvas } from '../pages/controller/CanvasController';
 
 export interface ReduxState {
   playersNb: number;
@@ -19,6 +20,7 @@ export interface ReduxState {
   showChat: boolean;
   shouldRender: boolean;
   shouldLoadChunks: boolean;
+  shouldClearChunks: boolean;
   searchActive: boolean;
   notifications: boolean;
   sounds: boolean;
@@ -49,6 +51,7 @@ export interface ReduxState {
     color?: string;
   },
   currentCanvas: string;
+  canvases: Array<Canvas>,
   user?: User,
 }
 
@@ -67,6 +70,7 @@ export const initialState: ReduxState = {
   showChat: true,
   shouldRender: true,
   shouldLoadChunks: true,
+  shouldClearChunks: false,
   searchActive: false,
   notifications: false,
   sounds: true,
@@ -97,6 +101,7 @@ export const initialState: ReduxState = {
     color: undefined,
   },
   currentCanvas: '',
+  canvases: [],
   user: undefined,
 };
 

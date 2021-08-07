@@ -6,9 +6,8 @@ import Cookies from 'universal-cookie';
 
 import { languages, languagesDisplay } from '../../constants/languages';
 import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../../store/actions/parameters';
-import { ReduxState } from '../../../store';
+import { ReduxState, store } from '../../../store';
 import { SET_HISTORY_MODE_ACTIVE } from '../../../store/actions/history';
-import { getCanvasController } from '../../controller/CanvasController';
 import { SET_POSITION } from '../../../store/actions/painting';
 
 const InputRow = styled.div`
@@ -49,7 +48,7 @@ export default function ModalParameters() {
                     dispatch({type: SET_CANVAS, payload: e.target.value});
                     dispatch({type: SET_POSITION, payload: { x: 0, y: 0, zoom: 1 }});
                 }}>
-                    {getCanvasController()?.canvases.map((e, i) => (
+                    {store?.getState().canvases.map((e, i) => (
                         <option
                             key={i}
                             value={e.id}
@@ -75,7 +74,14 @@ export default function ModalParameters() {
                 <input type="checkbox" className="checkbox" id="activity" checked={activity} readOnly/>
             </InputRow>
             <hr/>
-            <InputRow onClick={() => dispatch({type: SET_NOTIFICATIONS, payload: !notifications})}>
+            <InputRow onClick={async () => {
+                if (!notifications) {
+                    await Notification.requestPermission();
+                    dispatch({ type: SET_NOTIFICATIONS, payload: !notifications })
+                } else {
+                    dispatch({type: SET_NOTIFICATIONS, payload: !notifications})
+                }
+            }}>
                 {t('notifications')}
                 <input type="checkbox" className="checkbox" id="notifications" checked={notifications} readOnly/>
             </InputRow>
@@ -90,7 +96,7 @@ export default function ModalParameters() {
                 <input type="checkbox" className="checkbox" id="history" checked={history} readOnly/>
             </InputRow>
             <hr/>
-            <InputRow onClick={() => dispatch({type: SET_DARK_MODE, payload: !darkMode})}>
+            <InputRow onClick={() => dispatch({type: SET_DARK_MODE, payload: !darkMode}) }>
                 {t('darkMode')}
                 <input type="checkbox" className="checkbox" id="darkMode" checked={darkMode} readOnly/>
             </InputRow>

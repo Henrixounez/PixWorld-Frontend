@@ -8,7 +8,7 @@ import OverlayController from "./OverlayController";
 import SoundController, { AudioType } from "./SoundController";
 import { store } from "../../store";
 import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_CHAT, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../../store/actions/parameters";
-import { SET_POSITION, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../../store/actions/overlay";
 
 const ACTIVITY_DURATION_MS = 1000;
@@ -21,7 +21,7 @@ const LIMIT_DRAW_NORMAL_CHUNKS = 0.5;
 export const MAX_ZOOM = 3000;
 export const GRID_ZOOM = 6;
 
-interface Canvas {
+export interface Canvas {
   name: string;
   id: string;
   letter: string;
@@ -37,7 +37,6 @@ export class CanvasController {
   chunks: Record<string, Chunk> = {};
   historyChunks: Record<string, Chunk> = {};
   superChunks: Array<{[key: string]: Chunk}> = [];
-  canvases: Array<Canvas> = [];
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
   activityInterval: NodeJS.Timeout;
@@ -48,7 +47,7 @@ export class CanvasController {
   overlayController: OverlayController;
   soundController: SoundController;
 
-  constructor(wsHash: string) {
+  constructor(wsHash: string, pos?: { x: number, y: number, zoom: number, canvas: string }) {
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -63,14 +62,18 @@ export class CanvasController {
     this.connectionController = new ConnectionController(this, wsHash);
     this.overlayController = new OverlayController(this);
     this.soundController = new SoundController(this);
-    this.loadFromLocalStorage();
+    this.loadFromLocalStorage(pos);
 
     this.renderInterval = setInterval(() => {
-      if (store?.getState().shouldRender) {
-        this.render();
-      }
-      if (store?.getState().shouldLoadChunks) {
-        this.loadNeighboringChunks();
+      const state = store?.getState();
+
+      if (state) {
+        if (state.shouldClearChunks)
+          this.clearChunks();
+        if (state.shouldRender)
+          this.render();
+        if (state.shouldLoadChunks)
+          this.loadNeighboringChunks();
       }
     }, RENDER_REFRESH_MS);
 
@@ -106,6 +109,12 @@ export class CanvasController {
   get currentCanvasIndex() {
     return this.canvases.findIndex((e) => e.id === store!.getState().currentCanvas);
   }
+  get canvases() {
+    return store!.getState().canvases;
+  }
+  get currentCanvas() {
+    return this.canvases!.find((e) => e.id === store!.getState().currentCanvas)!;
+  }
 
   clearHistoryChunks() {
     this.historyChunks = {};
@@ -114,10 +123,11 @@ export class CanvasController {
     this.chunks = {};
     this.waitingPixels = {};
     this.historyChunks = {};
-    this.superChunks = [];
+    this.superChunks = this.currentCanvas.superchunkLevels.map(() => ({}));
+    store?.dispatch({ type: SET_SHOULD_CLEAR_CHUNKS, payload: false });
   }
 
-  loadFromLocalStorage() {
+  loadFromLocalStorage(pos?: { x: number, y: number, zoom: number, canvas: string }) {
     const gridActive = localStorage.getItem('gridActive');
     if (gridActive)
       store?.dispatch({ type: SET_GRID_ACTIVE, payload: gridActive === "true" });
@@ -133,10 +143,6 @@ export class CanvasController {
     const showChat = localStorage.getItem('showChat');
     if (showChat)
       store?.dispatch({ type: SET_SHOW_CHAT, payload: showChat === "true" });
-    
-    const position = localStorage.getItem('position')
-    if (position)
-      store?.dispatch({ type: SET_POSITION, payload: JSON.parse(position) });
 
     const overlayActive = localStorage.getItem('overlayActive')
     if (overlayActive)
@@ -147,9 +153,19 @@ export class CanvasController {
       store?.dispatch({ type: SET_OVERLAY_OPEN, payload: overlayOpen === "true" });
 
     const canvas = localStorage.getItem('canvas')
-    if (canvas)
+    if (pos)
+      store?.dispatch({ type: SET_CANVAS, payload: pos.canvas });
+    else if (canvas)
       store?.dispatch({ type: SET_CANVAS, payload: canvas });
+    else
+      store?.dispatch({ type: SET_CANVAS, payload: store.getState().canvases[0].id })
 
+    const position = localStorage.getItem('position')
+    if (pos)
+      store?.dispatch({ type: SET_POSITION, payload: { x: pos.x, y: pos.y, zoom: pos.zoom }});
+    else if (position)
+      store?.dispatch({ type: SET_POSITION, payload: JSON.parse(position) });
+  
     const darkMode = localStorage.getItem('darkMode')
     if (darkMode)
       store?.dispatch({ type: SET_DARK_MODE, payload: darkMode === "true" });
@@ -204,9 +220,12 @@ export class CanvasController {
     return i === canvas.superchunkLevels.length - 1 || pixelSize > 0.25 ** (i + 2);
   }
   loadSuperchunks = async () => {
-    const canvas = this.canvases[this.currentCanvasIndex];
+    const canvas = this.currentCanvas;
     const width = this.size.width;
     const height = this.size.height;
+
+    if (!canvas)
+      return;
 
     if (this.superChunks.length === 0)
       this.superChunks = canvas.superchunkLevels.map(() => ({}));
@@ -256,8 +275,8 @@ export class CanvasController {
     if (this.currentCanvasIndex === -1)
       return;
 
-    const boundingTL = this.canvases[this.currentCanvasIndex].boundingChunks[0];
-    const boundingBR = this.canvases[this.currentCanvasIndex].boundingChunks[1];
+    const boundingTL = this.currentCanvas.boundingChunks[0];
+    const boundingBR = this.currentCanvas.boundingChunks[1];
 
     if (chunkX < boundingTL[0] || chunkY < boundingTL[1] || chunkX > boundingBR[0] || chunkY > boundingBR[1])
       return;
@@ -380,15 +399,9 @@ export class CanvasController {
   changePosition = (deltaX: number, deltaY: number) => {
     const newPositionX = this.position.x + deltaX;
     const newPositionY = this.position.y + deltaY;
-    const canvas = this.canvases[this.currentCanvasIndex];
-    const limitCanvas = (canvas.size * CHUNK_SIZE) / 2;
     store?.dispatch({
       type: SET_POSITION,
-      payload: {
-        ...this.position,
-        x: newPositionX < -limitCanvas ? -limitCanvas : newPositionX > limitCanvas ? limitCanvas : newPositionX,
-        y: newPositionY < -limitCanvas ? -limitCanvas : newPositionY > limitCanvas ? limitCanvas : newPositionY,
-      }
+      payload: { ...this.position, x: newPositionX, y: newPositionY }
     });
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
@@ -475,7 +488,7 @@ export class CanvasController {
   drawSuperChunks = (ctx: CanvasRenderingContext2D) => {
     ctx.imageSmoothingEnabled = false;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    const canvas = this.canvases[this.currentCanvasIndex];
+    const canvas = this.currentCanvas;
 
     this.superChunks.slice().filter((_, i) => this.canSuperchunkLoadOrDisplay(i, canvas)).reverse().forEach((superChunks) => {
       Object.keys(superChunks).map((name) => {
@@ -516,8 +529,8 @@ let canvasController: CanvasController | null = null;
 export function getCanvasController() {
   return canvasController;
 }
-export function initCanvasController(wsHash: string) {
-  canvasController = new CanvasController(wsHash);
+export function initCanvasController(wsHash: string, pos?: { x: number, y: number, zoom: number, canvas: string }) {
+  canvasController = new CanvasController(wsHash, pos);
 }
 export function destructCanvasController() {
   canvasController?.destructor();

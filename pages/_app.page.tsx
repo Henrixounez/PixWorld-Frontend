@@ -2,11 +2,12 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head';
 import { Provider } from 'react-redux';
 import { appWithTranslation } from 'next-i18next';
-import { useStore } from '../store';
+import { initialState, useStore } from '../store';
 import '../styles/index.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const store = useStore(pageProps.initialReduxState);
+  const store = useStore(pageProps.initialReduxState || { ...initialState, canvases: pageProps.canvases });
+  console.log(store.getState())
 
   return (
     <>
@@ -42,7 +43,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta property='og:description' content='Place pixels where you want on this canvas !' />
         <meta property='og:site_name' content='PixWorld' />
         <meta property='og:url' content='https://pixworld.vercel.app' />
-        <meta property='og:image' content='https://pixworld.vercel.app/icons/apple-touch-icon.png' />
+        <meta property='og:image' content={pageProps.ogImage} />
       </Head>
       <Provider store={store}>
         <Component {...pageProps} />

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
 
-import { getCanvasController, MAX_ZOOM } from '../controller/CanvasController';
+import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
@@ -12,7 +12,6 @@ import { SET_CANVAS, SET_SHOW_CHAT } from '../../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
 import { SET_POSITION } from '../../store/actions/painting';
 import { ADD_CHAT_MESSAGE } from '../../store/actions/chat';
-import { CHUNK_SIZE } from '../constants/painting';
 
 const ChatButton = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -134,20 +133,14 @@ export function coordinateLinkGoto(text: string) {
     const y = Number(res[3]);
     const zoom = Number(res[4]);
 
-    const canvas = getCanvasController()?.canvases.find((e) => e.letter === canvasLetter);
+    const canvas = store!.getState().canvases.find((e) => e.letter === canvasLetter);
 
     if (!canvas)
       return false;
     if (canvas.id !== store?.getState().currentCanvas)
       store?.dispatch({ type: SET_CANVAS, payload: canvas.id });
 
-    const limitCanvas = (canvas.size * CHUNK_SIZE) / 2;
-
-    store?.dispatch({ type: SET_POSITION, payload: {
-      zoom: zoom < 1 || zoom >= MAX_ZOOM ? 1 : zoom,
-        x: x < -limitCanvas ? -limitCanvas : x > limitCanvas ? limitCanvas : x,
-        y: y < -limitCanvas ? -limitCanvas : y > limitCanvas ? limitCanvas : y
-    }})
+    store?.dispatch({ type: SET_POSITION, payload: { x, y, zoom } });
     return true;
   }
   return false;
@@ -173,7 +166,7 @@ export default function Chat() {
     const cmd = message.split(' ')[0];
     switch (cmd) {
       case '/here':
-        messageToWs(`#${getCanvasController()?.canvases.find((e) => e.id === canvas)?.letter}(${Math.round(position.x)},${Math.round(position.y)},${Math.round(position.zoom)})`);
+        messageToWs(`#${store!.getState().canvases.find((e) => e.id === canvas)?.letter}(${Math.round(position.x)},${Math.round(position.y)},${Math.round(position.zoom)})`);
         break;
       case '/help':
         dispatch({
