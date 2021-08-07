@@ -16,7 +16,10 @@ const ACTIVITY_REFRESH_MS = 25;
 const ACTIVITY_MAX_RADIUS = 10;
 const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
+const RENDER_REFRESH_MS = 25;
 const LIMIT_DRAW_NORMAL_CHUNKS = 0.5;
+export const MAX_ZOOM = 3000;
+export const GRID_ZOOM = 6;
 
 interface Canvas {
   name: string;
@@ -69,7 +72,7 @@ export class CanvasController {
       if (store?.getState().shouldLoadChunks) {
         this.loadNeighboringChunks();
       }
-    }, ACTIVITY_REFRESH_MS);
+    }, RENDER_REFRESH_MS);
 
     this.activityInterval = setInterval(() => {
       if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
@@ -110,6 +113,7 @@ export class CanvasController {
   clearChunks() {
     this.chunks = {};
     this.waitingPixels = {};
+    this.historyChunks = {};
     this.superChunks = [];
   }
 
@@ -356,7 +360,7 @@ export class CanvasController {
     const oldZoom = this.position.zoom;
     const newZoom = this.position.zoom + delta;
 
-    if (newZoom >= 1 && newZoom < 3000) {
+    if (newZoom >= 1 && newZoom < MAX_ZOOM) {
       const changeInZoom = (oldZoom - newZoom) / 15;
       if (store?.getState().zoomTowardCursor) {
         const translateX = (focalX - this.position.x) * changeInZoom;
@@ -419,7 +423,7 @@ export class CanvasController {
     this.overlayController.render(ctx);
   }
   drawGrid = (ctx: CanvasRenderingContext2D) => {
-    if (this.position.zoom > 6 || !store?.getState().gridActive) {
+    if (this.position.zoom > GRID_ZOOM || !store?.getState().gridActive) {
       return;
     }
 

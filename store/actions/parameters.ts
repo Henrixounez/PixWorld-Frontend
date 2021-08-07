@@ -1,4 +1,5 @@
 import { ReduxState, store } from "..";
+import { getCanvasController } from "../../pages/controller/CanvasController";
 
 /* Action */
 export const SET_GRID_ACTIVE = 'SET_GRID_ACTIVE';
@@ -110,6 +111,7 @@ export function setSounds(state: ReduxState, action: SetSoundsAction): ReduxStat
 }
 export function setCanvas(state: ReduxState, action: SetCanvasAction): ReduxState {
     localStorage.setItem('canvas', String(action.payload));
+    getCanvasController()?.clearChunks();
     return {
         ...state,
         shouldLoadChunks: action.payload !== state.currentCanvas,

@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { SET_MODAL, SET_SEARCH } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
-import { SET_POSITION } from '../../store/actions/painting';
 import { ReduxState } from '../../store';
 import { getCanvasController } from '../controller/CanvasController';
+import { coordinateLinkGoto } from './Chat';
 
 const ButtonListContainer = styled.div<{darkMode: boolean}>`
   position: absolute;
@@ -44,18 +44,13 @@ const SearchInput = styled.input<{active: boolean}>`
 function SearchBtn() {
   const dispatch = useDispatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const position = useSelector((state: ReduxState) => state.position);
   const searchActive = useSelector((state: ReduxState) => state.searchActive);
 
   const positionSearch = () => {
     if (inputRef.current) {
-      const text = inputRef.current.value;
-      const regex = /#p\((-?\d*),(-?\d*)\)/;
-      const res = text.match(regex);
-      if (res && res[1] && res[2]) {
-        const x = Number(res[1]);
-        const y = Number(res[2]);
-        dispatch({ type: SET_POSITION, payload: { ...position, x, y }})
+      const res = coordinateLinkGoto(inputRef.current.value);
+
+      if (res === true) {
         dispatch({ type: SET_SEARCH, payload: false });
         inputRef.current.value = '';
       }
@@ -78,7 +73,7 @@ function SearchBtn() {
         <>
           <SearchInput
             ref={inputRef}
-            placeholder='#p(-290,12)'
+            placeholder='#w(-290,12,10)'
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
               if (e.code === "Enter") {
