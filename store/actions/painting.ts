@@ -47,7 +47,7 @@ export function setSelectedColor(state: ReduxState, action: SetSelectedColorActi
 }
 export function setPosition(state: ReduxState, action: SetPositionAction): ReduxState {
   const canvas = state.canvases.find((e) => e.id === state.currentCanvas);
-  const limitCanvas = (canvas?.size || 1 * CHUNK_SIZE) / 2;
+  const limitCanvas = ((canvas?.size || 1 )* CHUNK_SIZE) / 2;
   const x = action.payload.x < -limitCanvas ? -limitCanvas : action.payload.x > limitCanvas ? limitCanvas : action.payload.x;
   const y = action.payload.y < -limitCanvas ? -limitCanvas : action.payload.y > limitCanvas ? limitCanvas : action.payload.y;
   const zoom = action.payload.zoom < 1 ? 1 : action.payload.zoom >= MAX_ZOOM ? MAX_ZOOM - 1 : action.payload.zoom;
