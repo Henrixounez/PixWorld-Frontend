@@ -7,7 +7,6 @@ import '../styles/index.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState || { ...initialState, canvases: pageProps.canvases });
-  console.log(store.getState())
 
   return (
     <>

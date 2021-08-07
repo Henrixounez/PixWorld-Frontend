@@ -101,7 +101,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext & { loca
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
 
-  const { data: canvases }: { data: Array<CanvasType> } = await axios.get(`${API_URL}/canvas`);
+  let canvases: Array<CanvasType> = [];
+  try {
+    const { data }: { data: Array<CanvasType> } = await axios.get(`${API_URL}/canvas`);
+    canvases = data;
+  } catch (err) {}
 
   const posAndOg = ctx.query.pos ? await getPosAndOgImage(canvases, ctx.query.pos as string) : { img: DEFAULT_OG_IMAGE };
 
