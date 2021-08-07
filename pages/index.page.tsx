@@ -19,7 +19,7 @@ import HistoryMode from './ui/HistoryMode';
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: lightblue;
+  background-color: #F0F0F0;
   overflow: hidden;
 `;
 

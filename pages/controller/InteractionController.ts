@@ -209,10 +209,10 @@ export default class InteractionController {
   keypress = (e: KeyboardEvent) => {
     switch (e.code) {
       case 'KeyE':
-        this.canvasController.changeZoom(-2, this.position.x, this.position.y);
+        this.canvasController.changeZoom(-this.position.zoom / 8, this.position.x, this.position.y);
         break;
       case 'KeyQ':
-        this.canvasController.changeZoom(2, this.position.x, this.position.y);
+        this.canvasController.changeZoom(this.position.zoom / 8, this.position.x, this.position.y);
         break;
       case 'KeyW':
         this.canvasController.changePosition(0, -4 * this.position.zoom);

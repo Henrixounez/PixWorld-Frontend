@@ -1,6 +1,5 @@
 import { API_URL } from "../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../constants/painting";
-import { Unsubscribe } from "redux";
 
 import Chunk from "./Chunk";
 import InteractionController from "./InteractionController";
@@ -17,16 +16,29 @@ const ACTIVITY_REFRESH_MS = 25;
 const ACTIVITY_MAX_RADIUS = 10;
 const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
+const LIMIT_DRAW_NORMAL_CHUNKS = 0.5;
+
+interface Canvas {
+  name: string;
+  id: string;
+  letter: string;
+  boundingChunks: [[number, number],[number, number]];
+  size: number;
+  superchunkLevels: number[];
+  locked?: boolean;
+}
+
 export class CanvasController {
   canvas: HTMLCanvasElement;
   size = { width: 0, height: 0 };
   chunks: Record<string, Chunk> = {};
   historyChunks: Record<string, Chunk> = {};
-  canvases: Array<{ name: string, id: string, boundingChunks: [[number, number], [number, number]], locked: boolean }> = [];
+  superChunks: Array<{[key: string]: Chunk}> = [];
+  canvases: Array<Canvas> = [];
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
   activityInterval: NodeJS.Timeout;
-  unsubscribe: Unsubscribe;
+  renderInterval: NodeJS.Timeout;
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
@@ -50,16 +62,14 @@ export class CanvasController {
     this.soundController = new SoundController(this);
     this.loadFromLocalStorage();
 
-    this.unsubscribe = store!.subscribe(() => {
-      if (store) {
-        const state = store.getState();
-        if (state.shouldLoadChunks)
-          this.loadNeighboringChunks();
-        if (state.shouldRender) {
-          this.render();
-        }
+    this.renderInterval = setInterval(() => {
+      if (store?.getState().shouldRender) {
+        this.render();
       }
-    });
+      if (store?.getState().shouldLoadChunks) {
+        this.loadNeighboringChunks();
+      }
+    }, ACTIVITY_REFRESH_MS);
 
     this.activityInterval = setInterval(() => {
       if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
@@ -76,7 +86,7 @@ export class CanvasController {
     this.connectionController.destructor();
     this.overlayController.destructor();
     clearInterval(this.activityInterval);
-    this.unsubscribe();
+    clearInterval(this.renderInterval);
   }
 
   get position() {
@@ -100,6 +110,7 @@ export class CanvasController {
   clearChunks() {
     this.chunks = {};
     this.waitingPixels = {};
+    this.superChunks = [];
   }
 
   loadFromLocalStorage() {
@@ -184,6 +195,50 @@ export class CanvasController {
 
     return { coordX, coordY };
   };
+  canSuperchunkLoadOrDisplay = (i: number, canvas: Canvas) => {
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    return i === canvas.superchunkLevels.length - 1 || pixelSize > 0.25 ** (i + 2);
+  }
+  loadSuperchunks = async () => {
+    const canvas = this.canvases[this.currentCanvasIndex];
+    const width = this.size.width;
+    const height = this.size.height;
+
+    if (this.superChunks.length === 0)
+      this.superChunks = canvas.superchunkLevels.map(() => ({}));
+
+    canvas.superchunkLevels.forEach(async (chunkNb, i) => {
+      if (!this.canSuperchunkLoadOrDisplay(i, canvas))
+        return;
+
+      const superChunkSize = canvas.size * CHUNK_SIZE / chunkNb;
+
+      const coordsStart = this.canvasToCoordinates(0, 0);
+      const coordsEnd = this.canvasToCoordinates(width, height);
+
+      const halfCanvasSize = canvas.size * CHUNK_SIZE / 2;
+      for (let x = coordsStart.coordX + halfCanvasSize - superChunkSize / 2; x < coordsEnd.coordX + halfCanvasSize + superChunkSize / 2; x += superChunkSize) {
+        for (let y = coordsStart.coordY + halfCanvasSize - superChunkSize / 2; y < coordsEnd.coordY + halfCanvasSize + superChunkSize / 2; y += superChunkSize) {
+          let toLoadX = Math.floor(x / superChunkSize);
+          let toLoadY = Math.floor(y / superChunkSize);
+
+          const posX = toLoadX - chunkNb / 2;
+          const posY = toLoadY - chunkNb / 2;
+
+          if (toLoadX >= chunkNb || toLoadY >= chunkNb || toLoadX < 0 || toLoadY < 0)
+            continue;
+
+          if (this.superChunks[i][`${toLoadX};${toLoadY}`])
+            continue;
+          const chunk = new Chunk({ x: posX , y: posY }, (canvas.size * CHUNK_SIZE) / chunkNb);
+          const img = chunk.fetchImage(`${API_URL}/superchunk/${this.currentCanvasId}/${i}/${toLoadX}/${toLoadY}`);
+          this.superChunks[i][`${toLoadX};${toLoadY}`] = chunk;
+          chunk.loadImage(await img);
+        }
+      }
+      store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+    })
+  }
   getChunkUrl = (chunkX: number, chunkY: number, history: boolean) => {
     const { date, hour } = store!.getState().history;
 
@@ -214,20 +269,28 @@ export class CanvasController {
     if (!reload && this.currentChunks[`${chunkX};${chunkY}`])
       return;
     try {
-      const chunk = new Chunk({x: chunkX, y: chunkY});
-      const [img] = await Promise.all([chunk.fetchImage(imgUrl)]);
-      chunk.loadImage(img);
+      const chunk = new Chunk({x: chunkX, y: chunkY}, CHUNK_SIZE);
+      const img = chunk.fetchImage(imgUrl);
       this.currentChunks[`${chunkX};${chunkY}`] = chunk;
+      chunk.loadImage(await img);
       store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
     } catch (e) {
       console.error(e);
     }
   }
   loadNeighboringChunks = async () => {
+    store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: false });
+
+    if (this.canvases.length)
+      this.loadSuperchunks();
+
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    if (pixelSize < LIMIT_DRAW_NORMAL_CHUNKS)
+      return;
+    
     const width = this.size.width;
     const height = this.size.height;
 
-    store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: false });
     const chunkNbX = Math.ceil(width / CHUNK_SIZE) + 2;
     const chunkNbY = Math.ceil(height / CHUNK_SIZE) + 2;
     const chunkLoading = [];
@@ -293,7 +356,7 @@ export class CanvasController {
     const oldZoom = this.position.zoom;
     const newZoom = this.position.zoom + delta;
 
-    if (newZoom >= 1 && newZoom < 50) {
+    if (newZoom >= 1 && newZoom < 3000) {
       const changeInZoom = (oldZoom - newZoom) / 15;
       if (store?.getState().zoomTowardCursor) {
         const translateX = (focalX - this.position.x) * changeInZoom;
@@ -311,7 +374,18 @@ export class CanvasController {
     store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x, y } });
   }
   changePosition = (deltaX: number, deltaY: number) => {
-    store?.dispatch({ type: SET_POSITION, payload: { ...this.position, x: this.position.x + deltaX, y: this.position.y + deltaY } });
+    const newPositionX = this.position.x + deltaX;
+    const newPositionY = this.position.y + deltaY;
+    const canvas = this.canvases[this.currentCanvasIndex];
+    const limitCanvas = (canvas.size * CHUNK_SIZE) / 2;
+    store?.dispatch({
+      type: SET_POSITION,
+      payload: {
+        ...this.position,
+        x: newPositionX < -limitCanvas ? -limitCanvas : newPositionX > limitCanvas ? limitCanvas : newPositionX,
+        y: newPositionY < -limitCanvas ? -limitCanvas : newPositionY > limitCanvas ? limitCanvas : newPositionY,
+      }
+    });
   }
   getColorOnCoordinates(coordX: number, coordY: number) {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
@@ -337,7 +411,9 @@ export class CanvasController {
 
     store?.dispatch({ type: SET_SHOULD_RENDER, payload: false });
     ctx.clearRect(0, 0, this.size.width, this.size.height);
-    this.drawChunks(ctx);
+    this.drawSuperChunks(ctx);
+    if (PIXEL_SIZE / this.position.zoom > LIMIT_DRAW_NORMAL_CHUNKS)
+      this.drawChunks(ctx);
     this.drawGrid(ctx);
     this.drawActivity(ctx);
     this.overlayController.render(ctx);
@@ -392,6 +468,20 @@ export class CanvasController {
       ctx.strokeRect(posX + BORDER_WIDTH, posY + BORDER_WIDTH, pixelSize - BORDER_WIDTH * 2, pixelSize - BORDER_WIDTH * 2);
     }
   }
+  drawSuperChunks = (ctx: CanvasRenderingContext2D) => {
+    ctx.imageSmoothingEnabled = false;
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    const canvas = this.canvases[this.currentCanvasIndex];
+
+    this.superChunks.slice().filter((_, i) => this.canSuperchunkLoadOrDisplay(i, canvas)).reverse().forEach((superChunks) => {
+      Object.keys(superChunks).map((name) => {
+        const chunk = superChunks[name];
+
+        const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * chunk.chunkSize, chunk.position.y * chunk.chunkSize);
+        ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
+      });
+    })
+  }
   drawChunks = (ctx: CanvasRenderingContext2D) => {
     ctx.imageSmoothingEnabled = false;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
@@ -399,7 +489,7 @@ export class CanvasController {
       const chunk = this.currentChunks[name];
 
       const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
-      ctx.drawImage(chunk.canvas, posX, posY, chunk.canvas.width * pixelSize, chunk.canvas.height * pixelSize);
+      ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
     });
   }
   drawActivity = (ctx: CanvasRenderingContext2D) => {

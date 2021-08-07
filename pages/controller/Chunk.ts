@@ -3,12 +3,14 @@ import { CHUNK_SIZE } from "../constants/painting";
 export default class Chunk {
   canvas: HTMLCanvasElement;
   position: {x: number, y: number} = {x: 0, y: 0};
+  chunkSize: number;
 
-  constructor(pos: { x: number, y: number }) {
+  constructor(pos: { x: number, y: number }, chunkSize: number) {
     this.canvas = document.createElement('canvas');
     this.canvas.width = CHUNK_SIZE;
     this.canvas.height = CHUNK_SIZE;
     this.position = pos;
+    this.chunkSize = chunkSize;
   }
   
   private displayImg(img: HTMLImageElement) {
