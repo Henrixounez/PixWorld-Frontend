@@ -48,12 +48,14 @@ export default function HistoryMode() {
   const canvas = useSelector((state: ReduxState) => state.currentCanvas);
   const [minDate, setMinDate] = useState(new Date().toLocaleDateString('fr-FR').replace(/\//g, '-'));
   const [availableHours, setAvailableHours] = useState<string[]>([]);
+  const [loadedDate, setLoadedDate] = useState(false);
 
   async function getFirstDate() {
     try {
       const datesUrl = `${API_URL}/history/dates/${canvas}`;
       const res = await axios(datesUrl);
       setMinDate(res.data[0]);
+      setLoadedDate(true);
     } catch (err) {
       console.error(err);
     }
@@ -85,7 +87,7 @@ export default function HistoryMode() {
 
   useEffect(() => {
     if (active) {
-      if (minDate === '')
+      if (!loadedDate)
         getFirstDate();
       if (!availableHours.length)
         setHoursFromDate(historyDate);
