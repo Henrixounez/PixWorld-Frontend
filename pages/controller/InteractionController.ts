@@ -246,7 +246,7 @@ export default class InteractionController {
           case 'c':
             if (navigator.clipboard) {
               const pos = store!.getState().cursorPos;
-              const txt = `#p(${Math.round(pos.x)},${Math.round(pos.y)})`;
+              const txt = window.location.origin + window.location.pathname + `?pos=${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.id}(${Math.round(pos.x)},${Math.round(pos.y)})`;
               navigator.clipboard.writeText(txt);
               store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
             }
