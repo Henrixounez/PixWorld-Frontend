@@ -94,7 +94,6 @@ export default class ConnectionController {
   };
 
   sendToWs = (type: string, data: any) => {
-    const key = (window as Window & typeof globalThis & {key?: string}).key;
-    this.ws.send(JSON.stringify({ type, data, key }));
+    this.ws.send(JSON.stringify({ type, data }));
   }
 }

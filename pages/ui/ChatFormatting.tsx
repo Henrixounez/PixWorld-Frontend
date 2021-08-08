@@ -92,9 +92,7 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
             const name = text.replace('@', '');
             return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i}>{text}</Mention>;
           case FormatType.GREENTEXT:
-            return <Greentext>{text}</Greentext>
-          default:
-            return text;
+            return <Greentext key={i}>{text}</Greentext>
         }
       })}
     </>
