@@ -54,7 +54,10 @@ export default function HistoryMode() {
     try {
       const datesUrl = `${API_URL}/history/dates/${canvas}`;
       const res = await axios(datesUrl);
-      setMinDate(res.data[0]);
+
+      if (res.data.length) {
+        setMinDate(res.data[0]);
+      }
       setLoadedDate(true);
     } catch (err) {
       console.error(err);
@@ -84,6 +87,15 @@ export default function HistoryMode() {
     dispatch({type: SET_HISTORY_HOUR, payload: value});
     dispatch({type: SET_SHOULD_LOAD_CHUNKS, payload: true});
   }
+  function getCurrentDate() {
+    if (historyDate !== '') {
+      const date = new Date(dateFrToEn(historyDate));
+      date.setMinutes(date.getMinutes() -  date.getTimezoneOffset());
+      return date.toISOString().slice(0, 10);
+    } else {
+      return minDate;
+    }
+  }
 
   useEffect(() => {
     if (active) {
@@ -109,7 +121,7 @@ export default function HistoryMode() {
             id='dateSelector'
             min={new Date(dateFrToEn(minDate)).toISOString().slice(0, 10)}
             max={new Date().toISOString().slice(0, 10)}
-            defaultValue={minDate}
+            defaultValue={getCurrentDate()}
             onChange={(e) => changeDate(e.target.value)}
           />
           <select
