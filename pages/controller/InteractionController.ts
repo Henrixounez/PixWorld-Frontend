@@ -1,7 +1,7 @@
 import { store } from "../../store";
 import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
-import { SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
+import { SET_POSITION, SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../../store/actions/parameters";
 import { SET_HISTORY_MODE_ACTIVE } from "../../store/actions/history";
 import { PIXEL_SIZE } from "../constants/painting";
@@ -13,6 +13,7 @@ export default class InteractionController {
   canvasController: CanvasController;
 
   shiftPressed = false;
+  rightShiftPressed = false;
   isMouseDown = false;
   isMoving = false;
   startMove = { x: 0, y: 0 };
@@ -120,6 +121,8 @@ export default class InteractionController {
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true)
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+      else if (this.rightShiftPressed == true)
+        this.canvasController.placeUserPixel(coordX, coordY, this.canvasController.getColorOnCoordinates(coordX, coordY, true));
     }
   }
   mouseUp = (e: MouseEvent) => {
@@ -144,6 +147,7 @@ export default class InteractionController {
   mouseLeave = () => {
     this.haveMouseOver = false;
     this.shiftPressed = false;
+    this.rightShiftPressed = false;
     this.startMove = { x: 0, y: 0};
     this.isMoving = false;
     this.isMouseDown = false;
@@ -186,9 +190,22 @@ export default class InteractionController {
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
         break;
+      case 'ShiftRight':
+        if (this.haveMouseOver) {
+          this.rightShiftPressed = true;
+          const {coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
+          this.canvasController.placeUserPixel(coordX, coordY, this.canvasController.getColorOnCoordinates(coordX, coordY, true));
+        }
+        break;
       case 'KeyH':
         store?.dispatch({type: SET_HISTORY_MODE_ACTIVE, payload: !store?.getState().history.activate});
         store?.dispatch({type: SET_SHOULD_RENDER, payload: true });
+
+        if (store?.getState().history.activate) {
+          if (store?.getState().position.zoom > 25) {
+            store?.dispatch({ type: SET_POSITION, payload: { ...this.position, zoom: 25 } });
+          }
+        }
         break;
       case 'ControlLeft':
         const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
@@ -255,9 +272,13 @@ export default class InteractionController {
     }
   }
   keyup = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'Shift':
+    switch (e.code) {
+      case 'ShiftLeft':
         this.shiftPressed = false;
+        break;
+      case 'ShiftRight':
+        this.rightShiftPressed = false;
+        break;
     }
   }
 
