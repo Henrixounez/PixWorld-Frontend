@@ -8,10 +8,10 @@ import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
-import { SET_CANVAS, SET_SHOW_CHAT } from '../../store/actions/parameters';
+import { SET_CANVAS } from '../../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
 import { SET_POSITION } from '../../store/actions/painting';
-import { ADD_CHAT_MESSAGE } from '../../store/actions/chat';
+import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../../store/actions/chat';
 
 const ChatButton = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -39,6 +39,9 @@ const ChatButton = styled.div<{darkMode: boolean}>`
   svg {
     color: black;
   }
+  div {
+    filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
+  }
 
   @media (max-height: 800px) {
     right: 75px;
@@ -46,6 +49,16 @@ const ChatButton = styled.div<{darkMode: boolean}>`
   @media (max-height: 400px) {
     right: 150px;
   }
+`;
+const UnreadBubble = styled.div`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 12px;
+  height: 12px;
+  user-select: none;
+  border-radius: 100%;
+  background-color: #FF0000;
 `;
 const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   position: fixed;
@@ -158,6 +171,7 @@ export default function Chat() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const canvas = useSelector((state: ReduxState) => state.currentCanvas);
+  const unreadMessage = useSelector((state: ReduxState) => state.unreadMessage);
 
   const messageToWs = (text: string) => {
     getCanvasController()?.connectionController.sendToWs('sendMessage', text);
@@ -207,6 +221,9 @@ export default function Chat() {
     <>
       <ChatButton darkMode={darkMode} onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
         <MessageSquare height="20px" />
+        { unreadMessage && (
+          <UnreadBubble />
+        )}
       </ChatButton>
       <ChatWindow show={showChat} darkMode={darkMode}>
         <ChatText ref={chatRef}>

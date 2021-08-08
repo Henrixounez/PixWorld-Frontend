@@ -4,7 +4,6 @@ import { ReduxState } from "..";
 export const SET_GRID_ACTIVE = 'SET_GRID_ACTIVE';
 export const SET_ZOOM_TOWARD_CURSOR = 'SET_ZOOM_TOWARD_CURSOR';
 export const SET_ACTIVITY = 'SET_ACTIVITY';
-export const SET_SHOW_CHAT = 'SET_SHOW_CHAT';
 export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const SET_SOUNDS = 'SET_SOUNDS';
 export const SET_CANVAS = 'SET_CANVAS';
@@ -24,10 +23,6 @@ export interface SetActivityAction {
   type: typeof SET_ACTIVITY;
   payload: boolean;
 }
-export interface SetShowChatAction {
-  type: typeof SET_SHOW_CHAT;
-  payload: boolean;
-}
 export interface SetNotificationsAction {
   type: typeof SET_NOTIFICATIONS;
   payload: boolean;
@@ -45,7 +40,7 @@ export interface SetDarkModeAction {
   payload: boolean;
 }
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetShowChatAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -69,13 +64,6 @@ export function setActivity(state: ReduxState, action: SetActivityAction): Redux
     ...state,
     shouldRender: true,
     activity: action.payload
-  };
-}
-export function setShowChat(state: ReduxState, action: SetShowChatAction): ReduxState {
-  localStorage.setItem('showChat', String(action.payload));
-  return {
-    ...state,
-    showChat: action.payload
   };
 }
 export function setNotifications(state: ReduxState, action: SetNotificationsAction): ReduxState {
@@ -136,10 +124,6 @@ export const dispatches = [
   {
     action: SET_ACTIVITY,
     function: setActivity
-  },
-  {
-    action: SET_SHOW_CHAT,
-    function: setShowChat
   },
   {
     action: SET_NOTIFICATIONS,

@@ -14,6 +14,7 @@ export interface ReduxState {
   currentModal: ModalTypes;
   cooldown: number;
   chatMessages: { author: string, msg: string, color: string }[];
+  unreadMessage: boolean;
   gridActive: boolean;
   zoomTowardCursor: boolean;
   activity: boolean;
@@ -64,6 +65,7 @@ export const initialState: ReduxState = {
   currentModal: ModalTypes.NONE,
   cooldown: 0,
   chatMessages: [],
+  unreadMessage: false,
   gridActive: true,
   zoomTowardCursor: true,
   activity: true,
