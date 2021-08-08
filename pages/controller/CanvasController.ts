@@ -378,7 +378,7 @@ export class CanvasController {
   }
   changeZoom = (delta: number, focalX: number, focalY: number) => {
     const oldZoom = this.position.zoom;
-    const newZoom = this.position.zoom + delta;
+    let newZoom = this.position.zoom + delta;
 
     if (newZoom >= 1 && newZoom < MAX_ZOOM) {
       const changeInZoom = (oldZoom - newZoom) / 15;
@@ -386,6 +386,9 @@ export class CanvasController {
         const translateX = (focalX - this.position.x) * changeInZoom;
         const transtateY = (focalY - this.position.y) * changeInZoom;
         this.changePosition(translateX, transtateY);
+      }
+      if (store?.getState().history.activate && newZoom > 25) {
+        newZoom = 25;
       }
       this.setZoom(newZoom);
       localStorage.setItem('position', JSON.stringify(this.position));
@@ -405,19 +408,27 @@ export class CanvasController {
       payload: { ...this.position, x: newPositionX, y: newPositionY }
     });
   }
-  getColorOnCoordinates(coordX: number, coordY: number) {
+  getColorOnCoordinates(coordX: number, coordY: number, inHistory: boolean = false) {
     const chunkX = Math.floor(coordX / CHUNK_SIZE);
     const chunkY = Math.floor(coordY / CHUNK_SIZE);
+    
+    let workingChunk;
+    if (inHistory) {
+      workingChunk = this.historyChunks;
+    }
+    else {
+      workingChunk = this.currentChunks
+    }
 
-    if (this.currentChunks[`${chunkX};${chunkY}`]) {
+    if (workingChunk[`${chunkX};${chunkY}`]) {
       let px = coordX % CHUNK_SIZE;
       let py = coordY % CHUNK_SIZE;
       px = px >= 0 ? px : CHUNK_SIZE + px;
       py = py >= 0 ? py : CHUNK_SIZE + py;
-      const chunk = this.currentChunks[`${chunkX};${chunkY}`];
+      const chunk = workingChunk[`${chunkX};${chunkY}`];
       return chunk.getColorAt(px, py);
     } else {
-      return null;
+      return "";
     }
   }
 
