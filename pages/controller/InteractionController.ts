@@ -121,7 +121,7 @@ export default class InteractionController {
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
       if (this.shiftPressed === true)
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
-      else if (this.rightShiftPressed === true)
+      else if (this.rightShiftPressed == true)
         this.canvasController.placeUserPixel(coordX, coordY, this.canvasController.getColorOnCoordinates(coordX, coordY, true));
     }
   }
@@ -272,7 +272,7 @@ export default class InteractionController {
     }
   }
   keyup = (e: KeyboardEvent) => {
-    switch (e.key) {
+    switch (e.code) {
       case 'ShiftLeft':
         this.shiftPressed = false;
         break;
