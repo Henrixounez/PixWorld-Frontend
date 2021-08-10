@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { ReduxState, store } from "../../store"
@@ -26,19 +27,28 @@ const Pos = styled.div<{darkMode: boolean}>`
 
 export default function CursorPosition() {
   const cursorPos = useSelector((state: ReduxState) => state.cursorPos);
+  const pos = useSelector((state: ReduxState) => state.position);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const [showCursorPos, setShowCursorPos] = useState(true);
 
   const copyPos = () => {
     if (navigator.clipboard) {
-      const txt = `#${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(cursorPos.x)},${Math.round(cursorPos.y)},10)`;
+      const txt = `#${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},10)`;
       navigator.clipboard.writeText(txt);
       store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
     }
   }
 
+  const toShow = showCursorPos ? cursorPos : pos;
+
   return (
-    <Pos darkMode={darkMode} onClick={copyPos}>
-      ({cursorPos.x}, {cursorPos.y})
+    <Pos
+      darkMode={darkMode}
+      onClick={copyPos}
+      onMouseEnter={() => setShowCursorPos(false)}
+      onMouseLeave={() => setShowCursorPos(true)}
+    >
+      ({Math.round(toShow.x)}, {Math.round(toShow.y)})
     </Pos>
   );
 }
