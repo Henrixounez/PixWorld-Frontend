@@ -3,5 +3,6 @@
   "text": "Placez des pixels où vous voulez sur cette carte !",
   "madeBy": "Site créé par Henrixounez & MXS",
   "os": "Disponible en Open Source sur Github: ",
-  "discord": "Rejoignez notre "
+  "discord": "Rejoignez notre ",
+  "controls": "\nContrôles\n\nPixels:\n  Selectionnez les couleurs dans la palette à droite de l'écran\n  KeyClicMoletteSouris ou KeyCtrlGauche ou KeyAppuiLong pour selectionner la couleur survolée\n  KeyClicGauche ou KeyAppuyer pour placer un pixel\n  KeyShiftGauche pour placer des pixels en bougeant la souris\n  KeyShiftDroit pour placer des pixels depuis le mode historique en bougeant la souris\n\nBouger:\n  KeyZ KeyQ KeyS KeyD  ou  Key↑ Key← Key↓ Key→  ou  KeyGlisserSouris  ou  KeyGlisserDoigt  pour bouger\n  KeyGlisserMolette  ou  KeyA KeyE  ou  KeyPincerDoigts pour zoomer\n\nParamètres:\n  KeyG pour activer la grille\n  KeyX pour activer l'activité de pixels\n  KeyH pour activer le mode historique\n  KeyO pour activer le calque\n  KeyM pour activer le mode muet\n  KeyC pour copier les coordonnées du curseur\n  KeySHIFT+C pour copier la position actuelle en URL\n"
 }
