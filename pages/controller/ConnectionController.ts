@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "../../store";
-import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE } from "../../store/actions/chat";
+import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE, CLEAR_CHAT_MESSAGES } from "../../store/actions/chat";
 import { SET_COOLDOWN, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
 import { SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_CANVAS } from "../../store/actions/parameters";
@@ -58,6 +58,9 @@ export default class ConnectionController {
           break;
         case 'chatMessage':
           store?.dispatch({ type: ADD_CHAT_MESSAGE, payload: data });
+          break;
+        case 'clearChatMessages':
+          store?.dispatch({ type: CLEAR_CHAT_MESSAGES, payload: data });
           break;
         case 'captchaNeeded':
           store?.dispatch({ type: SET_MODAL, payload: ModalTypes.CAPTCHA });

@@ -6,6 +6,7 @@ import palette from '../pages/constants/palette';
 import ModalTypes from '../pages/constants/modalTypes';
 import { User } from './actions/user';
 import { Canvas } from '../pages/controller/CanvasController';
+import { Message } from './actions/chat';
 
 export interface ReduxState {
   playersNb: number;
@@ -13,7 +14,7 @@ export interface ReduxState {
   selectedColor: string;
   currentModal: ModalTypes;
   cooldown: number;
-  chatMessages: { author: string, msg: string, color: string }[];
+  chatMessages: Message[];
   unreadMessage: boolean;
   gridActive: boolean;
   zoomTowardCursor: boolean;
