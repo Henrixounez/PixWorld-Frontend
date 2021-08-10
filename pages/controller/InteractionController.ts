@@ -260,10 +260,18 @@ export default class InteractionController {
             store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
             store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
             break;
-          case 'c':
+          case 'C':
             if (navigator.clipboard) {
               const pos = store!.getState().position;
               const txt = window.location.origin + `?pos="${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},${Math.round(pos.zoom)})"`;
+              navigator.clipboard.writeText(txt);
+              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+            }
+            break;
+          case 'c':
+            if (navigator.clipboard) {
+              const pos = store!.getState().cursorPos;
+              const txt = `#${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},10)`;
               navigator.clipboard.writeText(txt);
               store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
             }
