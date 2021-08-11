@@ -14,6 +14,7 @@ import { SET_CANVAS } from '../../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
 import { SET_ERASER_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../../store/actions/painting';
 import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../../store/actions/chat';
+import countryCodes from '../constants/countryCodes';
 
 const ChatButton = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -111,7 +112,7 @@ const ChatInteraction = styled.div`
   }
 `;
 const ChatMessage = styled.div`
-
+  word-break: break-all;
 `;
 const SendButton = styled.div`
   display: flex;
@@ -253,18 +254,17 @@ export default function Chat() {
       </ChatButton>
       <ChatWindow show={showChat} darkMode={darkMode}>
         <ChatText ref={chatRef}>
-          {messageList.map((msg, i) => {
-            const Flag = Flags[msg.country];
-            return (
-              <ChatMessage key={i} >
-                <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
-                  { Flag && <Flag style={{ height: "0.6rem", marginRight: "0.2rem", filter: darkMode ? 'invert(1)' : 'invert(0)' }}/> }
-                  {msg.author}
-                </span>
-                : {formatChatText(msg.msg, textClick)}
-              </ChatMessage>
-            );
-          })}
+          {messageList.map((msg, i) => (
+            <ChatMessage key={i} >
+              <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
+                { countryCodes.includes(msg.country) && (
+                  <img src={`/flags/${msg.country}.svg`} style={{ height: "0.6rem", marginRight: "0.2rem", filter: darkMode ? 'invert(1)' : 'invert(0)' }} />
+                )}
+                {msg.author}
+              </span>
+              : {formatChatText(msg.msg, textClick)}
+            </ChatMessage>
+          ))}
         </ChatText>
         <ChatInteraction>
           { user ? (
