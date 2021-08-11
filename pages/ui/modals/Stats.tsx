@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useTranslation } from "next-i18next";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { Eye, EyeOff } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 import styled from 'styled-components';
 import { ReduxState } from "../../../store";
@@ -8,6 +9,7 @@ import { SET_MODAL } from "../../../store/actions/infos";
 import { SET_USER } from "../../../store/actions/user";
 import { API_URL } from "../../constants/api";
 import ModalTypes from "../../constants/modalTypes";
+import { Error, InputRow, ShowBtn, SubmitBtn } from "./Login";
 
 const Container = styled.div`
   display: flex;
@@ -169,9 +171,74 @@ function PixelRankings() {
   )
 }
 
+function EditInfos() {
+  const { t } = useTranslation('stats');
+  const dispatch = useDispatch();
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [err, setErr] = useState('');
+
+  const updateInfos = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (!password.length) {
+        setErr(t('edit.emptyPassword'));
+        return;
+      }
+      const token = localStorage.getItem('token');
+
+      if (!token)
+        return;
+  
+      const res = await axios.put(`${API_URL}/user/me`, { password }, { headers: { 'Authorization': token }});
+      dispatch({
+        type: SET_USER,
+        payload: res.data
+      });
+      dispatch({
+        type: SET_MODAL,
+        payload: ModalTypes.NONE
+      });
+    } catch (err) {
+      setErr(err.response?.data || t('edit.error'));
+    }
+  }
+
+  return (
+    <MenuContainer>
+      <form onSubmit={updateInfos}>
+        <InputRow>
+          <input
+            placeholder={t('edit.password')}
+            autoComplete='new-password'
+            aria-autocomplete='list'
+            required
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <ShowBtn onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? <EyeOff height="15px"/> : <Eye height="15px"/> }
+          </ShowBtn>
+        </InputRow>
+        { err && (
+          <Error>
+            {err}
+          </Error>
+        )}
+        <br/>
+        <SubmitBtn>
+          {t('edit.send')}
+        </SubmitBtn>
+      </form>
+    </MenuContainer>
+  );
+}
+
 enum MenusTypes {
   UserInfos = 'UserInfos',
-  PixelRankings = 'PixelRankings'
+  PixelRankings = 'PixelRankings',
+  EditInfos = 'EditInfos',
 }
 const menus = {
   [MenusTypes.UserInfos]: {
@@ -181,6 +248,10 @@ const menus = {
   [MenusTypes.PixelRankings]: {
     name: 'ranking.title',
     component: <PixelRankings/>,
+  },
+  [MenusTypes.EditInfos]: {
+    name: 'edit.title',
+    component: <EditInfos/>
   }
 };
 

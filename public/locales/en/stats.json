@@ -14,5 +14,12 @@
     "totalRanking": "Total",
     "dailyRanking": "Daily",
     "reset": "Daily rankings are reset everyday at 00:00 UTC."
+  },
+  "edit": {
+    "title": "Edit infos",
+    "emptyPassword": "Empty password",
+    "error": "Error during update",
+    "password": "Password",
+    "send": "Send"
   }
 }

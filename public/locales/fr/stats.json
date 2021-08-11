@@ -14,5 +14,12 @@
     "totalRanking": "Total",
     "dailyRanking": "Journalier",
     "reset": "Les rangs journaliers sont réinitialisés tout les jours à 00:00 UTC."
+  },
+  "edit": {
+    "title": "Editer infos",
+    "emptyPassword": "Mot de passe vide",
+    "error": "Erreur durant la modification",
+    "password": "Mot de passe",
+    "send": "Envoyer"
   }
 }
