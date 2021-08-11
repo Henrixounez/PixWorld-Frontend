@@ -3,7 +3,8 @@ import { MessageSquare } from 'react-feather';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
-import emojiFlags from 'emoji-flags';
+// @ts-ignore
+import * as Flags from 'country-flag-icons/react/3x2';
 
 import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../../store';
@@ -216,6 +217,7 @@ export default function Chat() {
 > == Commands ==
 > /help : Show this help
 > /here : Share your position
+> /setCountry [Country Code] : Set your chat country flag
 > == Other ==
 > Click on someone name to mention
             ` }});
@@ -251,14 +253,18 @@ export default function Chat() {
       </ChatButton>
       <ChatWindow show={showChat} darkMode={darkMode}>
         <ChatText ref={chatRef}>
-          {messageList.map((msg, i) => (
-            <ChatMessage key={i} >
-              <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
-                {msg.country !== "AQ" && emojiFlags.countryCode(msg.country).emoji}&nbsp;{msg.author}
-              </span>
-              : {formatChatText(msg.msg, textClick)}
-            </ChatMessage>
-          ))}
+          {messageList.map((msg, i) => {
+            const Flag = Flags[msg.country];
+            return (
+              <ChatMessage key={i} >
+                <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
+                  { Flag && <Flag style={{ height: "0.6rem", marginRight: "0.2rem" }}/> }
+                  {msg.author}
+                </span>
+                : {formatChatText(msg.msg, textClick)}
+              </ChatMessage>
+            );
+          })}
         </ChatText>
         <ChatInteraction>
           { user ? (
