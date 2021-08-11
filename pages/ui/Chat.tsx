@@ -258,7 +258,7 @@ export default function Chat() {
             return (
               <ChatMessage key={i} >
                 <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
-                  { Flag && <Flag style={{ height: "0.6rem", marginRight: "0.2rem" }}/> }
+                  { Flag && <Flag style={{ height: "0.6rem", marginRight: "0.2rem", filter: darkMode ? 'invert(1)' : 'invert(0)' }}/> }
                   {msg.author}
                 </span>
                 : {formatChatText(msg.msg, textClick)}
