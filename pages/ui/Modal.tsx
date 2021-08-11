@@ -16,6 +16,7 @@ import ModalStats from './modals/Stats';
 import ModalLogin from './modals/Login';
 import ModalRegister from './modals/Register';
 import ModalOverlay from './modals/Overlay';
+import ModalBookmarks from './modals/Bookmarks';
 
 const ModalBackdrop = styled.div<{darkMode: boolean}>`
   position: absolute;
@@ -101,6 +102,7 @@ const modalComponents = {
   [ModalTypes.LOGIN]: { title: 'auth:login:title', component: <ModalLogin/> },
   [ModalTypes.REGISTER]: { title: 'auth:register:title', component: <ModalRegister/> },
   [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/> },
+  [ModalTypes.BOOKMARKS]: { title: 'bookmarks:title', component: <ModalBookmarks/> },
 }
 
 export default function Modal() {

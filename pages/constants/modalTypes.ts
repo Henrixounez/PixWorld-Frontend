@@ -9,6 +9,7 @@ enum ModalTypes {
   LOGIN,
   REGISTER,
   OVERLAY,
+  BOOKMARKS,
 };
 
 export default ModalTypes;

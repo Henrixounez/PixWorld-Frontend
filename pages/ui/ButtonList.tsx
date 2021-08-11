@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { SET_MODAL, SET_SEARCH } from '../../store/actions/infos';
@@ -110,6 +110,9 @@ export default function ButtonList() {
       </Button>
       <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })}>
         <Sliders/>
+      </Button>
+      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })}>
+        <Bookmark/>
       </Button>
       <SearchBtn/>
     </ButtonListContainer>

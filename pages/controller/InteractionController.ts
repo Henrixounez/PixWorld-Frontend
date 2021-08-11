@@ -1,5 +1,5 @@
 import { store } from "../../store";
-import { SET_ALERT, SET_CURSOR_POS, SET_SEARCH } from "../../store/actions/infos";
+import { SET_ALERT, SET_CURSOR_POS, SET_MODAL, SET_SEARCH } from "../../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../../store/actions/overlay";
 import { SET_POSITION, SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../../store/actions/parameters";
@@ -8,6 +8,7 @@ import { PIXEL_SIZE } from "../constants/painting";
 import palette from "../constants/palette";
 import { CanvasController } from "./CanvasController";
 import { AudioType } from "./SoundController";
+import ModalTypes from "../constants/modalTypes";
 
 export default class InteractionController {
   canvasController: CanvasController;
@@ -259,6 +260,9 @@ export default class InteractionController {
           case 'm':
             store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
             store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
+            break;
+          case 'b':
+            store?.dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS });
             break;
           case 'C':
             if (navigator.clipboard) {

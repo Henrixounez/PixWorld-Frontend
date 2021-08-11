@@ -1,6 +1,6 @@
 import { ReduxState } from "..";
 import ModalTypes from "../../pages/constants/modalTypes";
-import { GRID_ZOOM } from "../../pages/controller/CanvasController";
+import { getCanvasController, GRID_ZOOM } from "../../pages/controller/CanvasController";
 
 /* Actions */
 export const SET_NB_PLAYERS = 'SET_NB_PLAYERS';
@@ -57,6 +57,9 @@ export function setCursorPos(state: ReduxState, action: SetCursorPosAction): Red
   };
 }
 export function setModal(state: ReduxState, action: SetModalAction): ReduxState {
+  if (action.payload === ModalTypes.NONE) {
+    getCanvasController()?.canvas.focus();
+  }
   return {
     ...state,
     currentModal: action.payload,
