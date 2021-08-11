@@ -102,7 +102,7 @@ const modalComponents = {
   [ModalTypes.LOGIN]: { title: 'auth:login:title', component: <ModalLogin/> },
   [ModalTypes.REGISTER]: { title: 'auth:register:title', component: <ModalRegister/> },
   [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/> },
-  [ModalTypes.BOOKMARKS]: { title: 'bookmarks:title', component: <ModalBookmarks/> },
+  [ModalTypes.BOOKMARKS]: { title: 'bookmark:title', component: <ModalBookmarks/> },
 }
 
 export default function Modal() {

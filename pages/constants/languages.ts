@@ -12,5 +12,6 @@ export const languagesModules = [
   'chat',
   'auth',
   'notification',
-  'alerts'
+  'alerts',
+  'bookmark'
 ];

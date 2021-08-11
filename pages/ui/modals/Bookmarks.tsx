@@ -161,7 +161,7 @@ export default function ModalBookmarks() {
       ))}
       <AddNew error={errorNew}>
         <input type="text" value={newBookmarkTitle} placeholder={t('name')} onChange={(e) => setNewBookmarkTitle(e.target.value)} />
-        <input type="text" value={newBookmarkPosition} placeholder={t('name')} onChange={(e) => setNewBookmarkPosition(e.target.value)} />
+        <input type="text" value={newBookmarkPosition} placeholder={t('position')} onChange={(e) => setNewBookmarkPosition(e.target.value)} />
         <FilePlus onClick={() => saveNew() }/>
       </AddNew>
     </Container>
