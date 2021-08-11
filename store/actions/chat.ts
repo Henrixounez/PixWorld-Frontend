@@ -10,6 +10,7 @@ export const SET_UNREAD_MESSAGE = 'SET_UNREAD_MESSAGE';
 export type Message = {
   id: number;
   author: string;
+  country: string;
   msg: string;
   color: string;
 }

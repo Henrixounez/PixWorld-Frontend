@@ -3,6 +3,7 @@ import { MessageSquare } from 'react-feather';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
+import emojiFlags from 'emoji-flags';
 
 import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../../store';
@@ -253,7 +254,7 @@ export default function Chat() {
           {messageList.map((msg, i) => (
             <ChatMessage key={i} >
               <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
-                {msg.author}
+                {msg.country !== "AQ" && emojiFlags.countryCode(msg.country).emoji}&nbsp;{msg.author}
               </span>
               : {formatChatText(msg.msg, textClick)}
             </ChatMessage>
