@@ -8,6 +8,7 @@ export const SET_POSITION = 'SET_POSITION';
 export const SET_SHOULD_RENDER = 'SET_SHOULD_RENDER';
 export const SET_SHOULD_LOAD_CHUNKS = 'SET_SHOULD_LOAD_CHUNKS';
 export const SET_SHOULD_CLEAR_CHUNKS = 'SET_SHOULD_CLEAR_CHUNKS';
+export const SET_ERASER_MODE = 'SET_ERASER_MODE';
 
 /* Types */
 export interface SetSelectedColorAction {
@@ -34,8 +35,12 @@ export interface SetShouldClearChunksAction {
   type: typeof SET_SHOULD_CLEAR_CHUNKS;
   payload: boolean;
 }
+export interface SetEraserModeAction {
+  type: typeof SET_ERASER_MODE;
+  payload: boolean;
+}
 
-export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldClearChunksAction;
+export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldClearChunksAction | SetEraserModeAction;
 
 /* Functions */
 export function setSelectedColor(state: ReduxState, action: SetSelectedColorAction): ReduxState {
@@ -82,6 +87,12 @@ export function setShouldClearChunks(state: ReduxState, action: SetShouldClearCh
     shouldClearChunks: action.payload,
   };
 }
+export function setEraserMode(state: ReduxState, action: SetEraserModeAction): ReduxState {
+  return {
+    ...state,
+    eraserMode: action.payload,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -104,5 +115,9 @@ export const dispatches = [
   {
     action: SET_SHOULD_CLEAR_CHUNKS,
     function: setShouldClearChunks,
+  },
+  {
+    action: SET_ERASER_MODE,
+    function: setEraserMode,
   }
 ];

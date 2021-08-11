@@ -269,7 +269,7 @@ export class CanvasController {
     if (history) {
       return `${API_URL}/history/chunk/${date}/${hour}/${this.currentCanvasId}/${chunkX}/${chunkY}`;
     } else {
-      return `${API_URL}/chunk/${this.currentCanvasId}/${chunkX}/${chunkY}`;
+      return `${API_URL}/chunk/${this.currentCanvasId}/${chunkX}/${chunkY}${store?.getState().eraserMode ? '?noBg' : ''}`;
     }
   }
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
@@ -358,6 +358,8 @@ export class CanvasController {
         return;
       color = overlayColor;
     }
+    if (store?.getState().eraserMode)
+      color = "#0000";
 
     const lastColor = this.placePixel(coordX, coordY, color);
     if (lastColor) {
@@ -440,7 +442,12 @@ export class CanvasController {
 
     store?.dispatch({ type: SET_SHOULD_RENDER, payload: false });
     ctx.clearRect(0, 0, this.size.width, this.size.height);
-    this.drawSuperChunks(ctx);
+    if (!store?.getState().eraserMode) {
+      this.drawSuperChunks(ctx);
+    } else {
+      ctx.fillStyle = "lightblue"
+      ctx.fillRect(0, 0, this.size.width, this.size.height);  
+    }
     if (PIXEL_SIZE / this.position.zoom > LIMIT_DRAW_NORMAL_CHUNKS)
       this.drawChunks(ctx);
     this.drawGrid(ctx);

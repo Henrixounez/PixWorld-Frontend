@@ -53,6 +53,8 @@ export default class Chunk {
     if (!ctx)
       return '#000000';
     const data = ctx.getImageData(x, y, 1, 1).data;
+    if (data[3] === 0)
+      return '#0000';
     return ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
   }
   placePixel(x: number, y: number, color: string) {
@@ -61,8 +63,12 @@ export default class Chunk {
     if (!ctx)
       return;
 
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, 1, 1);
+    if (color !== "#0000") {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, 1, 1);
+    } else {
+      ctx.clearRect(x, y, 1, 1);
+    }
     return;
   }
 }

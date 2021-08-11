@@ -10,7 +10,7 @@ import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
 import { SET_CANVAS } from '../../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
-import { SET_POSITION } from '../../store/actions/painting';
+import { SET_ERASER_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../../store/actions/painting';
 import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../../store/actions/chat';
 
 const ChatButton = styled.div<{darkMode: boolean}>`
@@ -172,6 +172,7 @@ export default function Chat() {
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const canvas = useSelector((state: ReduxState) => state.currentCanvas);
   const unreadMessage = useSelector((state: ReduxState) => state.unreadMessage);
+  const eraserMode = useSelector((state: ReduxState) => state.eraserMode);
 
   const messageToWs = (text: string) => {
     getCanvasController()?.connectionController.sendToWs('sendMessage', text);
@@ -181,6 +182,28 @@ export default function Chat() {
     switch (cmd) {
       case '/here':
         messageToWs(`#${store!.getState().canvases.find((e) => e.id === canvas)?.letter}(${Math.round(position.x)},${Math.round(position.y)},${Math.round(position.zoom)})`);
+        break;
+      case '/eraser':
+        dispatch({
+          type: SET_ERASER_MODE,
+          payload: !eraserMode,
+        });
+        dispatch({
+          type: SET_SHOULD_CLEAR_CHUNKS,
+          payload: true,
+        });
+        dispatch({
+          type: SET_SHOULD_LOAD_CHUNKS,
+          payload: true,
+        });
+        dispatch({
+          type: ADD_CHAT_MESSAGE,
+          payload: {
+            author: 'PixWorld',
+            color: 'green',
+            msg: `Eraser mode: ${!eraserMode}`
+          }
+        });
         break;
       case '/help':
         dispatch({
