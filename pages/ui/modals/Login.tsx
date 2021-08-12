@@ -49,6 +49,10 @@ export const Error = styled.div`
   color: crimson;
   margin: 0;
 `;
+export const Success = styled.div`
+  color: #297729;
+  margin: 0;
+`;
 export const Switch = styled.div`
   font-size: 1rem;
 `;

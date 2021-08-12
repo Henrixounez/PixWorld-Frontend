@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { useTranslation } from 'next-i18next';
-import { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReduxState } from '../../../store';
 import { SET_MODAL } from '../../../store/actions/infos';
-import { SET_USER } from '../../../store/actions/user';
 import { API_URL } from '../../constants/api';
 import ModalTypes from '../../constants/modalTypes';
 import {
-  Container, Error, InputRow, ShowBtn, SubmitBtn, Switch
+  Container, Error, InputRow, ShowBtn, SubmitBtn, Success, Switch
 } from './Login';
 
 export default function ModalRegister() {
@@ -21,20 +20,14 @@ export default function ModalRegister() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const register = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/user/register`, { email, username, password });
-      localStorage.setItem('token', res.data.token);
-      dispatch({
-        type: SET_USER,
-        payload: res.data
-      });
-      dispatch({
-        type: SET_MODAL,
-        payload: ModalTypes.STATS
-      });
+      await axios.post(`${API_URL}/user/register`, { email, username, password });
+
+      setSuccess(true);
     } catch (err) {
       setErr(err.response?.data || "Error during registration");
     }
@@ -48,65 +41,79 @@ export default function ModalRegister() {
       });
   }, []);
 
-  return (
-    <Container>
-      <form onSubmit={register}>
-        <InputRow>
-          <input
-            placeholder={t('register.email')}
-            type='email'
-            name='email'
-            autoComplete='email'
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </InputRow>
-        <InputRow>
-          <input
-            placeholder={t('register.username')}
-            type='text'
-            name='username'
-            required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </InputRow>
-        <InputRow>
-          <input
-            placeholder={t('register.password')}
-            autoComplete='new-password'
-            aria-autocomplete='list'
-            required
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <ShowBtn onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? <EyeOff height="15px"/> : <Eye height="15px"/> }
-          </ShowBtn>
-        </InputRow>
-        { err && (
-          <Error>
-            {err}
-          </Error>
-        )}
-        <SubmitBtn>
-          {t('register.registerBtn')}
-        </SubmitBtn>
-        <Switch>
-          {t('register.haveAccount')}&nbsp;
-          <a
-            href=''
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch({ type: SET_MODAL, payload: ModalTypes.LOGIN });
-            }}
-          >
-            {t('register.goToLogin')}
-          </a>
-        </Switch>
-      </form>
-    </Container>
-  );
+  if (success) {
+    return (
+      <Container>
+        <Success>
+          {t('register.success').split('\n').map((e, i) => (
+            <React.Fragment key={i}>
+              {e}<br/>
+            </React.Fragment>
+          ))}
+        </Success>
+      </Container>
+    )
+  } else {
+    return (
+      <Container>
+        <form onSubmit={register}>
+          <InputRow>
+            <input
+              placeholder={t('register.email')}
+              type='email'
+              name='email'
+              autoComplete='email'
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </InputRow>
+          <InputRow>
+            <input
+              placeholder={t('register.username')}
+              type='text'
+              name='username'
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </InputRow>
+          <InputRow>
+            <input
+              placeholder={t('register.password')}
+              autoComplete='new-password'
+              aria-autocomplete='list'
+              required
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <ShowBtn onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <EyeOff height="15px"/> : <Eye height="15px"/> }
+            </ShowBtn>
+          </InputRow>
+          { err && (
+            <Error>
+              {err}
+            </Error>
+          )}
+          <SubmitBtn>
+            {t('register.registerBtn')}
+          </SubmitBtn>
+          <Switch>
+            {t('register.haveAccount')}&nbsp;
+            <a
+              href=''
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch({ type: SET_MODAL, payload: ModalTypes.LOGIN });
+              }}
+            >
+              {t('register.goToLogin')}
+            </a>
+          </Switch>
+        </form>
+      </Container>
+    );
+  }
 }
