@@ -85,7 +85,7 @@ export default function Captcha() {
   }
 
   const refreshCaptcha = () => {
-    setCaptchaURL(`${API_URL}/captcha.svg?${Date.now()}`);
+    setCaptchaURL(`${API_URL}/captcha.png?${Date.now()}`);
   }
 
   useEffect(() => {
