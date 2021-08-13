@@ -9,6 +9,7 @@ export const SET_MODAL = 'SET_MODAL';
 export const SET_COOLDOWN = 'SET_COOLDOWN';
 export const SET_ALERT = 'SET_ALERT';
 export const SET_SEARCH = 'SET_SEARCH';
+export const SET_DISCONNECT = 'SET_DISCONNECT';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -39,8 +40,12 @@ export interface SetSearchAction {
   type: typeof SET_SEARCH;
   payload: boolean;
 }
+export interface SetDisconnectAction {
+  type: typeof SET_DISCONNECT;
+  payload: string;
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction | SetSearchAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction | SetSearchAction | SetDisconnectAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -83,6 +88,12 @@ export function setSearch(state: ReduxState, action: SetSearchAction): ReduxStat
     searchActive: action.payload,
   };
 }
+export function setDisconnect(state: ReduxState, action: SetDisconnectAction): ReduxState {
+  return {
+    ...state,
+    disconnectReason: action.payload,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -109,5 +120,9 @@ export const dispatches = [
   {
     action: SET_SEARCH,
     function: setSearch
+  },
+  {
+    action: SET_DISCONNECT,
+    function: setDisconnect
   }
 ];
