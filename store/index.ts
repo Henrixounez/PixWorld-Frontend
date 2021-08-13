@@ -24,6 +24,7 @@ export interface ReduxState {
   shouldLoadChunks: boolean;
   shouldClearChunks: boolean;
   searchActive: boolean;
+  disconnectReason: string;
   notifications: boolean;
   sounds: boolean;
   darkMode: boolean;
@@ -76,6 +77,7 @@ export const initialState: ReduxState = {
   shouldLoadChunks: true,
   shouldClearChunks: false,
   searchActive: false,
+  disconnectReason: "",
   notifications: false,
   sounds: true,
   darkMode: false,
