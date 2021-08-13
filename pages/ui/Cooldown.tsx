@@ -12,8 +12,9 @@ const MAX_COOLDOWN = 60;
 const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
   position: fixed;
   top: 10px;
-  left: calc(50vw - 25px);
+  left: 50vw;
   width: 50px;
+  transform: translate(-50%, 0);
   font-size: 1rem;
   height: 35px;
   background-color: ${({ limit })=> limit ? "#FFA9A9cc" : "#FFFD" };

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { store } from "../../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE, CLEAR_CHAT_MESSAGES } from "../../store/actions/chat";
-import { SET_COOLDOWN, SET_DISCONNECT, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
+import { SET_ALERT, SET_COOLDOWN, SET_DISCONNECT, SET_MODAL, SET_NB_PLAYERS } from "../../store/actions/infos";
 import { SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../../store/actions/painting";
 import { SET_CANVAS } from "../../store/actions/parameters";
 import { SET_NB_PIXELS, SET_USER } from "../../store/actions/user";
@@ -54,6 +54,7 @@ export default class ConnectionController {
           break;
         case 'refusePixel':
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
+          store?.dispatch({ type: SET_ALERT, payload: { show: true, text: data.reason, color: "#FFA9A9cc" }})
           this.canvasController.restorePixel(data.pos.x, data.pos.y);
           break;
         case 'chatMessage':

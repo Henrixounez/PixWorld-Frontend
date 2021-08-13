@@ -7,14 +7,14 @@ import { SET_ALERT } from '../../store/actions/infos';
 import { getCanvasController } from '../controller/CanvasController';
 import { AudioType } from '../controller/SoundController';
 
-const AlertContainer = styled.div<{show: boolean}>`
+const AlertContainer = styled.div<{show: boolean, color?: string}>`
   position: fixed;
   top: 55px;
   left: calc(50vw);
   transform: translate(-50%, 0);
   font-size: 1rem;
   text-align: center;
-  background-color: #FFFD;
+  background-color: ${({ color }) => color || "#FFFD"};
   border: 1px solid #000;
   padding: 10px;
   gap: 10px;
@@ -57,7 +57,7 @@ export default function Alert() {
   return (
     <>
       { alert.show && alert.text ? (
-        <AlertContainer show={display}>
+        <AlertContainer show={display} color={alert.color}>
           {t(alert.text)}
         </AlertContainer>
       ) : (
