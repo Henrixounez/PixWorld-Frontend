@@ -5,6 +5,7 @@ export interface User {
   username: string;
   totalPixels: number;
   dailyPixels: number;
+  type: string;
 }
 
 /* Actions */
