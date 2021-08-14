@@ -26,7 +26,7 @@ function PixelActivityGraph() {
 
   useEffect(() => {
     getPixelActivity();
-    const interval = setInterval(() => getPixelActivity(), 5 * 60 * 1000);
+    const interval = setInterval(() => getPixelActivity(), 30 * 1000);
     return () => {
       clearInterval(interval);
     }
