@@ -41,6 +41,13 @@ function PixelActivityGraph() {
         style={{
           padding: "1rem",
         }}
+        options={{
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }}
         data={{
           labels: pixelActivity.map((e) => (new Date(e.createdAt)).toLocaleTimeString('fr-FR')),
           datasets: [
