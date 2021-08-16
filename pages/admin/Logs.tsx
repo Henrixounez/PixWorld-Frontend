@@ -14,12 +14,12 @@ const LogsResults = styled.table`
   overflow: auto;
   margin: 1rem;
   width: 100%;
-  max-width: 500px;
+  max-width: 95%;
   row-gap: 1rem;
   column-gap: 1rem;
   border-collapse: collapse;
   td {
-    padding: .25rem 0;
+    padding: .25rem .5rem;
     text-align: center;
   }
   thead {
@@ -33,13 +33,21 @@ const LogsResults = styled.table`
 `;
 
 interface PixelLogResult {
-  ip: string,
-  userId: number,
+  ip: string;
+  userId: number;
   pos: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   }
-  color: string
+  color: string;
+  canvas: string;
+  createdAt: string;
+}
+
+function dateFormat(date: string) {
+  const d = new Date(date);
+
+  return `${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR')}`;
 }
 
 function PixelLogs() {
@@ -52,7 +60,7 @@ function PixelLogs() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/admin/pixelLogs/${x}/${y}`, { headers: { 'Authorization': token } });
+      const res = await axios.get(`${API_URL}/admin/pixelLogs/${canvas}/${x}/${y}`, { headers: { 'Authorization': token } });
       setResults(res.data || []);
     } catch (err) {
       console.error(err);
@@ -81,23 +89,27 @@ function PixelLogs() {
           <LogsResults>
             <thead>
               <tr>
-                <th>ip</th>
-                <th>userId</th>
+                <th>Date</th>
+                <th>IP</th>
+                <th>User Id</th>
                 <th>Position</th>
                 <th>Color</th>
               </tr>
             </thead>
-            {results.map((r, i) => (
-              <tr key={i}>
-                <td>{r.ip}</td>
-                <td>{r.userId}</td>
-                <td>{r.pos.x},{r.pos.y}</td>
-                <td>
-                  <div style={{ display: "inline-block", height: "10px", width: "10px", backgroundColor: r.color, marginRight: ".5rem" }}/>
-                  {r.color}
-                </td>
-              </tr>
-            ))}
+            <tbody>
+              {results.map((r, i) => (
+                <tr key={i}>
+                  <td>{dateFormat(r.createdAt)}</td>
+                  <td>{r.ip}</td>
+                  <td>{r.userId}</td>
+                  <td>{r.pos.x},{r.pos.y}</td>
+                  <td>
+                    <div style={{ display: "inline-block", height: "10px", width: "10px", backgroundColor: r.color, marginRight: ".5rem" }}/>
+                    {r.color}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </LogsResults>
         </ContainerLogsResult>
       ) : null}
@@ -138,8 +150,10 @@ function UserPixelLogs() {
           <LogsResults>
             <thead>
               <tr>
-                <th>ip</th>
-                <th>userId</th>
+                <th>Date</th>
+                <th>Ip</th>
+                <th>User Id</th>
+                <th>Canvas</th>
                 <th>Position</th>
                 <th>Color</th>
               </tr>
@@ -147,8 +161,10 @@ function UserPixelLogs() {
             <tbody>
               {results.map((r, i) => (
                 <tr key={i}>
+                  <td>{dateFormat(r.createdAt)}</td>
                   <td>{r.ip}</td>
                   <td>{r.userId}</td>
+                  <td>{r.canvas}</td>
                   <td>{r.pos.x},{r.pos.y}</td>
                   <td>
                     <div style={{ display: "inline-block", height: "10px", width: "10px", backgroundColor: r.color, marginRight: ".5rem" }}/>
