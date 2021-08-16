@@ -2,7 +2,7 @@ import axios from "axios";
 import { FormEvent, useState } from "react";
 import { Send } from "react-feather";
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, CoordRow, ErrorBox, QueryForm, Textfield } from "./utils"
+import { BoxContainer, BoxTitle, CoordRow, ErrorBox, onCoordinatesPaste, QueryForm, Textfield } from "./utils"
 
 function Import() {
   const [url, setUrl] = useState("");
@@ -34,11 +34,11 @@ function Import() {
       <QueryForm onSubmit={importImage}>
         <CoordRow>
           <Textfield placeholder="URL" type="text" value={url} onChange={(e) => setUrl(e.target.value) }/>
-          <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+          <Textfield onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
         </CoordRow>
-        <CoordRow>
-          <Textfield placeholder="X" type="number" onChange={(e) => setX(Number(e.target.value)) }/>
-          <Textfield placeholder="Y" type="number" onChange={(e) => setY(Number(e.target.value)) }/>
+        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <Textfield placeholder="X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
+          <Textfield placeholder="Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
         </CoordRow>
         <CoordRow>
           <div style={{ flex: 1 }}/>
@@ -85,13 +85,13 @@ function Erase() {
         Erase
       </BoxTitle>
       <QueryForm onSubmit={importImage}>
-        <CoordRow>
-          <Textfield placeholder="Start X" type="number" onChange={(e) => setStartX(Number(e.target.value)) }/>
-          <Textfield placeholder="Start Y" type="number" onChange={(e) => setStartY(Number(e.target.value)) }/>
+        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setStartX, setStartY, setCanvas)}>
+          <Textfield placeholder="Start X" type="number" value={startX} onChange={(e) => setStartX(Number(e.target.value)) }/>
+          <Textfield placeholder="Start Y" type="number" value={startY} onChange={(e) => setStartY(Number(e.target.value)) }/>
         </CoordRow>
-        <CoordRow>
-          <Textfield placeholder="End X" type="number" onChange={(e) => setEndX(Number(e.target.value)) }/>
-          <Textfield placeholder="End Y" type="number" onChange={(e) => setEndY(Number(e.target.value)) }/>
+        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setEndX, setEndY, setCanvas)}>
+          <Textfield placeholder="End X" type="number" value={endX} onChange={(e) => setEndX(Number(e.target.value)) }/>
+          <Textfield placeholder="End Y" type="number" value={endY} onChange={(e) => setEndY(Number(e.target.value)) }/>
         </CoordRow>
         <CoordRow>
           <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>

@@ -1,3 +1,4 @@
+import { ClipboardEvent, Dispatch, SetStateAction } from "react";
 import styled, { css } from "styled-components"
 
 export const BoxContainer = styled.div<{ status?: string }>`
@@ -75,3 +76,32 @@ export const CoordRow = styled.div`
   align-items: stretch;
   gap: 0.5rem;
 `;
+
+const canvases = {
+  "w": "world",
+  "a": "art",
+}
+
+export function onCoordinatesPaste(e: ClipboardEvent<HTMLInputElement | HTMLDivElement>, setX: Dispatch<SetStateAction<number>>, setY: Dispatch<SetStateAction<number>>, setCanvas: Dispatch<SetStateAction<string>>) {
+  const text = e.clipboardData.getData('Text');
+  const regex = /#(.)\((-?\d*),\s*(-?\d*),\s*(-?\d*)\)/;
+  const res = text.match(regex);
+  if (res && res.length === 5) {
+    const canvasLetter = res[1];
+    const x = Number(res[2]);
+    const y = Number(res[3]);
+    // const zoom = Number(res[4]);
+
+    if (!Object.keys(canvases).includes(canvasLetter))
+      return false;
+    // @ts-ignore
+    const canvas = canvases[canvasLetter];
+
+    e.preventDefault();
+    setX(x);
+    setY(y);
+    setCanvas(canvas);
+    return true;
+  }
+  return false;
+}

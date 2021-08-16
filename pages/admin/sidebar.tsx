@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
+import Link from 'next/link';
 import styled, { css } from 'styled-components'
-import { pages, PageTypes } from './index.page';
+import { pages, PageTypes } from './[page].page';
 
 const SideBarContainer = styled.div`
   padding: .5rem;
@@ -43,21 +43,17 @@ const SideBarButton = styled.div<{active: boolean}>`
 
 interface SideBarProps {
   currentPage: PageTypes,
-  setCurrentPage: Dispatch<SetStateAction<PageTypes>>,
 }
 
-export default function SideBar({ currentPage, setCurrentPage}: SideBarProps) {
+export default function SideBar({ currentPage }: SideBarProps) {
   return (
     <SideBarContainer>
       { pages.map((p, i) => (
-        <SideBarButton
-          key={i}
-          title={p.name}
-          active={currentPage === p.type}
-          onClick={() => setCurrentPage(p.type)}
-        >
-          {p.icon}
-        </SideBarButton>
+        <Link key={i} href={`/admin/${p.type}`}>
+          <SideBarButton title={p.name} active={currentPage === p.type}>
+            {p.icon}
+          </SideBarButton>
+        </Link>
       ))}
     </SideBarContainer>
   )

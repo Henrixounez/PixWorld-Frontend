@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { Search } from "react-feather";
 import styled from "styled-components";
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, CoordRow, QueryForm, Textfield } from "./utils"
+import { BoxContainer, BoxTitle, CoordRow, onCoordinatesPaste, QueryForm, Textfield } from "./utils"
 
 const ContainerLogsResult = styled.div`
   height: 500px;
@@ -45,6 +45,7 @@ interface PixelLogResult {
 function PixelLogs() {
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
+  const [canvas, setCanvas] = useState("");
   const [results, setResults] = useState<PixelLogResult[]>([]);
 
   const searchPixelLogs = async (e: FormEvent<HTMLFormElement>) => {
@@ -64,9 +65,10 @@ function PixelLogs() {
         Coordinate Pixel Logs
       </BoxTitle>
       <QueryForm onSubmit={searchPixelLogs}>
-        <CoordRow>
-          <Textfield placeholder="Coord X" type="number" onChange={(e) => setX(Number(e.target.value)) }/>
-          <Textfield placeholder="Coord Y" type="number" onChange={(e) => setY(Number(e.target.value)) }/>
+        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <Textfield placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
+          <Textfield placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+          <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
           <button>
             <Search/>
           </button>
