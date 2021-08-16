@@ -164,8 +164,10 @@ export default class InteractionController {
     }
   }
   zoom = (e: WheelEvent) => {
-    const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
-    this.canvasController.changeZoom(e.deltaY < 0 ? -2 : 2, coordX, coordY);
+    if (store?.getState().zoomTowardCursor)
+      this.canvasController.changeZoom(e.deltaY < 0 ? 0.9 : 1.1, e.clientX, e.clientY);
+    else
+      this.canvasController.changeZoom(e.deltaY < 0 ? 0.9 : 1.1, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
   }
 
 
@@ -227,10 +229,10 @@ export default class InteractionController {
   keypress = (e: KeyboardEvent) => {
     switch (e.code) {
       case 'KeyE':
-        this.canvasController.changeZoom(-this.position.zoom / 8, this.position.x, this.position.y);
+        this.canvasController.changeZoom(0.9, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
         break;
       case 'KeyQ':
-        this.canvasController.changeZoom(this.position.zoom / 8, this.position.x, this.position.y);
+        this.canvasController.changeZoom(1.1, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
         break;
       case 'KeyW':
         this.canvasController.changePosition(0, -4 * this.position.zoom);
@@ -312,7 +314,7 @@ export default class InteractionController {
     e.preventDefault();
   }
   touchEnd = (e: TouchEvent) => {
-    if (!this.isMoving) {
+    if (!this.isMoving && this.pinchDistance !== 0) {
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
       this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
     }
@@ -362,8 +364,13 @@ export default class InteractionController {
         const distX = touches[0].clientX - touches[1].clientX;
         const distY = touches[0].clientY - touches[1].clientY;
         const pinchDistance = Math.hypot(distX, distY);
-        if (this.pinchDistance !== 0)
-          this.canvasController.changeZoom((this.pinchDistance - pinchDistance) / 10, this.position.x, this.position.y);
+        if (this.pinchDistance !== 0) {
+          const pinchDiff = (this.pinchDistance - pinchDistance) / 10;
+          if (store?.getState().zoomTowardCursor)
+            this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, touches[1].clientX + distX / 2, touches[1].clientY + distY / 2);
+          else
+            this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
+        }
         this.pinchDistance = pinchDistance;
       }
     }
