@@ -190,8 +190,9 @@ export class CanvasController {
   }
 
   // Utils //
-  coordinatesOnCanvas = (targetX: number, targetY: number) => {
-    const { zoom, x, y } = this.position;
+  coordinatesOnCanvas = (targetX: number, targetY: number, _zoom?: number) => {
+    const { x, y } = this.position;
+    const zoom = _zoom ? _zoom : this.position.zoom;
     const width = this.size.width;
     const height = this.size.height;
     const pixelSize = PIXEL_SIZE / zoom;
@@ -379,21 +380,24 @@ export class CanvasController {
     this.soundController.playSound(AudioType.NEUTRAL);
   }
   changeZoom = (delta: number, focalX: number, focalY: number) => {
-    const oldZoom = this.position.zoom;
-    let newZoom = this.position.zoom + delta;
-
+    const { coordX, coordY } = this.canvasToCoordinates(focalX, focalY);
+    const { posX: startPosX, posY: startPosY } = this.coordinatesOnCanvas(coordX, coordY);
+    let newZoom = this.position.zoom * delta;
     if (newZoom >= 1 && newZoom < MAX_ZOOM) {
-      const changeInZoom = (oldZoom - newZoom) / 15;
-      if (store?.getState().zoomTowardCursor) {
-        const translateX = (focalX - this.position.x) * changeInZoom;
-        const transtateY = (focalY - this.position.y) * changeInZoom;
-        this.changePosition(translateX, transtateY);
-      }
-      if (store?.getState().history.activate && newZoom > 25) {
-        newZoom = 25;
-      }
-      this.setZoom(newZoom);
-      localStorage.setItem('position', JSON.stringify(this.position));
+      const { posX, posY } = this.coordinatesOnCanvas(coordX, coordY, newZoom);
+      
+      const diffX = startPosX - posX;
+      const diffY = startPosY - posY;
+      const pixelSize = PIXEL_SIZE / newZoom;
+      const toMoveX = diffX / pixelSize;
+      const toMoveY = diffY / pixelSize;
+
+      // Optimization for being less CPU intensive due to Redux dispatch
+      store!.getState().position.zoom = newZoom;
+      store!.getState().position.x = this.position.x - toMoveX;
+      store!.getState().position.y = this.position.y - toMoveY;
+      store!.getState().shouldLoadChunks = true;
+      store!.getState().shouldRender = true;
     }
   }
   setZoom = (zoom: number) => {
