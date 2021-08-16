@@ -6,6 +6,7 @@ const Text = styled.div`
   text-align: left;
   margin: auto;
   width: fit-content;
+  max-width: 560px;
 `;
 const Key = styled.span`
   border: 1px solid #333;
@@ -94,6 +95,10 @@ export default function ModalInfos() {
       {t('madeBy')}<br/>
       {t('os')} <a href="https://github.com/Henrixounez/PixWorld-Frontend">Frontend</a> & <a href="https://github.com/Henrixounez/PixWorld-Backend">Backend</a><br/>
       {t('discord')} <a href="https://discord.gg/kQPsRxNuDr">Discord</a>
+      <hr/>
+      <Text>
+        {formatControls(t('rules'))}
+      </Text>
       <hr/>
       <Text>
         {formatControls(t('controls'))}
