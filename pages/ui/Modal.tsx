@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { useRef } from 'react';
 import { XCircle } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
@@ -110,8 +109,6 @@ export default function Modal() {
   const currentModal = useSelector((state: ReduxState) => state.currentModal);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const dispatch = useDispatch();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const touchStart = useRef(0);
 
   if (currentModal === ModalTypes.NONE)
     return null;
@@ -127,17 +124,7 @@ export default function Modal() {
             <XCircle color="#000" />
           </CloseButton>
         </div>
-        <ContentContainer
-          ref={containerRef}
-          onTouchStart={(e) => touchStart.current = e.changedTouches[0].clientY }
-          onTouchMove={(e) => {
-            if (containerRef.current) {
-              const delta = touchStart.current - e.changedTouches[0].clientY;
-              containerRef.current.scrollBy(0, delta)
-              touchStart.current = e.changedTouches[0].clientY;
-            }
-          }}  
-        >
+        <ContentContainer>
           {modalComponents[currentModal].component}
         </ContentContainer>
       </ModalContent>
