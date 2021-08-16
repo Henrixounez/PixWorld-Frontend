@@ -34,10 +34,10 @@ const ContentContainer = styled.div`
 `;
 
 export enum PageTypes {
-  ACTIVITY,
-  LOGS,
-  BAN,
-  MAP
+  ACTIVITY = "activity",
+  LOGS = "logs",
+  BAN = "ban",
+  MAP = "map"
 }
 
 export const pages = [
@@ -72,7 +72,6 @@ export default function AdminPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [currentPage, setCurrentPage] = useState(PageTypes.ACTIVITY);
 
   const checkAdmin = async () => {
     try {
@@ -101,6 +100,8 @@ export default function AdminPage() {
       checkAdmin();
   }, []);
 
+  const currentPage = router.query.page as PageTypes;
+
   if (!isAdmin) {
     return (
       <Container>
@@ -110,7 +111,7 @@ export default function AdminPage() {
   } else {
     return (
       <Container>
-        <SideBar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <SideBar currentPage={currentPage} />
         <ContentContainer>
           {pages.find((p) => p.type === currentPage)?.component}
         </ContentContainer>
