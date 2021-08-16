@@ -9,7 +9,7 @@ import { AudioType } from '../controller/SoundController';
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
 
-const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
+const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: boolean}>`
   position: fixed;
   top: 10px;
   left: 50vw;
@@ -26,6 +26,7 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean}>`
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .5s;
+  filter: ${({ darkMode, limit }) => darkMode && !limit ? 'invert(1)' : 'invert(0)'};
   opacity: ${({ show }) => show ? '1' : '0'};
   user-select: none;
 `;
@@ -37,6 +38,7 @@ export default function Cooldown() {
   const notifications = useSelector((state: ReduxState) => state.notifications);
   const [display, setDisplay] = useState(false);
   const [lastNotifTime, setLastNotifTime] = useState(0);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   function calculateDiff() {
     const diff = Math.round((cooldownUntil - Date.now()) / 1000);
@@ -92,7 +94,7 @@ export default function Cooldown() {
   return (
     <>
       { display ? (
-        <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME}>
+        <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME} darkMode={darkMode}>
           {cooldownLeft}
         </CooldownContainer>
       ) : null }
