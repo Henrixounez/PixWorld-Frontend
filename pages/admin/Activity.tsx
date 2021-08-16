@@ -42,6 +42,8 @@ function PixelActivityGraph() {
           padding: "1rem",
         }}
         options={{
+          responsive: true,
+          maintainAspectRatio: true,
           scales: {
             y: {
               beginAtZero: true
@@ -73,8 +75,6 @@ function PixelActivityGraph() {
             }
           ]
         }}
-        width={1000}
-        height={300}
       />
     </BoxContainer>
   )

@@ -31,6 +31,9 @@ const ContentContainer = styled.div`
   box-sizing: border-box;
   overflow-y: auto;
   padding: 5rem 2rem;
+  @media(max-width: 500px) {
+    padding: 1rem 0.5rem;
+  }
 `;
 
 export enum PageTypes {
@@ -96,7 +99,7 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (window)
+    if (window && !isAdmin)
       checkAdmin();
   }, []);
 

@@ -38,6 +38,19 @@ const SideBarButton = styled.div<{active: boolean}>`
     border-radius: 1rem;
     background-color: #3070a5;
   `}
+
+  @media(max-width: 500px) {
+    width: 22.5px;
+    height: 22.5px;
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+    border-radius: 15px;
+    ${({ active }) => active && css`
+      border-radius: 0.5rem;
+    `}
+  }
 `;
 
 

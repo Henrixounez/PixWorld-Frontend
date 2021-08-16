@@ -14,15 +14,25 @@ export const BoxContainer = styled.div<{ status?: string }>`
   ${({ status }) => status === "error" && css`
     border: 2px solid #a53030;
   `}
+  @media(max-width: 500px) {
+    margin: 0.5rem auto;
+  }
 `;
 export const ErrorBox = styled.div`
   padding: 1rem;
   color: #a53030;
+  @media(max-width: 500px) {
+    padding: 0.5rem;
+  }
 `;
 
 export const BoxTitle = styled.h1`
   font-size: 1rem;
   padding: 1rem;
+  @media(max-width: 500px) {
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+  }
 `;
 
 export const QueryForm = styled.form`
@@ -48,6 +58,19 @@ export const QueryForm = styled.form`
       background-color: rgba(0,0,0,0.3);
     }
   }
+  @media(max-width: 500px) {
+    label {
+      padding: 0.5rem;
+    }
+    button {
+      padding: 0.5rem;
+      font-size: 0.7rem;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
 `;
 export const Textfield = styled.input`
   flex: 1;
@@ -56,9 +79,14 @@ export const Textfield = styled.input`
   background-color: rgba(0,0,0,0.2);
   border: none;
   border-radius: 0;
+  min-width: 5rem;
   &:hover {
     outline-offset: 0px;
     outline: -webkit-focus-ring-color auto 1px;
+  }
+  @media(max-width: 500px) {
+    font-size: 0.7rem;
+    padding: 0.5rem;
   }
 `;
 export const Checkbox = styled.div`
@@ -68,6 +96,13 @@ export const Checkbox = styled.div`
   cursor: pointer;
   padding: 1rem;
   background-color: rgba(0,0,0,0.2);
+  @media(max-width: 500px) {
+    padding: 0.5rem;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
 export const CoordRow = styled.div`
