@@ -68,6 +68,8 @@ function PixelLogs() {
         <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
           <Textfield placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
           <Textfield placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+        </CoordRow>
+        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
           <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
           <button>
             <Search/>
