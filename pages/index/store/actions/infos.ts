@@ -57,7 +57,7 @@ export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): Red
 export function setCursorPos(state: ReduxState, action: SetCursorPosAction): ReduxState {
   return {
     ...state,
-    shouldRender: state.gridActive && state.position.zoom < GRID_ZOOM ? true : state.shouldRender,
+    shouldRender: state.position.zoom < GRID_ZOOM ? true : state.shouldRender,
     cursorPos: action.payload,
   };
 }

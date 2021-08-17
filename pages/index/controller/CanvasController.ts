@@ -455,6 +455,7 @@ export class CanvasController {
     if (PIXEL_SIZE / this.position.zoom > LIMIT_DRAW_NORMAL_CHUNKS)
       this.drawChunks(ctx);
     this.drawGrid(ctx);
+    this.drawSquare(ctx);
     this.drawActivity(ctx);
     this.overlayController.render(ctx);
   }
@@ -488,9 +489,12 @@ export class CanvasController {
       ctx.lineTo(posX, height);
       ctx.stroke();
     }
-    this.drawSquare(ctx);
   }
   drawSquare = (ctx: CanvasRenderingContext2D) => {
+    if (this.position.zoom > GRID_ZOOM) {
+      return;
+    }
+
     const pos = store?.getState().cursorPos;
 
     if (pos) {
