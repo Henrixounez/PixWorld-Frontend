@@ -317,18 +317,20 @@ export default class InteractionController {
     e.preventDefault();
   }
   touchEnd = (e: TouchEvent) => {
-    if (!this.isMoving && this.pinchDistance !== 0) {
-      const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-      this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+    if (e.touches.length === 0) {
+      if (!this.isMoving && this.pinchDistance === 0) {
+        const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+      }
+      this.pinchDistance = 0;
+      if (this.longTouchTimeout)
+        clearTimeout(this.longTouchTimeout);
+      this.longTouchTimeout = null;
+      this.pinchDistance = 0;
+      this.startMove = { x: 0, y: 0 };
+      this.isMoving = false;
+      this.isMouseDown = false
     }
-    this.pinchDistance = 0;
-    if (this.longTouchTimeout)
-      clearTimeout(this.longTouchTimeout);
-    this.longTouchTimeout = null;
-    this.pinchDistance = 0;
-    this.startMove = { x: 0, y: 0 };
-    this.isMoving = false;
-    this.isMouseDown = false
   }
   touchCancel = (e: TouchEvent) => {
     this.touchEnd(e);
