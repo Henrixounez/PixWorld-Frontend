@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { Search } from "react-feather";
 import styled from "styled-components";
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, CoordRow, onCoordinatesPaste, QueryForm, Textfield } from "./utils"
+import { BoxContainer, BoxTitle, CoordRow, onCoordinatesPaste, QueryForm, Textfield } from "../pagesComponents"
 
 const ContainerLogsResult = styled.div`
   height: 500px;

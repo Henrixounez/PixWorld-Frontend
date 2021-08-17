@@ -2,7 +2,7 @@ import axios from "axios";
 import { FormEvent, useState } from "react";
 import { CheckSquare, Send, Square } from "react-feather";
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, Checkbox, CoordRow, ErrorBox, QueryForm, Textfield } from "./utils"
+import { BoxContainer, BoxTitle, Checkbox, CoordRow, ErrorBox, QueryForm, Textfield } from "../pagesComponents"
 
 function BanIp() {
   const [ip, setIp] = useState("");

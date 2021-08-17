@@ -2,7 +2,7 @@ import axios from "axios";
 import { FormEvent, useState } from "react";
 import { Send } from "react-feather";
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, CoordRow, ErrorBox, onCoordinatesPaste, QueryForm, Textfield } from "./utils"
+import { BoxContainer, BoxTitle, CoordRow, ErrorBox, onCoordinatesPaste, QueryForm, Textfield } from "../pagesComponents"
 
 function Import() {
   const [url, setUrl] = useState("");

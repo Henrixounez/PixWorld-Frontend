@@ -1,12 +1,9 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head';
-import { Provider } from 'react-redux';
 import { appWithTranslation } from 'next-i18next';
-import { initialState, useStore } from '../store';
 import '../styles/index.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const store = useStore(pageProps.initialReduxState || { ...initialState, canvases: pageProps.canvases });
 
   return (
     <>
@@ -44,9 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta property='og:url' content='https://pixworld.vercel.app' />
         <meta property='og:image' content={pageProps.ogImage} />
       </Head>
-      <Provider store={store}>
-        <Component {...pageProps} />
-      </Provider>
+      <Component {...pageProps} />
     </>
   );
 };

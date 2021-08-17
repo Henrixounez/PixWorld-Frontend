@@ -2,11 +2,9 @@ import styled from 'styled-components'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { API_URL } from '../constants/api';
-import { useDispatch } from 'react-redux';
-import { SET_USER } from '../../store/actions/user';
 import { useRouter } from 'next/dist/client/router';
 import PageLogs from './Logs';
-import SideBar from './sidebar';
+import SideBar from '../sidebar';
 import { Activity, Database, Map, Shield } from 'react-feather';
 import PageActivity from './Activity';
 import PageBan from './Ban';
@@ -73,7 +71,6 @@ export const pages = [
 
 export default function AdminPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
   const [isAdmin, setIsAdmin] = useState(false);
 
   const checkAdmin = async () => {
@@ -84,10 +81,6 @@ export default function AdminPage() {
         return router.replace(router.basePath);
 
       const res = await axios.get(`${API_URL}/user/me`, { headers: { 'Authorization': token }});
-      dispatch({
-        type: SET_USER,
-        payload: res.data
-      });
       if (res.data.type !== "admin") {
         router.replace(router.basePath);
       } else {
@@ -114,7 +107,7 @@ export default function AdminPage() {
   } else {
     return (
       <Container>
-        <SideBar currentPage={currentPage} />
+        <SideBar currentPage={currentPage} pages={pages} routePrefix="admin" />
         <ContentContainer>
           {pages.find((p) => p.type === currentPage)?.component}
         </ContentContainer>
