@@ -28,6 +28,7 @@ export interface ReduxState {
   notifications: boolean;
   sounds: boolean;
   darkMode: boolean;
+  showButtons: boolean;
   eraserMode: boolean;
   position: {
     x: number,
@@ -81,6 +82,7 @@ export const initialState: ReduxState = {
   notifications: false,
   sounds: true,
   darkMode: false,
+  showButtons: true,
   eraserMode: false,
   position: {
     x: 0,

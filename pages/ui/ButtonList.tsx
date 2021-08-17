@@ -1,23 +1,36 @@
 import styled from 'styled-components'
-import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SET_MODAL, SET_SEARCH } from '../../store/actions/infos';
 import ModalTypes from '../constants/modalTypes';
 import { ReduxState } from '../../store';
 import { getCanvasController } from '../controller/CanvasController';
 import { coordinateLinkGoto } from './Chat';
+import { SET_SHOW_BUTTONS } from '../../store/actions/parameters';
 
 const ButtonListContainer = styled.div<{darkMode: boolean}>`
   position: absolute;
   top: 10px;
   left: 10px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 40px;
   gap: 5px;
   flex-wrap: wrap;
-  max-width: calc(50vw - 25px);
   filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
+`;
+const ButtonListDropdown = styled.div<{ show: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  flex-wrap: wrap;
+  max-width: 40px;
+  max-height: calc(100vh - 150px);
+  transition: .5s;
+  opacity: ${({ show }) => show ? '1' : '0'};
 `;
 const Button = styled.div`
   background-color: #FFFD;
@@ -96,25 +109,51 @@ function SearchBtn() {
 export default function ButtonList() {
   const dispatch = useDispatch();
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const showButtons = useSelector((state: ReduxState) => state.showButtons);
+  const [display, setDisplay] = useState(true);
+
+  useEffect(() => {
+    if (!display && showButtons) {
+      const t = setTimeout(() => {
+        setDisplay(true)
+      }, 0);
+      return () => clearTimeout(t);
+    }
+  }, [showButtons]);
+  useEffect(() => {
+    if (!display && showButtons) {
+      const t = setTimeout(() => {
+        dispatch({ type: SET_SHOW_BUTTONS, payload: false });
+      }, 500);
+      return () => clearTimeout(t);
+    }
+  }, [display]);
 
   return (
     <ButtonListContainer darkMode={darkMode}>
-      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })}>
-        <HelpCircle/>
+      <Button onClick={() => { showButtons ? setDisplay(!display) : dispatch({ type: SET_SHOW_BUTTONS, payload: !showButtons }) }}>
+        {display ? <ChevronDown/> : <ChevronUp/> }
       </Button>
-      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.STATS })}>
-        <User/>
-      </Button>
-      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })}>
-        <Upload/>
-      </Button>
-      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })}>
-        <Sliders/>
-      </Button>
-      <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })}>
-        <Bookmark/>
-      </Button>
-      <SearchBtn/>
+      { showButtons && (
+        <ButtonListDropdown show={display}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })}>
+            <HelpCircle/>
+          </Button>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.STATS })}>
+            <User/>
+          </Button>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })}>
+            <Upload/>
+          </Button>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })}>
+            <Sliders/>
+          </Button>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })}>
+            <Bookmark/>
+          </Button>
+          <SearchBtn/>
+        </ButtonListDropdown>
+      )}
     </ButtonListContainer>
   );
 }

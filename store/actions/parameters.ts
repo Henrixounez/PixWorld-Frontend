@@ -8,6 +8,7 @@ export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const SET_SOUNDS = 'SET_SOUNDS';
 export const SET_CANVAS = 'SET_CANVAS';
 export const SET_DARK_MODE = 'SET_DARK_MODE';
+export const SET_SHOW_BUTTONS = 'SET_SHOW_BUTTONS';
 
 /* Types */
 
@@ -39,8 +40,12 @@ export interface SetDarkModeAction {
   type: typeof SET_DARK_MODE;
   payload: boolean;
 }
+export interface SetShowButtonsAction {
+  type: typeof SET_SHOW_BUTTONS;
+  payload: boolean;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetShowButtonsAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -109,6 +114,13 @@ export function setDarkMode(state: ReduxState, action: SetDarkModeAction): Redux
     darkMode: action.payload
   };
 }
+export function setShowButtons(state: ReduxState, action: SetShowButtonsAction): ReduxState {
+  localStorage.setItem('showButtons', String(action.payload));
+  return {
+    ...state,
+    showButtons: action.payload
+  };
+}
 
 
 /* Dispatches */
@@ -140,5 +152,9 @@ export const dispatches = [
   {
     action: SET_DARK_MODE,
     function: setDarkMode
+  },
+  {
+    action: SET_SHOW_BUTTONS,
+    function: setShowButtons
   }
 ]
