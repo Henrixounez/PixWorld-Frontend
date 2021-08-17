@@ -282,6 +282,9 @@ export default class InteractionController {
               store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
             }
             break;
+          case 'l':
+            this.canvasController.setZoom(PIXEL_SIZE);
+            break;
         }
     }
   }
