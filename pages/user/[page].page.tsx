@@ -80,6 +80,7 @@ function UserRouterPage() {
       setLoaded(true);
     } catch (err) {
       console.error(err);
+      router.replace('/user/login');
     }
   };
 

@@ -95,12 +95,12 @@ function Rankings() {
           {t('ranking.dailyRanking')}
         </RankingSwitchButton>
       </BoxRow>
-      <BoxRow style={{ overflowY: "auto", maxHeight: "500px", paddingLeft: 0, paddingRight: 0 }}>
+      <BoxRow style={{ overflowY: "auto", maxHeight: "500px", paddingLeft: 0, paddingRight: 0, alignItems: "baseline" }}>
         <RankingTable>
           <thead>
             <tr>
               <th>#</th>
-              <th>{t('ranking.username')}</th>
+              <th style={{ wordBreak: "break-all" }}>{t('ranking.username')}</th>
               <th>{t('ranking.pixels')}</th>
             </tr>
           </thead>
