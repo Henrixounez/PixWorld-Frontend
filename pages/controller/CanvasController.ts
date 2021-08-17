@@ -446,7 +446,7 @@ export class CanvasController {
 
     store?.dispatch({ type: SET_SHOULD_RENDER, payload: false });
     ctx.clearRect(0, 0, this.size.width, this.size.height);
-    if (!store?.getState().eraserMode) {
+    if (!store?.getState().eraserMode && !store?.getState().history.activate) {
       this.drawSuperChunks(ctx);
     } else {
       ctx.fillStyle = "lightblue"
