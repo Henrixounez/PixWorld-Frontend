@@ -15,15 +15,11 @@ import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../store/actions/chat';
 import countryCodes from '../../constants/countryCodes';
 import { useRouter } from 'next/dist/client/router';
 
-const ChatButton = styled.div<{darkMode: boolean}>`
-  position: fixed;
-  bottom: 10px;
-  right: 50px;
+export const BottomButton = styled.div<{darkMode: boolean}>`
   font-size: 1rem;
   height: 35px;
   width: 35px;
   transition: .2s;
-
   background-color: #FFFD;
   color: #FFFD;
   border: 1px solid #000;
@@ -41,6 +37,13 @@ const ChatButton = styled.div<{darkMode: boolean}>`
   svg {
     color: black;
   }
+`;
+
+const ChatButton = styled(BottomButton)<{ darkMode: boolean }>`
+  position: fixed;
+  bottom: 10px;
+  right: 50px;
+
   div {
     filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
   }

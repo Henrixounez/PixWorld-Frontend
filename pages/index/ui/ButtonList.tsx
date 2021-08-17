@@ -120,6 +120,9 @@ export default function ButtonList() {
       }, 0);
       return () => clearTimeout(t);
     }
+    if (display && !showButtons) {
+      setDisplay(false);
+    }
   }, [showButtons]);
   useEffect(() => {
     if (!display && showButtons) {

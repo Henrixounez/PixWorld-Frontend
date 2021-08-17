@@ -9,6 +9,7 @@ export const SET_SOUNDS = 'SET_SOUNDS';
 export const SET_CANVAS = 'SET_CANVAS';
 export const SET_DARK_MODE = 'SET_DARK_MODE';
 export const SET_SHOW_BUTTONS = 'SET_SHOW_BUTTONS';
+export const SET_SHOW_PALETTE = 'SET_SHOW_PALETTE';
 
 /* Types */
 
@@ -44,8 +45,12 @@ export interface SetShowButtonsAction {
   type: typeof SET_SHOW_BUTTONS;
   payload: boolean;
 }
+export interface SetShowPaletteAction {
+  type: typeof SET_SHOW_PALETTE;
+  payload: boolean;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetShowButtonsAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetShowButtonsAction | SetShowPaletteAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -121,6 +126,13 @@ export function setShowButtons(state: ReduxState, action: SetShowButtonsAction):
     showButtons: action.payload
   };
 }
+export function setShowPalette(state: ReduxState, action: SetShowPaletteAction): ReduxState {
+  localStorage.setItem('showPalette', String(action.payload));
+  return {
+    ...state,
+    showPalette: action.payload
+  };
+}
 
 
 /* Dispatches */
@@ -156,5 +168,9 @@ export const dispatches = [
   {
     action: SET_SHOW_BUTTONS,
     function: setShowButtons
+  },
+  {
+    action: SET_SHOW_PALETTE,
+    function: setShowPalette
   }
 ]
