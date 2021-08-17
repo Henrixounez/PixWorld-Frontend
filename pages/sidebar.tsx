@@ -81,9 +81,11 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
       ))}
       <div style={{ display: "flex", flexDirection: "column", position: "absolute", bottom: ".5rem", gap: ".5rem" }}>
         <Link href={'/'}>
-          <SideBarButton title="Go to map" active={false}>
-            <Globe/>
-          </SideBarButton>
+          <a>
+            <SideBarButton title="Go to map" active={false}>
+              <Globe/>
+            </SideBarButton>
+          </a>
         </Link>
         <SideBarButton
           title="Disconnect"
