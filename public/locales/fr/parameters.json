@@ -8,5 +8,6 @@
   "sounds": "Activer les sons",
   "canvas": "Sélectionner la toile à afficher",
   "history": "Activer la vue historique",
-  "darkMode": "Activer le mode sombre"
+  "darkMode": "Activer le mode sombre",
+  "download": "Télécharger la toile actuellement sur l'écran"
 }
