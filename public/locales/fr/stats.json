@@ -24,11 +24,11 @@
   },
   "activity": {
     "pixels": {
-      "title": "Activité de Pixels (Dernières 24h)",
+      "title": "Activité de Pixels (Tout les Joueurs, Dernières 24h)",
       "legend": "Nb de Pixels Placés"
     },
     "colors": {
-      "title": "Couleurs Posées (Dernières 24h)"
+      "title": "Couleurs Posées (Tout les Joueurs, Dernières 24h)"
     }
   }
 }

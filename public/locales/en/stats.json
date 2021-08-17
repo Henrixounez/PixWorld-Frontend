@@ -24,11 +24,11 @@
   },
   "activity": {
     "pixels": {
-      "title": "Pixel Activity (Last 24h)",
+      "title": "Pixel Activity (All Users, Last 24h)",
       "legend": "Nb Pixels Placed"
     },
     "colors": {
-      "title": "Placed Colors (Last 24h)"
+      "title": "Placed Colors (All Users, Last 24h)"
     }
   }
 }
