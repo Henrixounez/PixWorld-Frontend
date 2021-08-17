@@ -2,3 +2,10 @@ body {
   margin: 0px;
   padding: 0px;
 }
+
+div::-webkit-scrollbar {
+  width: 0.4em;
+}
+div::-webkit-scrollbar-thumb {
+  background-color: darkgray;
+}
