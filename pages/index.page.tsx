@@ -3,22 +3,25 @@ import styled from 'styled-components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import crypto from 'crypto';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+import { initialState, ReduxState, useStore } from './index/store';
 
 import { languagesModules } from './constants/languages';
-import Canvas from './ui/Canvas';
-import ButtonList from './ui/ButtonList';
-import CursorPosition from './ui/CursorPosition';
-import Modal from './ui/Modal';
-import PaletteList from './ui/PaletteList';
-import PlayerCounter from './ui/PlayerCounter';
-import Overlay from './ui/Overlay';
-import Cooldown from './ui/Cooldown';
-import Chat from './ui/Chat';
-import Alert from './ui/Alert';
-import HistoryMode from './ui/HistoryMode';
+import Canvas from './index/ui/Canvas';
+import ButtonList from './index/ui/ButtonList';
+import CursorPosition from './index/ui/CursorPosition';
+import Modal from './index/ui/Modal';
+import PaletteList from './index/ui/PaletteList';
+import PlayerCounter from './index/ui/PlayerCounter';
+import Overlay from './index/ui/Overlay';
+import Cooldown from './index/ui/Cooldown';
+import Chat from './index/ui/Chat';
+import Alert from './index/ui/Alert';
+import HistoryMode from './index/ui/HistoryMode';
 import { API_URL } from './constants/api';
-import { Canvas as CanvasType  } from './controller/CanvasController';
+import { Canvas as CanvasType  } from './index/controller/CanvasController';
 import { CHUNK_SIZE, PIXEL_SIZE } from './constants/painting';
+import { AppProps } from 'next/dist/next-server/lib/router/router';
 
 const Container = styled.div`
   width: 100vw;
@@ -27,23 +30,32 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-export default function Home({ wsHash, pos }: { wsHash: string, pos?: { x: number, y: number, zoom: number, canvas: string } }) {
+interface HomeProps {
+  wsHash: string,
+  pos?: { x: number, y: number, zoom: number, canvas: string },
+  canvases: Array<CanvasType>,
+  initialReduxState: ReduxState,
+}
+export default function Home({ wsHash, pos, initialReduxState, canvases }: AppProps | HomeProps) {
+  const store = useStore(initialReduxState || { ...initialState, canvases: canvases });
 
   return (
-    <Container>
-      <Modal/>
-      <ButtonList/>
-      <Overlay/>
-      <Cooldown/>
-      <PaletteList/>
-      <Chat/>
-      <PlayerCounter/>
-      <CursorPosition/>
-      <Alert/>
-      <Canvas wsHash={wsHash} pos={pos} />
-      <HistoryMode/>
-    </Container>
-  )
+    <Provider store={store}>
+      <Container>
+        <Modal/>
+        <ButtonList/>
+        <Overlay/>
+        <Cooldown/>
+        <PaletteList/>
+        <Chat/>
+        <PlayerCounter/>
+        <CursorPosition/>
+        <Alert/>
+        <Canvas wsHash={wsHash} pos={pos} />
+        <HistoryMode/>
+      </Container>
+    </Provider>
+  );
 };
 
 

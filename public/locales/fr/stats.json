@@ -21,5 +21,14 @@
     "error": "Erreur durant la modification",
     "password": "Mot de passe",
     "send": "Envoyer"
+  },
+  "activity": {
+    "pixels": {
+      "title": "Activité de Pixels (Dernières 24h)",
+      "legend": "Nb de Pixels Placés"
+    },
+    "colors": {
+      "title": "Couleurs Posées (Dernières 24h)"
+    }
   }
 }

@@ -14,6 +14,11 @@ module.exports = withPWA({
         source: '/admin',
         destination: '/admin/activity',
         permanent: true
+      },
+      {
+        source: '/user',
+        destination: '/user/home',
+        permanent: true
       }
     ]
   }

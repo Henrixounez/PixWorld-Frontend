@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Line } from 'react-chartjs-2';
 
 import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle } from "./utils"
+import { BoxContainer, BoxTitle } from "../pagesComponents"
 
 interface PixelActivity {
   id: number;

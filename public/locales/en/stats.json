@@ -21,5 +21,14 @@
     "error": "Error during update",
     "password": "Password",
     "send": "Send"
+  },
+  "activity": {
+    "pixels": {
+      "title": "Pixel Activity (Last 24h)",
+      "legend": "Nb Pixels Placed"
+    },
+    "colors": {
+      "title": "Placed Colors (Last 24h)"
+    }
   }
 }
