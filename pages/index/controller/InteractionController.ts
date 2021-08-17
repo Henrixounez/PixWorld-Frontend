@@ -246,25 +246,28 @@ export default class InteractionController {
       case 'KeyD':
         this.canvasController.changePosition(4 * this.position.zoom, 0);
         break;
+      case 'KeyO':
+        store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
+        break;
+      case 'KeyG':
+        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: "#FFFD" }})
+        store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
+        break;
+      case 'KeyX':
+        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: "#FFFD" }})
+        store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
+        break;
+      case 'KeyB':
+        store?.dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS });
+        break;
+      case 'KeyL':
+        this.canvasController.setZoom(PIXEL_SIZE);
+        break;
       default:
         switch (e.key) {
-          case 'o':
-            store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
-            break;
-          case 'g':
-            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: "#FFFD" }})
-            store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
-            break;
-          case 'x':
-            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: "#FFFD" }})
-            store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
-            break;
           case 'm':
             store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
             store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
-            break;
-          case 'b':
-            store?.dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS });
             break;
           case 'C':
             if (navigator.clipboard) {
@@ -281,9 +284,6 @@ export default class InteractionController {
               navigator.clipboard.writeText(txt);
               store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
             }
-            break;
-          case 'l':
-            this.canvasController.setZoom(PIXEL_SIZE);
             break;
         }
     }
