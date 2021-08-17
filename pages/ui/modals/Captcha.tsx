@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useTranslation } from 'next-i18next';
+import { RefreshCw } from 'react-feather';
 
 import { API_URL } from "../../constants/api";
 import { useDispatch } from 'react-redux';
@@ -46,6 +47,7 @@ const FormRow = styled.form`
   flex-direction: row;
   gap: 1rem;
   width: 100%;
+  margin-top: 1rem;
   justify-content: center;
   input {
     text-align: center;
@@ -63,6 +65,15 @@ const SendButton = styled.button`
   &:hover {
     background-color: #EEE;
   }
+`;
+const RefreshButton = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 1px solid #777;
+  border-radius: 2px;
 `;
 
 export default function Captcha() {
@@ -109,6 +120,9 @@ export default function Captcha() {
           alt="CAPTCHA"
         />
         <FormRow onSubmit={sendCaptcha}>
+          <RefreshButton onClick={(e) => { e.preventDefault(); refreshCaptcha(); }}>
+            <RefreshCw/>
+          </RefreshButton>
           <input
             type="text"
             placeholder={t('input')}
