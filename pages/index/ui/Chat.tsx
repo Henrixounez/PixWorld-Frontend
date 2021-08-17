@@ -8,13 +8,12 @@ import * as Flags from 'country-flag-icons/react/3x2';
 
 import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../store';
-import { SET_MODAL } from '../store/actions/infos';
-import ModalTypes from '../../constants/modalTypes';
 import { SET_CANVAS } from '../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
 import { SET_ERASER_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
 import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../store/actions/chat';
 import countryCodes from '../../constants/countryCodes';
+import { useRouter } from 'next/dist/client/router';
 
 const ChatButton = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -165,6 +164,7 @@ export function coordinateLinkGoto(text: string) {
 export default function Chat() {
   const { t } = useTranslation('chat');
   const dispatch = useDispatch();
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const messageList = useSelector((state: ReduxState) => state.chatMessages);
   const user = useSelector((state: ReduxState) => state.user);
@@ -284,7 +284,7 @@ export default function Chat() {
               </SendButton>
             </>
           ) : (
-            <NotConnected onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.LOGIN })}>
+            <NotConnected onClick={() => router.replace('/user/login')}>
               {t('needConnect')}
             </NotConnected>
           )}
