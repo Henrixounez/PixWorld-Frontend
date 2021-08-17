@@ -30,6 +30,10 @@ export enum FormatType {
   POSITION = 'POSITION',
   MENTION = 'MENTION',
   GREENTEXT = 'GREENTEXT',
+  BOLD = 'BOLD',
+  ITALICS = 'ITALICS',
+  UNDERLINE = 'UNDERLINE',
+  CODE = 'CODE',
 }
 
 const formattingTypes = [
@@ -48,6 +52,22 @@ const formattingTypes = [
   {
     type: FormatType.GREENTEXT,
     regex: /^>.*$/gm,
+  },
+  {
+    type: FormatType.BOLD,
+    regex: /\*{2}(.*?(?:(?=\*{2}\w)|(?=\*{2}$)))\*{2}/gm
+  },
+  {
+    type: FormatType.ITALICS,
+    regex: /(?:[^\*]|^)\*([^*]+)\*(?:[^\*]|$)/gm,
+  },
+  {
+    type: FormatType.UNDERLINE,
+    regex: /_{2}([^_]+)_{2}/gm
+  },
+  {
+    type: FormatType.CODE,
+    regex: /`.*`/gm
   }
 ]
 
@@ -56,9 +76,11 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
 
   formattingTypes.forEach(({ type, regex }) => {
     const found = [...text.matchAll(regex)];
-    formattings.push(...found.map((e) => ({ type, text: e[0], index: e.index! })));
+    const newFormattings = found.map((e) => ({ type, text: e[0], index: e.index! }))
+    formattings.push(...newFormattings.filter((f) => formattings.findIndex((f2) => f.index >= f2.index && f.index <= f2.index + f2.text.length) === -1));
   });
   formattings = formattings.sort((a, b) => a.index - b.index);
+  formattings = formattings.filter((f, i) => formattings.findIndex((f2, i2) => i > i2 && f.index >= f2.index && f.index <= f2.index + f2.text.length ) === -1);
 
   let index = 0;
   formattings.push(...formattings.map((f) => {
@@ -91,8 +113,16 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
           case FormatType.MENTION:
             const name = text.replace('@', '');
             return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i}>{text}</Mention>;
+          case FormatType.BOLD:
+            return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick)}</b>
+          case FormatType.ITALICS:
+            return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick)}</i>
+          case FormatType.UNDERLINE:
+            return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick)}</u>
+          case FormatType.CODE:
+            return <code key={i}>{text.replace(/`/gm, '')}</code>
           case FormatType.GREENTEXT:
-            return <Greentext key={i}>{text}</Greentext>
+            return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick)}</Greentext>
         }
       })}
     </>
