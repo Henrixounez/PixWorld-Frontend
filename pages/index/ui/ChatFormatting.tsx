@@ -77,10 +77,10 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
   formattingTypes.forEach(({ type, regex }) => {
     const found = [...text.matchAll(regex)];
     const newFormattings = found.map((e) => ({ type, text: e[0], index: e.index! }))
-    formattings.push(...newFormattings.filter((f) => formattings.findIndex((f2) => f.index >= f2.index && f.index <= f2.index + f2.text.length) === -1));
+    formattings.push(...newFormattings.filter((f) => formattings.findIndex((f2) => f.index >= f2.index && f.index < f2.index + f2.text.length) === -1));
   });
   formattings = formattings.sort((a, b) => a.index - b.index);
-  formattings = formattings.filter((f, i) => formattings.findIndex((f2, i2) => i > i2 && f.index >= f2.index && f.index <= f2.index + f2.text.length ) === -1);
+  formattings = formattings.filter((f, i) => formattings.findIndex((f2, i2) => i > i2 && f.index >= f2.index && f.index < f2.index + f2.text.length ) === -1);
 
   let index = 0;
   formattings.push(...formattings.map((f) => {

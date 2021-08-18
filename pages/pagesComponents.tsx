@@ -29,6 +29,7 @@ export const ErrorBox = styled.div`
 export const BoxTitle = styled.h1`
   font-size: 1.5rem;
   padding: 1rem;
+  margin: 0;
   @media(max-width: 500px) {
     font-size: 0.7rem;
     padding: 0.5rem 1rem;
@@ -79,6 +80,24 @@ export const QueryForm = styled.form`
   }
 `;
 export const Textfield = styled.input`
+  flex: 1;
+  padding: 1rem;
+  color: #ffffffa0;
+  background-color: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 0;
+  min-width: 5rem;
+  &:hover {
+    outline-offset: 0px;
+    outline: -webkit-focus-ring-color auto 1px;
+  }
+  @media(max-width: 500px) {
+    font-size: 0.7rem;
+    padding: 0.5rem;
+  }
+`;
+export const Textarea = styled.textarea`
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   flex: 1;
   padding: 1rem;
   color: #ffffffa0;

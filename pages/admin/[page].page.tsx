@@ -1,14 +1,16 @@
 import styled from 'styled-components'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { API_URL } from '../constants/api';
+import { Activity, Database, Mail, Map, Shield } from 'react-feather';
 import { useRouter } from 'next/dist/client/router';
-import PageLogs from './Logs';
+
+import { API_URL } from '../constants/api';
 import SideBar from '../sidebar';
-import { Activity, Database, Map, Shield } from 'react-feather';
+import PageLogs from './Logs';
 import PageActivity from './Activity';
 import PageBan from './Ban';
 import PageMapOperations from './MapOperations';
+import PageNotifications from './Notifications';
 
 const Container = styled.div`
   width: 100vw;
@@ -38,7 +40,8 @@ export enum PageTypes {
   ACTIVITY = "activity",
   LOGS = "logs",
   BAN = "ban",
-  MAP = "map"
+  MAP = "map",
+  NOTIFICATIONS = "notifications",
 }
 
 export const pages = [
@@ -65,6 +68,12 @@ export const pages = [
     icon: <Map/>,
     name: "Map",
     component: <PageMapOperations/>
+  },
+  {
+    type: PageTypes.NOTIFICATIONS,
+    icon: <Mail/>,
+    name: "Notifications",
+    component: <PageNotifications/>
   }
 ]
 
