@@ -19,7 +19,14 @@ const Container = styled.div`
   gap: 5px;
 `;
 const OpenButton = styled(BottomButton)`
-
+  transition: 0.5s;
+  width: calc(25px + 8px);
+  @media (max-height: 800px) {
+    width: calc(2 * 25px + 8px);
+  }
+  @media (max-height: 450px) {
+    width: calc(5 * 25px + 8px);
+  }
 `;
 const Palette = styled.div<{ show: boolean }>`
   padding: 3px;
@@ -37,7 +44,7 @@ const Palette = styled.div<{ show: boolean }>`
     height: calc(15 * 25px);
     width: calc(2 * 25px);
   }
-  @media (max-height: 400px) {
+  @media (max-height: 450px) {
     height: calc(6 * 25px);
     width: calc(5 * 25px);
   }
