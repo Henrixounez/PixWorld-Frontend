@@ -32,5 +32,8 @@
     "colors": {
       "title": "Placed Colors (All Users, Last 24h)"
     }
+  },
+  "news": {
+    "title": "News"
   }
 }

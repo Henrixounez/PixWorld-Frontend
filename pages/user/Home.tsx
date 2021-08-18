@@ -62,6 +62,7 @@ interface Notification {
   createdAt: Date;
 }
 function Notifications() {
+  const { t } = useTranslation('stats')
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const getNotifications = async () => {
@@ -83,7 +84,7 @@ function Notifications() {
   return (
     <BoxContainer>
       <BoxTitle>
-        Notifications
+        {t('news.title')}
       </BoxTitle>
       <NotificationContainer>
         { notifications.map((n, i) => (

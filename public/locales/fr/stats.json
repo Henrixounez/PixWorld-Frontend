@@ -32,5 +32,8 @@
     "colors": {
       "title": "Couleurs Posées (Tout les Joueurs, Dernières 24h)"
     }
+  },
+  "news": {
+    "title": "Actualités"
   }
 }
