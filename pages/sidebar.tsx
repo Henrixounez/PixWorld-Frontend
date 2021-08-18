@@ -80,13 +80,15 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
         </Link>
       ))}
       <div style={{ display: "flex", flexDirection: "column", position: "absolute", bottom: ".5rem", gap: ".5rem" }}>
-        <Link href={'/'}>
-          <a>
-            <SideBarButton title="Go to map" active={false}>
-              <Globe/>
-            </SideBarButton>
-          </a>
-        </Link>
+        <SideBarButton
+          title="Go to map"
+          active={false}
+          onClick={() => {
+            router.replace('/');
+          }}
+        >
+          <Globe/>
+        </SideBarButton>
         <SideBarButton
           title="Disconnect"
           active={false}
