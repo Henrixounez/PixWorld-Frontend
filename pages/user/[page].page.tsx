@@ -1,18 +1,21 @@
-import styled from 'styled-components'
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { API_URL } from '../constants/api';
-import { Provider, useDispatch } from 'react-redux';
+import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import SideBar from '../sidebar';
-import { Activity, User } from 'react-feather';
-import PageHome from './Home';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import axios from 'axios';
+import styled from 'styled-components'
+import { Provider, useDispatch } from 'react-redux';
+import { Activity, Settings, User } from 'react-feather';
+
+import { API_URL } from '../constants/api';
 import { initialState, useStore } from './store';
 import { SET_USER } from './store/actions/user';
-import { GetServerSidePropsContext } from 'next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { languagesModules } from '../constants/languages';
+
+import SideBar from '../sidebar';
+import PageHome from './Home';
 import PageActivity from './Activity';
+import PageSettings from './Settings';
 
 export const Container = styled.div`
   width: 100vw;
@@ -41,6 +44,7 @@ export const ContentContainer = styled.div`
 export enum PageTypes {
   HOME = "home",
   ACTIVITY = "activity",
+  SETTINGS = "settings",
 }
 
 export const pages = [
@@ -55,6 +59,12 @@ export const pages = [
     icon: <Activity/>,
     name: "Activity",
     component: <PageActivity/>
+  },
+  {
+    type: PageTypes.SETTINGS,
+    icon: <Settings/>,
+    name: "Settings",
+    component: <PageSettings/>
   }
 ]
 

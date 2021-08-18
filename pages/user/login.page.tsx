@@ -11,7 +11,7 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import { API_URL } from "../constants/api";
 import { languagesModules } from "../constants/languages";
 import { BoxContainer, BoxRow, BoxTitle, CoordRow, ErrorBox, QueryForm, Textfield } from "../pagesComponents";
-import { ShowBtn } from "./Home";
+import { ShowBtn } from "./Settings";
 import { initialState, UserReduxState, useStore } from "./store";
 import { SET_USER } from "./store/actions/user";
 import { Container, ContentContainer } from "./[page].page";

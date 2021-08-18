@@ -20,6 +20,8 @@
     "emptyPassword": "Mot de passe vide",
     "error": "Erreur durant la modification",
     "password": "Mot de passe",
+    "email": "Nouveau Email",
+    "verify": "Un lien de verification pour votre compte à été envoyé à votre nouvelle addresse email.",
     "send": "Envoyer"
   },
   "activity": {

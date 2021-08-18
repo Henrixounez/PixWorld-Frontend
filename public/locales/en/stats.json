@@ -20,6 +20,8 @@
     "emptyPassword": "Empty password",
     "error": "Error during update",
     "password": "Password",
+    "email": "New email",
+    "verify": "A verification link for your account has been sent to your new email address.",
     "send": "Send"
   },
   "activity": {
