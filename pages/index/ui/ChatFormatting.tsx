@@ -55,7 +55,7 @@ const formattingTypes = [
   },
   {
     type: FormatType.BOLD,
-    regex: /\*{2}(.*?(?:(?=\*{2}\w)|(?=\*{2}$)))\*{2}/gm
+    regex: /\*{2}(.*?(?:(?=\*{2}[^*])|(?=\*{2}$)))\*{2}/gm
   },
   {
     type: FormatType.ITALICS,
