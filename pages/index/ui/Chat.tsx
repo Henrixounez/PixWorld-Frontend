@@ -259,8 +259,8 @@ export default function Chat() {
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
             <ChatMessage key={i} >
-              <span title={msg.createdAt.toLocaleDateString('fr-FR') + ' ' + msg.createdAt.toLocaleTimeString('fr-FR')}>
-                {msg.createdAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}&nbsp;
+              <span title={isNaN(msg.createdAt.getTime()) ? '' : msg.createdAt.toLocaleDateString('fr-FR') + ' ' + msg.createdAt.toLocaleTimeString('fr-FR')}>
+                {isNaN(msg.createdAt.getTime()) ? '' : msg.createdAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' '}
               </span>
               <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
                 { countryCodes.includes(msg.country) && (
