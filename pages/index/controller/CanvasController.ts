@@ -537,12 +537,25 @@ export class CanvasController {
   drawChunks = (ctx: CanvasRenderingContext2D) => {
     ctx.imageSmoothingEnabled = false;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    Object.keys(this.currentChunks).map((name) => {
-      const chunk = this.currentChunks[name];
+    const width = this.size.width;
+    const height = this.size.height;
+    const coordsStart = this.canvasToCoordinates(0, 0);
+    const coordsEnd = this.canvasToCoordinates(width, height);
 
-      const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
-      ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
-    });
+    for (let x = coordsStart.coordX - CHUNK_SIZE; x < coordsEnd.coordX + CHUNK_SIZE; x += CHUNK_SIZE) {
+      for (let y = coordsStart.coordY - CHUNK_SIZE; y < coordsEnd.coordY + CHUNK_SIZE; y += CHUNK_SIZE) {
+        const toDisplayX = Math.floor(x / CHUNK_SIZE);
+        const toDisplayY = Math.floor(y / CHUNK_SIZE);
+
+        const chunk = this.currentChunks[`${toDisplayX};${toDisplayY}`];
+
+        if (!chunk)
+          continue;
+
+        const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
+        ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
+      }
+    }
   }
   drawActivity = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = "#FF000066";
