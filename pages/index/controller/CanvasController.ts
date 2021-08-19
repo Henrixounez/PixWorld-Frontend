@@ -227,7 +227,7 @@ export class CanvasController {
   };
   canSuperchunkLoadOrDisplay = (i: number, canvas: Canvas) => {
     const pixelSize = PIXEL_SIZE / this.position.zoom;
-    return i === canvas.superchunkLevels.length - 1 || pixelSize > 0.25 ** (i + 2);
+    return i === canvas?.superchunkLevels?.length - 1 || pixelSize > 0.25 ** (i + 2);
   }
   loadSuperchunks = async () => {
     const canvas = this.currentCanvas;

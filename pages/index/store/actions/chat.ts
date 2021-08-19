@@ -13,6 +13,7 @@ export type Message = {
   country: string;
   msg: string;
   color: string;
+  createdAt: Date;
 }
 
 /* Types */
@@ -52,13 +53,13 @@ export function setShowChat(state: ReduxState, action: SetShowChatAction): Redux
 export function setChatMessage(state: ReduxState, action: SetChatMessageAction): ReduxState {
   return {
     ...state,
-    chatMessages: action.payload,
+    chatMessages: action.payload.map((m) => ({ ...m, createdAt: new Date(m.createdAt)})),
   };
 }
 export function addChatMessage(state: ReduxState, action: AddChatMessageAction): ReduxState {
   return {
     ...state,
-    chatMessages: [...state.chatMessages, action.payload],
+    chatMessages: [...state.chatMessages, ({ ...action.payload, createdAt: new Date(action.payload.createdAt) })],
     unreadMessage: !state.showChat,
   };
 }
