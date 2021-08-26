@@ -34,7 +34,8 @@ const LogsResults = styled.table`
 
 interface PixelLogResult {
   ip: string;
-  userId: number;
+  userId?: number;
+  username?: string;
   pos: {
     x: number;
     y: number;
@@ -92,6 +93,7 @@ function PixelLogs() {
                 <th>Date</th>
                 <th>IP</th>
                 <th>User Id</th>
+                <th>Username</th>
                 <th>Position</th>
                 <th>Color</th>
               </tr>
@@ -102,6 +104,7 @@ function PixelLogs() {
                   <td>{dateFormat(r.createdAt)}</td>
                   <td>{r.ip}</td>
                   <td>{r.userId}</td>
+                  <td>{r.username}</td>
                   <td>{r.pos.x},{r.pos.y}</td>
                   <td>
                     <div style={{ display: "inline-block", height: "10px", width: "10px", backgroundColor: r.color, marginRight: ".5rem" }}/>
@@ -153,6 +156,7 @@ function UserPixelLogs() {
                 <th>Date</th>
                 <th>Ip</th>
                 <th>User Id</th>
+                <th>Username</th>
                 <th>Canvas</th>
                 <th>Position</th>
                 <th>Color</th>
@@ -164,6 +168,7 @@ function UserPixelLogs() {
                   <td>{dateFormat(r.createdAt)}</td>
                   <td>{r.ip}</td>
                   <td>{r.userId}</td>
+                  <td>{r.username}</td>
                   <td>{r.canvas}</td>
                   <td>{r.pos.x},{r.pos.y}</td>
                   <td>
