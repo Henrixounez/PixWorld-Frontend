@@ -104,7 +104,7 @@ function UserRouterPage() {
   if (!loaded) {
     return (
       <Container>
-        Loging in...
+        Logging in...
       </Container>
     );
   } else {
