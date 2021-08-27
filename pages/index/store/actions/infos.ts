@@ -10,6 +10,8 @@ export const SET_COOLDOWN = 'SET_COOLDOWN';
 export const SET_ALERT = 'SET_ALERT';
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_DISCONNECT = 'SET_DISCONNECT';
+export const SET_LAST_NOTIFICATION_DATE = 'SET_LAST_NOTIFICATION_DATE';
+export const SET_LAST_READ_NOTIFICATION_DATE = 'SET_LAST_READ_NOTIFICATION_DATE';
 
 /* Types */
 export interface SetNbPlayersAction {
@@ -44,8 +46,16 @@ export interface SetDisconnectAction {
   type: typeof SET_DISCONNECT;
   payload: string;
 }
+export interface SetLastNotificationDateAction {
+  type: typeof SET_LAST_NOTIFICATION_DATE;
+  payload: string;
+}
+export interface SetLastReadNotificationDateAction {
+  type: typeof SET_LAST_READ_NOTIFICATION_DATE;
+  payload: string;
+}
 
-export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction | SetSearchAction | SetDisconnectAction;
+export type Actions = SetNbPlayersAction | SetCursorPosAction | SetModalAction | SetCooldownAction | SetAlertAction | SetSearchAction | SetDisconnectAction | SetLastNotificationDateAction | SetLastReadNotificationDateAction;
 
 /* Functions */
 export function setNbPlayers(state: ReduxState, action: SetNbPlayersAction): ReduxState {
@@ -94,6 +104,19 @@ export function setDisconnect(state: ReduxState, action: SetDisconnectAction): R
     disconnectReason: action.payload,
   };
 }
+export function setLastNotificationDate(state: ReduxState, action: SetLastNotificationDateAction): ReduxState {
+  return {
+    ...state,
+    lastNotificationDate: new Date(action.payload),
+  };
+}
+export function setLastReadNotificationDate(state: ReduxState, action: SetLastReadNotificationDateAction): ReduxState {
+  localStorage.setItem('lastReadNotificatonDate', action.payload);
+  return {
+    ...state,
+    lastReadNotificationDate: new Date(action.payload),
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -124,5 +147,13 @@ export const dispatches = [
   {
     action: SET_DISCONNECT,
     function: setDisconnect
+  },
+  {
+    action: SET_LAST_NOTIFICATION_DATE,
+    function: setLastNotificationDate
+  },
+  {
+    action: SET_LAST_READ_NOTIFICATION_DATE,
+    function: setLastReadNotificationDate,
   }
 ];

@@ -72,6 +72,7 @@ function Notifications() {
       setNotifications(
         res.data.map((e: Notification) => ({ ...e, createdAt: new Date(e.createdAt) }))
       );
+      localStorage.setItem('lastReadNotificationDate', (new Date()).toString());
     } catch (e) {
       console.error(e);
     }

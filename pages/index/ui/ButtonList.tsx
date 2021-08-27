@@ -53,7 +53,17 @@ const SearchInput = styled.input<{active: boolean}>`
   padding: .25rem .25rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-`
+`;
+const UnreadBubble = styled.div`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  user-select: none;
+  border-radius: 100%;
+  background-color: #FF0000;
+`;
 
 function SearchBtn() {
   const dispatch = useDispatch();
@@ -111,6 +121,8 @@ export default function ButtonList() {
   const dispatch = useDispatch();
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const showButtons = useSelector((state: ReduxState) => state.showButtons);
+  const lastNotificationDate = useSelector((state: ReduxState) => state.lastNotificationDate);
+  const lastReadNotificationDate = useSelector((state: ReduxState) => state.lastReadNotificationDate);
   const [display, setDisplay] = useState(true);
 
   useEffect(() => {
@@ -144,10 +156,13 @@ export default function ButtonList() {
             <HelpCircle/>
           </Button>
           <Link href="/user/home">
-            <a style={{ color: "inherit" }}>
+            <a style={{ color: "inherit", position: "relative" }}>
               <Button>
                 <User/>
               </Button>
+              { lastNotificationDate > lastReadNotificationDate ? (
+                <UnreadBubble/>
+              ) : null }
             </a>
           </Link>
           <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })}>

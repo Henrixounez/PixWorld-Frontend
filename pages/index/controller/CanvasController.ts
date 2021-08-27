@@ -11,6 +11,7 @@ import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICAT
 import { SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../store/actions/overlay";
 import { SET_SHOW_CHAT } from "../store/actions/chat";
+import { SET_LAST_READ_NOTIFICATION_DATE } from "../store/actions/infos";
 
 const ACTIVITY_DURATION_MS = 1000;
 const ACTIVITY_REFRESH_MS = 25;
@@ -178,7 +179,11 @@ export class CanvasController {
     const showPalette = localStorage.getItem('showPalette')
     if (showPalette)
       store?.dispatch({ type: SET_SHOW_PALETTE, payload: showPalette === "true" });
-    
+
+    const lastReadNotificationDate = localStorage.getItem('lastReadNotificationDate')
+    if (lastReadNotificationDate)
+      store?.dispatch({ type: SET_LAST_READ_NOTIFICATION_DATE, payload: lastReadNotificationDate });
+  
     const notifications = localStorage.getItem('notifications')
     if (notifications) {
       store?.dispatch({ type: SET_NOTIFICATIONS, payload: notifications === "true" });  

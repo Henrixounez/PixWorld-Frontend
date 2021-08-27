@@ -31,6 +31,8 @@ export interface ReduxState {
   showButtons: boolean;
   showPalette: boolean;
   eraserMode: boolean;
+  lastNotificationDate: Date;
+  lastReadNotificationDate: Date;
   position: {
     x: number,
     y: number,
@@ -86,6 +88,8 @@ export const initialState: ReduxState = {
   showButtons: true,
   showPalette: true,
   eraserMode: false,
+  lastNotificationDate: new Date(0),
+  lastReadNotificationDate: new Date(0),
   position: {
     x: 0,
     y: 0,
