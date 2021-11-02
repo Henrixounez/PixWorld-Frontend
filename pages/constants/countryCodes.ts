@@ -37,6 +37,7 @@ const countryCodes = [
   "BV",
   "BW",
   "BY",
+  "BY2",
   "BZ",
   "CA",
   "CC",
