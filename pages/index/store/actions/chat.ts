@@ -12,6 +12,7 @@ export type Message = {
   author: string;
   country: string;
   msg: string;
+  tag: string;
   color: string;
   createdAt: Date;
 }

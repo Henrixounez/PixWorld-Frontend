@@ -1,10 +1,12 @@
 import { UserReduxState } from "..";
+import { FactionMember } from "./faction";
 
 export interface User {
   username: string;
   totalPixels: number;
   dailyPixels: number;
   type: string;
+  factionMember?: FactionMember;
 }
 
 /* Actions */

@@ -1,8 +1,10 @@
 import { UserReduxState } from '.';
 import * as User from './actions/user';
+import * as Faction from './actions/faction';
 
 export type ActionTypes =
-  User.Actions;
+  User.Actions |
+  Faction.Actions;
 
 export interface Dispatch {
   action: string,
@@ -12,6 +14,7 @@ export interface Dispatch {
 // @ts-ignore
 const allDispatches: Array<Dispatch> = [
   User.dispatches,
+  Faction.dispatches,
 ].flat();
 
 export function reducer(state: UserReduxState, action: ActionTypes) {

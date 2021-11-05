@@ -53,9 +53,9 @@ function Edit() {
         payload: res.data
       });
       setStatus("success");
-      if (email)false
+      if (email)
         setEmailVerify(true);
-    } catch (err) {
+    } catch (err: any) {
       setStatus("error");
       setError(err.response?.data || t('edit.error'));
     }
