@@ -266,6 +266,7 @@ export default function Chat() {
                 { countryCodes.includes(msg.country) && (
                   <img src={`/flags/${msg.country}.svg`} style={{ height: "0.6rem", marginRight: "0.2rem", filter: darkMode ? 'invert(1)' : 'invert(0)' }} />
                 )}
+                {msg.tag && `[${msg.tag}] `}
                 {msg.author}
               </span>
               : {formatChatText(msg.msg, textClick)}

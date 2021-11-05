@@ -13,5 +13,6 @@ export const languagesModules = [
   'auth',
   'notification',
   'alerts',
-  'bookmark'
+  'bookmark',
+  'faction'
 ];

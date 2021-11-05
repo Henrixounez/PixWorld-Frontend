@@ -79,6 +79,38 @@ export const QueryForm = styled.form`
     }
   }
 `;
+export const Button = styled.button`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  color: #ffffffa0;
+  background-color: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: .1s;
+  svg {
+    transition: .2s;
+  }
+  &:hover {
+    background-color: rgba(0,0,0,0.3);
+    svg {
+      color: #4bc0c0;
+    }
+  }
+  @media(max-width: 500px) {
+    button {
+      padding: 0.5rem;
+      font-size: 0.7rem;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+`;
+
 export const Textfield = styled.input`
   flex: 1;
   padding: 1rem;

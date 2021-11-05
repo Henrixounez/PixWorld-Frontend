@@ -3,9 +3,11 @@ import { createStore, Store } from 'redux';
 import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
 import { User } from './actions/user';
+import { Faction } from './actions/faction';
 
 export interface UserReduxState {
   user?: User,
+  faction?: Faction,
 }
 
 export let store: Store<UserReduxState, ActionTypes> | undefined;

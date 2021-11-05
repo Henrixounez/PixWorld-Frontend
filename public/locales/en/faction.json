@@ -1,0 +1,27 @@
+{
+  "create": {
+    "title": "Create your faction",
+    "description": "Invite your friends and build together in the world. To create a faction, you need to have placed 20 000 pixels.",
+    "name": "Name",
+    "tag": "Tag (Max 4 Letters)"
+  },
+  "nonMemberInvites": {
+    "title": "Incomming Faction Invites"
+  },
+  "infos": {
+    "noDescription": "No description"
+  },
+  "members": {
+    "title": "Members"
+  },
+  "invites": {
+    "title": "Invites",
+    "username": "Username"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Description",
+    "quit": "Quit faction",
+    "delete": "Delete faction"
+  }
+}

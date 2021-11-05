@@ -5,7 +5,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import axios from 'axios';
 import styled from 'styled-components'
 import { Provider, useDispatch } from 'react-redux';
-import { Activity, Settings, User } from 'react-feather';
+import { Activity, Settings, User, Users } from 'react-feather';
 
 import { API_URL } from '../constants/api';
 import { initialState, useStore } from './store';
@@ -16,6 +16,7 @@ import SideBar from '../sidebar';
 import PageHome from './Home';
 import PageActivity from './Activity';
 import PageSettings from './Settings';
+import PageFaction from './Faction';
 
 export const Container = styled.div`
   width: 100vw;
@@ -45,6 +46,7 @@ export enum PageTypes {
   HOME = "home",
   ACTIVITY = "activity",
   SETTINGS = "settings",
+  FACTION = "faction"
 }
 
 export const pages = [
@@ -61,11 +63,17 @@ export const pages = [
     component: <PageActivity/>
   },
   {
+    type: PageTypes.FACTION,
+    icon: <Users/>,
+    name: "Factions",
+    component: <PageFaction/>
+  },
+  {
     type: PageTypes.SETTINGS,
     icon: <Settings/>,
     name: "Settings",
     component: <PageSettings/>
-  }
+  },
 ]
 
 
