@@ -9,7 +9,7 @@ import { API_URL } from "../../constants/api";
 import { SET_USER } from "../../index/store/actions/user";
 import { BoxContainer, BoxRow, BoxTitle, Button, CoordRow, ErrorBox, QueryForm, Textfield } from "../../pagesComponents";
 import { UserReduxState } from "../store";
-import { FactionInvite, Faction } from "../store/actions/faction";
+import { FactionInvite } from "../store/actions/faction";
 import { List } from '.';
 
 export function FactionCreate() {
@@ -169,46 +169,4 @@ export function FactionInvites() {
       </BoxRow>
     </BoxContainer>
   );
-}
-
-export function SearchFaction() {
-  const router = useRouter();
-  const [factions, setFactions] = useState<Faction[]>([]);
-
-  const getFactions = async () => {
-    try {
-      const token = localStorage.getItem('token');
-
-      if (!token)
-        return router.replace(router.basePath);
-
-      const res = await axios.get(`${API_URL}/factions`, { headers: { 'Authorization': token }});
-      setFactions(res.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useEffect(() => {
-    getFactions();
-  }, []);
-
-  return (
-    <BoxContainer>
-      <BoxTitle>
-        Search Faction
-      </BoxTitle>
-      <BoxRow>
-        <List>
-          {factions.map((f, i) => (
-            <div key={i}>
-              {f.id}
-              {f.tag}
-              {f.name}
-            </div>
-          ))}
-        </List>
-      </BoxRow>
-    </BoxContainer>
-  )
 }

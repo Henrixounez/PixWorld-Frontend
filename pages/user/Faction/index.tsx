@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { UserReduxState } from "../store";
+import { FactionList } from "./List";
 import { MyFaction } from "./Member";
 import { FactionCreate, FactionInvites } from "./NotMember";
 
@@ -26,12 +27,16 @@ export default function PageFaction() {
       <>
         <FactionCreate/>
         <FactionInvites/>
-        {/* <SearchFaction/> */}
+        <FactionList/>
       </>
     );
   } else {
     return (
-      <MyFaction factionId={user.factionMember.faction} role={user.factionMember.role} />
+      <>
+        <MyFaction factionId={user.factionMember.faction} role={user.factionMember.role} />
+        <div style={{ padding: "2.5rem"}}/>
+        <FactionList/>
+      </>
     );
   }
 }

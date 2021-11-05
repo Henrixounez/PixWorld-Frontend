@@ -23,5 +23,8 @@
     "description": "Description",
     "quit": "Quitter la faction",
     "delete": "Supprimer la faction"
+  },
+  "list": {
+    "title": "Liste des factions"
   }
 }
