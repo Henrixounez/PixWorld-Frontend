@@ -6,15 +6,18 @@ import { useEffect, useState } from 'react';
 import { SET_ALERT } from '../store/actions/infos';
 import { getCanvasController } from '../controller/CanvasController';
 import { AudioType } from '../controller/SoundController';
+import { Colors, getColor } from '../../constants/colors';
 
-const AlertContainer = styled.div<{show: boolean, color?: string}>`
+const AlertContainer = styled.div<{show: boolean, bgColor: string, darkMode: boolean}>`
   position: fixed;
   top: 55px;
   left: calc(50vw);
   transform: translate(-50%, 0);
   font-size: 1rem;
   text-align: center;
-  background-color: ${({ color }) => color || "#FFFD"};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ bgColor }) => bgColor};
+  border: ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border: 1px solid #000;
   padding: 10px;
   gap: 10px;
@@ -31,6 +34,7 @@ export default function Alert() {
   const { t } = useTranslation('alerts');
   const dispatch = useDispatch();
   const alert = useSelector((state: ReduxState) => state.alert);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const [display, setDisplay] = useState(false);
 
   useEffect(() => {
@@ -54,10 +58,11 @@ export default function Alert() {
     }
   }, [alert]);
 
+  const color = alert.color !== undefined ? alert.color : Colors.UI_BACKGROUND;
   return (
     <>
       { alert.show && alert.text ? (
-        <AlertContainer show={display} color={alert.color}>
+        <AlertContainer show={display} bgColor={getColor(color, darkMode)} darkMode={darkMode}>
           {t(alert.text)}
         </AlertContainer>
       ) : (

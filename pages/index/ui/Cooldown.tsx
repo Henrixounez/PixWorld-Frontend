@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { getCanvasController } from '../controller/CanvasController';
 import { AudioType } from '../controller/SoundController';
+import { Colors, getColor } from '../../constants/colors';
 
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
@@ -17,8 +18,8 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: b
   transform: translate(-50%, 0);
   font-size: 1rem;
   height: 35px;
-  background-color: ${({ limit })=> limit ? "#FFA9A9cc" : "#FFFD" };
-  border: 1px solid #000;
+  background-color: ${({ limit, darkMode }) => getColor(limit ? Colors.ALERT : Colors.UI_BACKGROUND, darkMode) };
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0 10px;
   gap: 10px;
   display: flex;
@@ -26,7 +27,6 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: b
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .5s;
-  filter: ${({ darkMode, limit }) => darkMode && !limit ? 'invert(1)' : 'invert(0)'};
   opacity: ${({ show }) => show ? '1' : '0'};
   user-select: none;
 `;

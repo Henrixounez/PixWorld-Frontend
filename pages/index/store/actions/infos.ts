@@ -1,4 +1,5 @@
 import { ReduxState } from "..";
+import { Colors } from "../../../constants/colors";
 import ModalTypes from "../../../constants/modalTypes";
 import { getCanvasController, GRID_ZOOM } from "../../controller/CanvasController";
 
@@ -35,7 +36,7 @@ export interface SetAlertAction {
   payload: {
     show: boolean;
     text?: string;
-    color?: string;
+    color?: Colors;
   };
 }
 export interface SetSearchAction {

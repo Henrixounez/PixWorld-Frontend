@@ -7,6 +7,7 @@ import ModalTypes from '../../constants/modalTypes';
 import { User } from './actions/user';
 import { Canvas } from '../controller/CanvasController';
 import { Message } from './actions/chat';
+import { Colors } from '../../constants/colors';
 
 export interface ReduxState {
   playersNb: number;
@@ -56,7 +57,7 @@ export interface ReduxState {
   alert: {
     show: boolean;
     text?: string;
-    color?: string;
+    color?: Colors;
   },
   currentCanvas: string;
   canvases: Array<Canvas>,

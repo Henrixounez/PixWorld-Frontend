@@ -7,6 +7,7 @@ import { ReduxState, store } from '../../store';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../../../constants/modalTypes';
 import { coordinateLinkGoto } from '../Chat';
+import { Colors, getColor } from '../../../constants/colors';
 
 const Container = styled.div`
   display: flex;
@@ -28,7 +29,6 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     width: 50%;
   }
   img {
-    filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
     width: 15%;
     max-height: 50px;
     object-fit: scale-down;
@@ -46,7 +46,7 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     }
   }
 `;
-const AddNew = styled.div<{error: boolean}>`
+const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -56,7 +56,7 @@ const AddNew = styled.div<{error: boolean}>`
 
   input {
     max-width: 30vw;
-    border-color: ${({ error }) => error ? '#FF0000' : 'initial'};
+    border-color: ${({ error, darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
   }
   svg {
     cursor: pointer;
@@ -159,7 +159,7 @@ export default function ModalBookmarks() {
           </div>
         </OverlayRow>
       ))}
-      <AddNew error={errorNew}>
+      <AddNew error={errorNew} darkMode={darkMode}>
         <input type="text" value={newBookmarkTitle} placeholder={t('name')} onChange={(e) => setNewBookmarkTitle(e.target.value)} />
         <input type="text" value={newBookmarkPosition} placeholder={t('position')} onChange={(e) => setNewBookmarkPosition(e.target.value)} />
         <FilePlus onClick={() => saveNew() }/>

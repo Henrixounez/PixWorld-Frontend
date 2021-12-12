@@ -13,6 +13,7 @@ import ModalParameters from './modals/Parameters';
 import Captcha from './modals/Captcha';
 import ModalOverlay from './modals/Overlay';
 import ModalBookmarks from './modals/Bookmarks';
+import { Colors, getColor } from '../../constants/colors';
 
 const ModalBackdrop = styled.div<{darkMode: boolean}>`
   position: absolute;
@@ -21,17 +22,17 @@ const ModalBackdrop = styled.div<{darkMode: boolean}>`
   width: 100vw;
   height: 100vh;
   z-index: 100;
-  background-color: #FFFA;
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKDROP, darkMode)};
 `;
-const ModalContent = styled.div`
+const ModalContent = styled.div<{ darkMode: boolean }>`
   position: relative;
   margin: 10vh auto;
   z-index: 1000;
   width: 80vw;
   height: 80vh;
   max-width: 800px;
-  background-color: white;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   box-sizing: border-box;
   padding: 2.5rem 0;
   padding-bottom: 0;
@@ -45,15 +46,16 @@ const ModalContent = styled.div`
   }
   button {
     outline: none;
-    background-color: white;
-    border: 1px solid #555;
+    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     border-radius: 2px;
     padding: 5px 10px;
     cursor: pointer;
-    box-shadow: 1px 1px 2px #000;
+    box-shadow: 1px 1px 2px ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     transition: .5s;
     &:hover {
-      box-shadow: 2px 2px 3px #000;
+      box-shadow: 2px 2px 3px ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     }
   }
 
@@ -109,7 +111,7 @@ export default function Modal() {
 
   return (
     <ModalBackdrop darkMode={darkMode} onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+      <ModalContent darkMode={darkMode} onClick={(e) => e.stopPropagation()}>
         <div style={{ height: "2.5rem" }}>
           <ModalTitle>
             {t(modalComponents[currentModal].title)}

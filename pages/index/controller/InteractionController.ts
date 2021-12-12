@@ -9,6 +9,7 @@ import palette from "../../constants/palette";
 import { CanvasController } from "./CanvasController";
 import { AudioType } from "./SoundController";
 import ModalTypes from "../../constants/modalTypes";
+import { Colors } from "../../constants/colors";
 
 export default class InteractionController {
   canvasController: CanvasController;
@@ -250,11 +251,11 @@ export default class InteractionController {
         store?.dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !store.getState().overlay.activate})
         break;
       case 'KeyG':
-        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: "#FFFD" }})
+        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().gridActive ? 'showGrid' : 'hideGrid', color: Colors.UI_BACKGROUND }})
         store?.dispatch({ type: SET_GRID_ACTIVE, payload: !store.getState().gridActive });
         break;
       case 'KeyX':
-        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: "#FFFD" }})
+        store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().activity ? 'showActivity' : 'hideActivity', color: Colors.UI_BACKGROUND }})
         store?.dispatch({ type: SET_ACTIVITY, payload: !store.getState().activity });
         break;
       case 'KeyB':
@@ -266,7 +267,7 @@ export default class InteractionController {
       default:
         switch (e.key) {
           case 'm':
-            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: "#FFFD" }})
+            store?.dispatch({ type: SET_ALERT, payload: { show: true, text: !store.getState().sounds ? 'unmuted' : 'muted', color: Colors.UI_BACKGROUND }})
             store?.dispatch({ type: SET_SOUNDS, payload: !store.getState().sounds });
             break;
           case 'C':
@@ -274,7 +275,7 @@ export default class InteractionController {
               const pos = store!.getState().position;
               const txt = window.location.origin + `?pos="${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},${Math.round(pos.zoom)})"`;
               navigator.clipboard.writeText(txt);
-              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: Colors.UI_BACKGROUND }})
             }
             break;
           case 'c':
@@ -283,7 +284,7 @@ export default class InteractionController {
               const pos2 = store!.getState().position;
               const txt = `#${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},${Math.round(pos2.zoom)})`;
               navigator.clipboard.writeText(txt);
-              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+              store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: Colors.UI_BACKGROUND }})
             }
             break;
         }

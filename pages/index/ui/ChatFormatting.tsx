@@ -2,22 +2,23 @@ import React from 'react';
 import styled from 'styled-components';
 import md5 from 'md5';
 import { store } from '../store';
+import { Colors, getColor } from '../../constants/colors';
 
 function createColor(text: string) {
   return '#' + md5(text).substr(0, 6);
 }
 
-const Position = styled.span`
-  color: #428BCA;
+const Position = styled.span<{ darkMode: boolean }>`
+  color: ${({ darkMode }) => getColor(Colors.LINK, darkMode)};
   padding: 0 2px;
   cursor: pointer;
   &:hover {
-    color: #226BAA;
+    color: ${({ darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
   }
 `;
-const Mention = styled.span<{color: string, isMe: boolean}>`
+const Mention = styled.span<{color: string, isMe: boolean, darkMode: boolean}>`
   ${( { isMe, color }) => `${isMe ? 'background-color' : 'color'}: ${color}`};
-  ${( { isMe }) => `${isMe ? 'color' : 'background-color'}: ${isMe ? '#FFF' : 'transparent'}`};
+  ${( { isMe }) => `${isMe ? 'color' : 'background-color'}: ${isMe ? getColor(Colors.TEXT, true) : 'transparent'}`};
   padding: 0 2px;
 `;
 const Greentext = styled.span`
@@ -71,7 +72,7 @@ const formattingTypes = [
   }
 ]
 
-export default function formatChatText(text: string, onClick: (type: FormatType, text: string) => void) {
+export default function formatChatText(text: string, onClick: (type: FormatType, text: string) => void, darkMode: boolean) {
   let formattings: { type: FormatType, text: string, index: number }[] = []
 
   formattingTypes.forEach(({ type, regex }) => {
@@ -109,20 +110,20 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
           case FormatType.BREAK:
             return <br key={i}/>;
           case FormatType.POSITION:
-            return <Position onClick={() => onClick(FormatType.POSITION, text)} key={i}>{text}</Position>;
+            return <Position onClick={() => onClick(FormatType.POSITION, text)} key={i} darkMode={darkMode}>{text}</Position>;
           case FormatType.MENTION:
             const name = text.replace('@', '');
-            return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i}>{text}</Mention>;
+            return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i} darkMode={darkMode}>{text}</Mention>;
           case FormatType.BOLD:
-            return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick)}</b>
+            return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick, darkMode)}</b>
           case FormatType.ITALICS:
-            return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick)}</i>
+            return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick, darkMode)}</i>
           case FormatType.UNDERLINE:
-            return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick)}</u>
+            return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick, darkMode)}</u>
           case FormatType.CODE:
             return <code key={i}>{text.replace(/`/gm, '')}</code>
           case FormatType.GREENTEXT:
-            return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick)}</Greentext>
+            return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick, darkMode)}</Greentext>
         }
       })}
     </>

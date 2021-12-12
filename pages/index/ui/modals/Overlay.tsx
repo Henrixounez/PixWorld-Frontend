@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check, Copy, FilePlus, Trash2 } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Colors, getColor } from '../../../constants/colors';
 import { ReduxState } from '../../store';
 import { SET_OVERLAY_AUTOCOLOR, SET_OVERLAY_IMAGE, SET_OVERLAY_POSITION, SET_OVERLAY_TRANSPARENCY } from '../../store/actions/overlay';
 import { OverlaySave } from '../Overlay';
@@ -26,7 +27,8 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     width: 50%;
   }
   img {
-    filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, !darkMode)};
+    padding: 0.5rem;
     width: 15%;
     max-height: 50px;
     object-fit: scale-down;
@@ -44,7 +46,7 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     }
   }
 `;
-const AddNew = styled.div<{error: boolean}>`
+const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -54,7 +56,7 @@ const AddNew = styled.div<{error: boolean}>`
 
   input {
     max-width: 30vw;
-    border-color: ${({ error }) => error ? '#FF0000' : 'initial'};
+    border-color: ${({ error, darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
   }
   svg {
     cursor: pointer;
@@ -142,7 +144,7 @@ export default function ModalOverlay() {
           </div>
         </OverlayRow>
       ))}
-      <AddNew error={errorNew}>
+      <AddNew error={errorNew} darkMode={darkMode}>
         <input type="text" value={newOverlayValue} onChange={(e) => setNewOverlayValue(e.target.value)} />
         <FilePlus onClick={() => saveNew() }/>
       </AddNew>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { ReduxState, store } from "../store"
 import { SET_ALERT } from '../store/actions/infos';
+import { Colors, getColor } from '../../constants/colors';
 
 const Pos = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -10,8 +11,9 @@ const Pos = styled.div<{darkMode: boolean}>`
   left: 10px;
   font-size: 1rem;
   height: 35px;
-  background-color: #FFFD;
-  border: 1px solid #000;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   padding: 0 10px;
   min-width: 50px;
   text-align: center;
@@ -21,7 +23,6 @@ const Pos = styled.div<{darkMode: boolean}>`
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   user-select: none;
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
   cursor: pointer;
 `;
 

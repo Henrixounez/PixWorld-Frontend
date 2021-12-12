@@ -94,7 +94,7 @@ function Notifications() {
               {n.title}
             </h2>
             <span>
-              {formatChatText(n.text, () => {})}
+              {formatChatText(n.text, () => {}, false)}
             </span>
           </NotificationBox>
         ))}

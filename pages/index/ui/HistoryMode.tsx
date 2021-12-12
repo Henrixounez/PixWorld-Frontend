@@ -8,15 +8,17 @@ import { ReduxState } from '../store';
 import { API_URL } from "../../constants/api";
 import { SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
 import { getCanvasController } from '../controller/CanvasController';
+import { Colors, getColor } from '../../constants/colors';
 
-const HistoryContainer = styled.div`
+const HistoryContainer = styled.div<{ darkMode: boolean }>`
   position: fixed;
   top: 10px;
   left: 50vw;
   transform: translate(-50%, 0);
   font-size: 1rem;
-  background-color: #FFFD;
-  border: 1px solid #000;
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0.5rem 0.5rem;
   gap: 10px;
   display: flex;
@@ -46,6 +48,7 @@ export default function HistoryMode() {
   const active = useSelector((state: ReduxState) => state.history.activate);
   const historyDate = useSelector((state: ReduxState) => state.history.date);
   const canvas = useSelector((state: ReduxState) => state.currentCanvas);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const [minDate, setMinDate] = useState(new Date().toLocaleDateString('fr-FR').replace(/\//g, '-'));
   const [availableHours, setAvailableHours] = useState<string[]>([]);
   const [loadedDate, setLoadedDate] = useState(false);
@@ -114,7 +117,7 @@ export default function HistoryMode() {
   return (
     <>
       {active ? (
-        <HistoryContainer>
+        <HistoryContainer darkMode={darkMode}>
           Select date:
           <input
             type='date'

@@ -8,6 +8,7 @@ import { BottomButton } from './Chat';
 import { Grid } from 'react-feather';
 import { useEffect, useState } from 'react';
 import { SET_SHOW_PALETTE } from '../store/actions/parameters';
+import { Colors, getColor } from '../../constants/colors';
 
 const Container = styled.div`
   position: fixed;
@@ -28,10 +29,11 @@ const OpenButton = styled(BottomButton)`
     width: calc(5 * 25px + 8px);
   }
 `;
-const Palette = styled.div<{ show: boolean }>`
+const Palette = styled.div<{ show: boolean, darkMode: boolean }>`
   padding: 3px;
-  background-color: #FFF;
-  border: 1px solid #000;
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   overflow: hidden;
 
   display: flex;
@@ -52,7 +54,7 @@ const Palette = styled.div<{ show: boolean }>`
     height: 0px !important;
   `};
 `;
-const PaletteButton = styled.div<{selected: boolean}>`
+const PaletteButton = styled.div<{ selected: boolean, darkMode: boolean }>`
   width: 25px;
   height: 25px;
   cursor: pointer;
@@ -60,12 +62,12 @@ const PaletteButton = styled.div<{selected: boolean}>`
   box-sizing: border-box;
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0px 0px 5px #444;
+    box-shadow: 0px 0px 5px ${({ darkMode }) => getColor(Colors.LIGHT_TEXT, darkMode)};
   }
-  ${({ selected }) => selected && `
+  ${({ selected, darkMode }) => selected && `
     transform: scale(1.1);
-    box-shadow: 0px 0px 5px #444;
-    border: 1px solid #FFF;
+    box-shadow: 0px 0px 5px ${getColor(Colors.LIGHT_TEXT, darkMode)};
+    border: 1px solid ${getColor(Colors.UI_BORDER, false)};
     z-index: 10;
   `}
 `;
@@ -103,7 +105,7 @@ export default function PaletteList() {
         <Grid/>
       </OpenButton>
       { showPalette && (
-        <Palette show={display}>
+        <Palette show={display} darkMode={darkMode}>
           {palette.map((color, i) => (
             <PaletteButton
               key={i}
@@ -112,6 +114,7 @@ export default function PaletteList() {
                 backgroundColor: color,
                 transform: selectedColor === color ? "scale(1.2)" : '',
               }}
+              darkMode={darkMode}
               onClick={() => {
                 dispatch({
                   type: SET_SELECTED_COLOR,

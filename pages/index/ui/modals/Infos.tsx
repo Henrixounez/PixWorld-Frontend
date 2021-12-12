@@ -1,6 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from "styled-components";
+import { Colors, getColor } from '../../../constants/colors';
+import { ReduxState } from '../../store';
 
 const Text = styled.div`
   text-align: left;
@@ -8,11 +11,11 @@ const Text = styled.div`
   width: fit-content;
   max-width: 560px;
 `;
-const Key = styled.span`
-  border: 1px solid #333;
+const Key = styled.span<{ darkMode: boolean }>`
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0.3rem 0.4rem;
   border-radius: 0.4rem;
-  color: #333;
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   font-weight: bold;
   font-size: 0.8rem;
   line-height: 2rem;
@@ -41,6 +44,7 @@ const formattingTypes = [
 ];
 
 function formatControls(text: string) {
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   let formattings: { type: FormatType, text: string, index: number }[] = []
 
   formattingTypes.forEach(({ type, regex }) => {
@@ -76,7 +80,7 @@ function formatControls(text: string) {
           case FormatType.BREAK:
             return <br key={i}/>;  
           case FormatType.KEY:
-            return <Key key={i}>{text.substr(3)}</Key>;
+            return <Key key={i} darkMode={darkMode}>{text.substr(3)}</Key>;
           case FormatType.TAB:
             return <React.Fragment key={i}>&nbsp;&nbsp;</React.Fragment>
         }

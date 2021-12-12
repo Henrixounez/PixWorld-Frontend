@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { Edit3, Users } from 'react-feather';
 import { ReduxState } from "../store"
+import { Colors, getColor } from '../../constants/colors';
 
 const Counter = styled.div<{darkMode: boolean}>`
   position: fixed;
@@ -9,15 +10,15 @@ const Counter = styled.div<{darkMode: boolean}>`
   left: 10px;
   font-size: 1rem;
   height: 35px;
-  background-color: #FFFD;
-  border: 1px solid #000;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   padding: 0 10px;
   gap: 5px;
   display: flex;
   align-items: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   user-select: none;
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 
 function pixelNbRounded(p: number) {

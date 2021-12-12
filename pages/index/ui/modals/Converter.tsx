@@ -4,9 +4,19 @@ import palette from "../../../constants/palette";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../store";
+import { Colors, getColor } from "../../../constants/colors";
+
+const Container = styled.div<{darkMode: boolean}>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  button {
+    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  }
+`;
 
 const ImagePreviewCanvas = styled.div<{darkMode: boolean}>`
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 
 function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
@@ -232,7 +242,7 @@ export default function ModalConverter() {
   }
 
   return (
-    <>
+    <Container darkMode={darkMode}>
       {t('widthText')}
       <input type="number" id="wantedWidth" defaultValue="50" min="1" onChange={WantedWidthChange}/>
       <br/>
@@ -253,6 +263,6 @@ export default function ModalConverter() {
       <button onClick={DownloadImage} type="button">
         {t('downloadBtn')}
       </button>
-    </>
+    </Container>
   );
 }

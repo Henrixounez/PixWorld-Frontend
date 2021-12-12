@@ -14,39 +14,35 @@ import { SET_ERASER_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD
 import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../store/actions/chat';
 import countryCodes from '../../constants/countryCodes';
 import { useRouter } from 'next/dist/client/router';
+import { Colors, getColor } from '../../constants/colors';
 
-export const BottomButton = styled.div<{darkMode: boolean}>`
+export const BottomButton = styled.div<{ darkMode: boolean }>`
   font-size: 1rem;
   height: 35px;
   width: 35px;
   transition: .2s;
-  background-color: #FFFD;
-  color: #FFFD;
-  border: 1px solid #000;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode) };
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode) };
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
   &:hover {
-    background-color: #FFFA;
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
   }
 
   svg {
-    color: black;
+    color: ${Colors.TEXT};
   }
 `;
 
-const ChatButton = styled(BottomButton)<{ darkMode: boolean }>`
+const ChatButton = styled(BottomButton)`
   position: fixed;
   bottom: 10px;
   right: 50px;
-
-  div {
-    filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
-  }
 
   @media (max-height: 800px) {
     right: 75px;
@@ -55,7 +51,7 @@ const ChatButton = styled(BottomButton)<{ darkMode: boolean }>`
     right: 150px;
   }
 `;
-const UnreadBubble = styled.div`
+const UnreadBubble = styled.div<{ darkMode: boolean }>`
   position: absolute;
   top: -5px;
   right: -5px;
@@ -63,7 +59,7 @@ const UnreadBubble = styled.div`
   height: 12px;
   user-select: none;
   border-radius: 100%;
-  background-color: #FF0000;
+  background-color: ${({ darkMode }) => getColor(Colors.UNREAD, darkMode)};
 `;
 const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   position: fixed;
@@ -75,9 +71,9 @@ const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   max-width: 80vw;
   transition: .2s;
 
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
-  background-color: #FFFD;
-  border: 1px solid #000;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -102,7 +98,7 @@ const ChatText = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const ChatInteraction = styled.div`
+const ChatInteraction = styled.div<{ darkMode: boolean }>`
   padding: 5px;
   box-sizing: border-box;
   display: flex;
@@ -111,34 +107,38 @@ const ChatInteraction = styled.div`
   gap: 5px;
   input {
     width: 80%;
+    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    border-radius: 2px;
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
 const ChatMessage = styled.div`
   word-break: break-all;
 `;
-const SendButton = styled.div`
+const SendButton = styled.div<{ darkMode: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2px 10px;
-  border: 1px solid #777;
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border-radius: 2px;
   cursor: pointer;
-  background-color: #FFFD;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   &:hover {
-    background-color:  #FFFA;
+    opacity: 0.8;
   }
   user-select: none;
 `;
-const NotConnected = styled.div`
+const NotConnected = styled.div<{ darkMode: boolean }>`
   cursor: pointer;
   font-size: 0.8rem;
-  color: #428BCA;
+  color: ${({ darkMode }) => getColor(Colors.LINK, darkMode)};
   text-align: center;
   width: 100%;
 
   &:hover {
-    color: #226BAA;
+    color: ${({ darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
   }
 `;
 
@@ -249,10 +249,10 @@ export default function Chat() {
 
   return (
     <>
-      <ChatButton darkMode={darkMode} onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })}>
+      <ChatButton onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })} darkMode={darkMode}>
         <MessageSquare height="20px" />
         { unreadMessage && (
-          <UnreadBubble />
+          <UnreadBubble  darkMode={darkMode}/>
         )}
       </ChatButton>
       <ChatWindow show={showChat} darkMode={darkMode}>
@@ -264,16 +264,16 @@ export default function Chat() {
               </span>
               <span style={{ color: msg.color, cursor: 'pointer' }} onClick={() => setMessage(message + `@${msg.author}`)}>
                 { countryCodes.includes(msg.country) && (
-                  <img src={`/flags/${msg.country}.svg`} style={{ height: "0.6rem", marginRight: "0.2rem", filter: darkMode ? 'invert(1)' : 'invert(0)' }} />
+                  <img src={`/flags/${msg.country}.svg`} style={{ height: "0.6rem", marginRight: "0.2rem" }} />
                 )}
                 {msg.tag && `[${msg.tag}] `}
                 {msg.author}
               </span>
-              : {formatChatText(msg.msg, textClick)}
+              : {formatChatText(msg.msg, textClick, darkMode)}
             </ChatMessage>
           ))}
         </ChatText>
-        <ChatInteraction>
+        <ChatInteraction darkMode={darkMode}>
           { user ? (
             <>
               <input
@@ -286,12 +286,12 @@ export default function Chat() {
                     sendMessage();
                 }}
               />
-              <SendButton onClick={sendMessage}>
+              <SendButton onClick={sendMessage} darkMode={darkMode}>
                 {t('send')}
               </SendButton>
             </>
           ) : (
-            <NotConnected onClick={() => router.replace('/user/login')}>
+            <NotConnected onClick={() => router.replace('/user/login')} darkMode={darkMode}>
               {t('needConnect')}
             </NotConnected>
           )}

@@ -1,16 +1,18 @@
 import styled from 'styled-components'
+import Link from 'next/link';
 import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
+
 import { SET_MODAL, SET_SEARCH } from '../store/actions/infos';
 import ModalTypes from '../../constants/modalTypes';
 import { ReduxState } from '../store';
 import { getCanvasController } from '../controller/CanvasController';
 import { coordinateLinkGoto } from './Chat';
 import { SET_SHOW_BUTTONS } from '../store/actions/parameters';
-import Link from 'next/link';
+import { Colors, getColor } from '../../constants/colors';
 
-const ButtonListContainer = styled.div<{darkMode: boolean}>`
+const ButtonListContainer = styled.div`
   position: absolute;
   top: 10px;
   left: 10px;
@@ -20,7 +22,6 @@ const ButtonListContainer = styled.div<{darkMode: boolean}>`
   max-width: 40px;
   gap: 5px;
   flex-wrap: wrap;
-  filter: ${({ darkMode }) => darkMode ? 'invert(1)' : 'invert(0)'};
 `;
 const ButtonListDropdown = styled.div<{ show: boolean }>`
   display: flex;
@@ -33,9 +34,9 @@ const ButtonListDropdown = styled.div<{ show: boolean }>`
   transition: .5s;
   opacity: ${({ show }) => show ? '1' : '0'};
 `;
-const Button = styled.div`
-  background-color: #FFFD;
-  border: 1px solid #000;
+const Button = styled.div<{ darkMode: boolean }>`
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   box-sizing: border-box;
   min-width: 40px;
   height: 40px;
@@ -45,7 +46,10 @@ const Button = styled.div`
   justify-content: center;
   cursor: pointer;
   &:hover {
-    background-color: #FFFA;
+    opacity: 0.8;
+  }
+  svg {
+    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
 const SearchInput = styled.input<{active: boolean}>`
@@ -54,7 +58,7 @@ const SearchInput = styled.input<{active: boolean}>`
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 `;
-const UnreadBubble = styled.div`
+const UnreadBubble = styled.div<{ darkMode: boolean }>`
   position: absolute;
   top: -4px;
   right: -4px;
@@ -62,13 +66,14 @@ const UnreadBubble = styled.div`
   height: 12px;
   user-select: none;
   border-radius: 100%;
-  background-color: #FF0000;
+  background-color: ${({ darkMode }) => getColor(Colors.UNREAD, darkMode)};
 `;
 
 function SearchBtn() {
   const dispatch = useDispatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const searchActive = useSelector((state: ReduxState) => state.searchActive);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const positionSearch = () => {
     if (inputRef.current) {
@@ -91,7 +96,7 @@ function SearchBtn() {
   }, [searchActive]);
 
   return (
-    <Button onClick={() => dispatch({ type: SET_SEARCH, payload: !searchActive })}>
+    <Button onClick={() => dispatch({ type: SET_SEARCH, payload: !searchActive })} darkMode={darkMode}>
       <Search/>
       { searchActive ? (
         <>
@@ -146,32 +151,32 @@ export default function ButtonList() {
   }, [display]);
 
   return (
-    <ButtonListContainer darkMode={darkMode}>
-      <Button onClick={() => { showButtons ? setDisplay(!display) : dispatch({ type: SET_SHOW_BUTTONS, payload: !showButtons }) }}>
+    <ButtonListContainer>
+      <Button onClick={() => { showButtons ? setDisplay(!display) : dispatch({ type: SET_SHOW_BUTTONS, payload: !showButtons }) }} darkMode={darkMode}>
         {display ? <ChevronDown/> : <ChevronUp/> }
       </Button>
       { showButtons && (
         <ButtonListDropdown show={display}>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })} darkMode={darkMode}>
             <HelpCircle/>
           </Button>
           <Link href="/user/home">
             <a style={{ color: "inherit", position: "relative" }}>
-              <Button>
+              <Button darkMode={darkMode}>
                 <User/>
               </Button>
               { lastNotificationDate > lastReadNotificationDate ? (
-                <UnreadBubble/>
+                <UnreadBubble darkMode={darkMode}/>
               ) : null }
             </a>
           </Link>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })} darkMode={darkMode}>
             <Upload/>
           </Button>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })} darkMode={darkMode}>
             <Sliders/>
           </Button>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })} darkMode={darkMode}>
             <Bookmark/>
           </Button>
           <SearchBtn/>

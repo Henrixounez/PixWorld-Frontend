@@ -5,12 +5,14 @@ import { useTranslation } from 'next-i18next';
 import { RefreshCw } from 'react-feather';
 
 import { API_URL } from "../../../constants/api";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SET_MODAL } from '../../store/actions/infos';
 import ModalTypes from '../../../constants/modalTypes';
 import { getCanvasController } from '../../controller/CanvasController';
+import { Colors, getColor } from '../../../constants/colors';
+import { ReduxState } from '../../store';
 
-const Container = styled.div`
+const Container = styled.div<{ darkMode: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,7 +28,7 @@ const Container = styled.div`
   }
 
   img {
-    border: 1px solid #000;
+    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     max-width: 60vw;
     max-height: 30vh;
   }
@@ -38,11 +40,11 @@ const Container = styled.div`
     span {
       font-weight: 100;
       font-size: 0.8rem;
-      color: #444;
+      color: ${({ darkMode }) => getColor(Colors.LIGHT_TEXT, darkMode)};
     }
   }
 `;
-const FormRow = styled.form`
+const FormRow = styled.form<{ darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   gap: 1rem;
@@ -51,11 +53,15 @@ const FormRow = styled.form`
   justify-content: center;
   input {
     text-align: center;
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
-const SendButton = styled.button`
+const SendButton = styled.button<{ darkMode: boolean }>`
   padding: 5px;
-  border: 1px solid #777;
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   border-radius: 2px;
   display: flex;
   justify-content: center;
@@ -63,21 +69,25 @@ const SendButton = styled.button`
   cursor: pointer;
   outline: none;
   &:hover {
-    background-color: #EEE;
+    opacity: 0.8;
   }
 `;
-const RefreshButton = styled.div`
+const RefreshButton = styled.div<{ darkMode: boolean }>`
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 5px;
-  border: 1px solid #777;
+  border: 1px solid ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
   border-radius: 2px;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 export default function Captcha() {
   const { t } = useTranslation('captcha');
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
   const dispatch = useDispatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [captchaURL, setCaptchaURL] = useState('');
@@ -109,7 +119,7 @@ export default function Captcha() {
 
   return (
     <>
-      <Container>
+      <Container darkMode={darkMode}>
         <h1>{t('title')} 🤖</h1>
         <p>
           {t('subtitle')}<br/>
@@ -119,8 +129,8 @@ export default function Captcha() {
           src={captchaURL}
           alt="CAPTCHA"
         />
-        <FormRow onSubmit={sendCaptcha}>
-          <RefreshButton onClick={(e) => { e.preventDefault(); refreshCaptcha(); }}>
+        <FormRow onSubmit={sendCaptcha} darkMode={darkMode}>
+          <RefreshButton onClick={(e) => { e.preventDefault(); refreshCaptcha(); }} darkMode={darkMode}>
             <RefreshCw/>
           </RefreshButton>
           <input
@@ -130,7 +140,7 @@ export default function Captcha() {
             onChange={(e) => setValue(e.target.value)}
             ref={inputRef}
           />
-          <SendButton type="submit">
+          <SendButton type="submit" darkMode={darkMode}>
             {t('send')}
           </SendButton>
         </FormRow>
