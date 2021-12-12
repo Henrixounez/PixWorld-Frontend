@@ -51,7 +51,7 @@ const ChatButton = styled(BottomButton)<{ darkMode: boolean }>`
   @media (max-height: 800px) {
     right: 75px;
   }
-  @media (max-height: 400px) {
+  @media (max-height: 450px) {
     right: 150px;
   }
 `;
@@ -90,7 +90,7 @@ const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   @media (max-height: 800px) {
     right: 75px;
   }
-  @media (max-height: 400px) {
+  @media (max-height: 450px) {
     right: 150px;
   }
 `;
