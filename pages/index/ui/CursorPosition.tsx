@@ -36,7 +36,7 @@ export default function CursorPosition() {
     if (navigator.clipboard) {
       const txt = `#${store?.getState().canvases.find((e) => e.id === store?.getState().currentCanvas)?.letter}(${Math.round(pos.x)},${Math.round(pos.y)},10)`;
       navigator.clipboard.writeText(txt);
-      store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: "#FFFD" }})
+      store?.dispatch({ type: SET_ALERT, payload: { show: true, text: 'clipboard', color: Colors.UI_BACKGROUND }})
     }
   }
 
