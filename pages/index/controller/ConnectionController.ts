@@ -8,6 +8,7 @@ import { SET_NB_PIXELS, SET_USER } from "../store/actions/user";
 import { API_URL, WS_URL } from "../../constants/api";
 import ModalTypes from "../../constants/modalTypes";
 import { CanvasController } from "./CanvasController";
+import { Colors } from "../../constants/colors";
 
 export default class ConnectionController {
   canvasController: CanvasController;
@@ -55,7 +56,7 @@ export default class ConnectionController {
           break;
         case 'refusePixel':
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cd });
-          store?.dispatch({ type: SET_ALERT, payload: { show: true, text: data.reason, color: "#FFA9A9cc" }})
+          store?.dispatch({ type: SET_ALERT, payload: { show: true, text: data.reason, color: Colors.ALERT }});
           this.canvasController.restorePixel(data.pos.x, data.pos.y);
           break;
         case 'chatMessage':
@@ -100,7 +101,7 @@ export default class ConnectionController {
         payload: res.data
       });
     } catch (e) {
-      if (e.response?.status === 401)
+      if ((e as any).response?.status === 401)
         localStorage.removeItem('token');
     }
   };
