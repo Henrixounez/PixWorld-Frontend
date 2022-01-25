@@ -1,0 +1,30 @@
+{
+  "create": {
+    "title": "Crea tu facción",
+    "description": "Invita a tus amigos y crea juntos en este mundo. Para crear una facción, debes tener más de 20.000 píxeles colocados",
+    "name": "Nombre",
+    "tag": "Tag (Máximo 4 letras)"
+  },
+  "nonMemberInvites": {
+    "title": "Invitaciones a facciones pendientes"
+  },
+  "infos": {
+    "noDescription": "Sin descripción"
+  },
+  "members": {
+    "title": "Miembros"
+  },
+  "invites": {
+    "title": "Invitaciones",
+    "username": "Nombre de Usuario"
+  },
+  "settings": {
+    "title": "Opciones",
+    "description": "Descripción",
+    "quit": "Salir de la facción",
+    "delete": "Eliminar facción"
+  },
+  "list": {
+    "title": "Lista de facciones"
+  }
+}
