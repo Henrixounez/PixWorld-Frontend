@@ -169,6 +169,7 @@ export default function Chat() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [message, setMessage] = useState('');
+  const [forceScrollBottom, setForceScrollBottom] = useState(true);
   const messageList = useSelector((state: ReduxState) => state.chatMessages);
   const user = useSelector((state: ReduxState) => state.user);
   const showChat = useSelector((state: ReduxState) => state.showChat);
@@ -182,6 +183,7 @@ export default function Chat() {
 
   const messageToWs = (text: string) => {
     getCanvasController()?.connectionController.sendToWs('sendMessage', text);
+    setForceScrollBottom(true);
   }
   const sendMessage = () => {
     const cmd = message.split(' ')[0];
@@ -243,7 +245,12 @@ export default function Chat() {
 
   useEffect(() => {
     if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      const isAtBottom = chatRef.current.scrollTop === chatRef.current.scrollHeight - chatRef.current.clientHeight - 13;
+      if (isAtBottom || (forceScrollBottom && messageList.length)) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+        if (forceScrollBottom)
+          setForceScrollBottom(false);
+      }
     }
   }, [messageList, chatRef, showChat]);
 
