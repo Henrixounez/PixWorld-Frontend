@@ -65,14 +65,6 @@ export class CanvasController {
     this.soundController = new SoundController(this);
     this.loadFromLocalStorage(pos);
 
-    // this.activityInterval = setInterval(() => {
-    //   if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
-    //     store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-    //   } else if (this.pixelActivity.length) {
-    //     this.pixelActivity = [];
-    //     store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-    //   }
-    // }, ACTIVITY_REFRESH_MS);
   }
 
   destructor() {
