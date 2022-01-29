@@ -8,6 +8,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "chart.js": "^3.5.0",
+    "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "next": "latest",
     "next-i18next": "^8.5.5",
@@ -23,6 +24,7 @@
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.178",
     "@types/md5": "^2.3.1",
     "@types/node": "15.0.0",
     "@types/react": "17.0.4",
