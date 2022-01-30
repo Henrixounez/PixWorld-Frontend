@@ -107,6 +107,12 @@ export default class ConnectionController {
   };
 
   sendToWs = (type: string, data: any) => {
+    if (this.ws.readyState === WebSocket.CLOSING || this.ws.readyState === WebSocket.CLOSED) {
+      window.location.reload();
+      return;
+    }
+    if (this.ws.readyState === WebSocket.CONNECTING)
+      return;
     this.ws.send(JSON.stringify({ type, data }));
   }
 }

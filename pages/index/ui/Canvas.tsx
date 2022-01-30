@@ -11,7 +11,7 @@ function CanvasComponent({ wsHash, pos }: { wsHash: string, pos?: { x: number, y
         destructCanvasController();
       }
     }
-  }, [canvasRef])
+  }, [canvasRef]);
 
   return (
     <canvas

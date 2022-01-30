@@ -251,6 +251,8 @@ export default function Chat() {
         if (forceScrollBottom)
           setForceScrollBottom(false);
       }
+    } else if (messageList.length === 0) {
+      setForceScrollBottom(true);
     }
   }, [messageList, chatRef, showChat]);
 
