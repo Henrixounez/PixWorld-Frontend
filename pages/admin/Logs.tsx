@@ -185,11 +185,77 @@ function UserPixelLogs() {
   );
 }
 
+function IpPixelLogs() {
+  const [ip, setIp] = useState("");
+  const [results, setResults] = useState<PixelLogResult[]>([]);
+
+  const searchPixelLogs = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/admin/ipPixelLogs/${ip}`, { headers: { 'Authorization': token } });
+      setResults(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  return (
+    <BoxContainer>
+      <BoxTitle>
+        IP Pixel Logs
+      </BoxTitle>
+      <QueryForm onSubmit={searchPixelLogs}>
+        <CoordRow>
+          <Textfield placeholder="Ip" type="text" onChange={(e) => setIp(e.target.value) }/>
+          <button>
+            <Search/>
+          </button>
+        </CoordRow>
+      </QueryForm>
+      { results.length ? (
+        <ContainerLogsResult>
+          <LogsResults>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Ip</th>
+                <th>User Id</th>
+                <th>Username</th>
+                <th>Canvas</th>
+                <th>Position</th>
+                <th>Color</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((r, i) => (
+                <tr key={i}>
+                  <td>{dateFormat(r.createdAt)}</td>
+                  <td>{r.ip}</td>
+                  <td>{r.userId}</td>
+                  <td>{r.username}</td>
+                  <td>{r.canvas}</td>
+                  <td>{r.pos.x},{r.pos.y}</td>
+                  <td>
+                    <div style={{ display: "inline-block", height: "10px", width: "10px", backgroundColor: r.color, marginRight: ".5rem" }}/>
+                    {r.color}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </LogsResults>
+        </ContainerLogsResult>
+      ) : null}
+    </BoxContainer>
+  );
+}
+
 export default function PageLogs() {
   return (
     <>
       <PixelLogs/>
       <UserPixelLogs/>
+      <IpPixelLogs/>
     </>
   )
 }
