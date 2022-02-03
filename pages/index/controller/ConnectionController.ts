@@ -39,6 +39,7 @@ export default class ConnectionController {
           store?.dispatch({ type: SET_LAST_NOTIFICATION_DATE, payload: data.lastNotification });
           if (!store?.getState().currentCanvas)
             store?.dispatch({ type: SET_CANVAS, payload: this.canvasController.canvases[0].id });
+          this.getMe();
           break;
         case 'placePixel':
           if (data.canvas === store?.getState().currentCanvas) {
