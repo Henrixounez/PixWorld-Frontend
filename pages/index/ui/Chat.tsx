@@ -300,7 +300,7 @@ export default function Chat() {
               </SendButton>
             </>
           ) : (
-            <NotConnected onClick={() => router.replace('/user/login')} darkMode={darkMode}>
+            <NotConnected onClick={() => router.push('/user/login')} darkMode={darkMode}>
               {t('needConnect')}
             </NotConnected>
           )}

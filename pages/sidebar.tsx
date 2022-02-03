@@ -84,7 +84,7 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
           title="Go to map"
           active={false}
           onClick={() => {
-            router.replace('/');
+            router.push('/');
           }}
         >
           <Globe/>
@@ -94,7 +94,7 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
           active={false}
           onClick={() => {
             localStorage.removeItem('token');
-            router.replace('/');
+            router.push('/');
           }}
         >
           <LogOut/>
