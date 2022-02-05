@@ -1,4 +1,5 @@
 import { useTranslation } from "next-i18next";
+import { Fragment } from "react";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../store";
 
@@ -10,7 +11,11 @@ export default function ModalProblem() {
     <>
       <h3>
         {disconnectReason ? (
-          disconnectReason
+          disconnectReason.split('\n').map((m, i) => (
+            <Fragment key={i}>
+              {m}<br/>
+            </Fragment>
+          ))
         ) : (
           t('connectionLost')
         )}
