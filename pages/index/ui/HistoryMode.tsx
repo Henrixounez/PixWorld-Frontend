@@ -35,10 +35,14 @@ const HistoryContainer = styled.div<{ darkMode: boolean }>`
 `;
 
 function dateFrToEn(date: string) {
+  if (date === '')
+    return '';
   const [dd, mm, yyyy] = date.split('-');
-  return `${mm}-${dd}-${yyyy}`;
+  return `${yyyy}-${mm}-${dd}`;
 }
 function dateEnToFr(date: string) {
+  if (date === '')
+    return '';
   const [yyyy, mm, dd] = date.split('-');
   return `${dd}-${mm}-${yyyy}`;
 }
