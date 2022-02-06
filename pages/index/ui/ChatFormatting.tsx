@@ -24,6 +24,9 @@ const Mention = styled.span<{color: string, isMe: boolean, darkMode: boolean}>`
 const Greentext = styled.span`
   color: green;
 `;
+const Redtext = styled.span`
+  color: red;
+`;
 
 export enum FormatType {
   TEXT = 'TEXT',
@@ -31,6 +34,7 @@ export enum FormatType {
   POSITION = 'POSITION',
   MENTION = 'MENTION',
   GREENTEXT = 'GREENTEXT',
+  REDTEXT = 'REDTEXT',
   BOLD = 'BOLD',
   ITALICS = 'ITALICS',
   UNDERLINE = 'UNDERLINE',
@@ -54,6 +58,10 @@ const formattingTypes = [
   {
     type: FormatType.GREENTEXT,
     regex: /^>.*$/gm,
+  },
+  {
+    type: FormatType.REDTEXT,
+    regex: /^<.*$/gm,
   },
   {
     type: FormatType.BOLD,
@@ -131,7 +139,9 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
             return <code key={i}>{text.replace(/`/gm, '')}</code>
           case FormatType.GREENTEXT:
             return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick, darkMode)}</Greentext>
-        }
+          case FormatType.REDTEXT:
+            return <Redtext key={i}>&lt;{formatChatText(text.replace('<', ''), onClick, darkMode)}</Redtext>
+          }
       })}
     </>
   )
