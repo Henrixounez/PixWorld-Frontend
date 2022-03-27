@@ -117,7 +117,7 @@ export default function Modal() {
             {t(modalComponents[currentModal].title)}
           </ModalTitle>
           <CloseButton onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
-            <XCircle color="#000" />
+            <XCircle color={getColor(Colors.UI_BORDER, darkMode)} />
           </CloseButton>
         </div>
         <ContentContainer>
