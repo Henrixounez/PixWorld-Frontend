@@ -93,7 +93,10 @@ const formattingTypes = [
   }
 ]
 
-export default function formatChatText(text: string, onClick: (type: FormatType, text: string) => void, darkMode: boolean) {
+export default function formatChatText(text: string, onClick: (type: FormatType, text: string) => void, darkMode: boolean, nbCalls: number) {
+  if (nbCalls > 100)
+    return <React.Fragment>{text}</React.Fragment>;
+
   let formattings: { type: FormatType, text: string, index: number }[] = []
 
   formattingTypes.forEach(({ type, regex }) => {
@@ -136,19 +139,19 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
             const name = text.replace('@', '');
             return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i} darkMode={darkMode}>{text}</Mention>;
           case FormatType.BOLD:
-            return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick, darkMode)}</b>
+            return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick, darkMode, nbCalls + 1)}</b>
           case FormatType.ITALICS:
-            return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick, darkMode)}</i>
+            return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick, darkMode, nbCalls + 1)}</i>
           case FormatType.UNDERLINE:
-            return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick, darkMode)}</u>
+            return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick, darkMode, nbCalls + 1)}</u>
           case FormatType.CROSSED:
-            return <del key={i}>{formatChatText(text.replace(/~{2}/gm, ''), onClick, darkMode)}</del>
+            return <del key={i}>{formatChatText(text.replace(/~{2}/gm, ''), onClick, darkMode, nbCalls + 1)}</del>
           case FormatType.CODE:
             return <code key={i}>{text.replace(/`/gm, '')}</code>
           case FormatType.GREENTEXT:
-            return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick, darkMode)}</Greentext>
+            return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick, darkMode, nbCalls + 1)}</Greentext>
           case FormatType.REDTEXT:
-            return <Redtext key={i}>&lt;{formatChatText(text.replace('<', ''), onClick, darkMode)}</Redtext>
+            return <Redtext key={i}>&lt;{formatChatText(text.replace('<', ''), onClick, darkMode, nbCalls + 1)}</Redtext>
           case FormatType.LINK:
             return <Link href={(text.startsWith('http') ? "" : "//") + text} key={i} rel="noreferrer noopener" target='_blank'>{text}</Link>;
         }
