@@ -98,7 +98,7 @@ export default class OverlayController {
     if (!ctx)
       return null;
     const data = ctx.getImageData(x, y, 1, 1).data;
-    const palette = getRGBPalette();
+    const palette = getRGBPalette(store?.getState().canvases.find((c) => c.id === store?.getState().currentCanvas)?.palette ?? []);
     palette.push([0, 0, 0, 0]);
 
     const color = FindNearestColor([data[0], data[1], data[2], data[3]], palette);

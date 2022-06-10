@@ -6,7 +6,6 @@ import { SET_POSITION, SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../store/ac
 import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../store/actions/parameters";
 import { SET_HISTORY_MODE_ACTIVE } from "../store/actions/history";
 import { PIXEL_SIZE } from "../../constants/painting";
-import palette from "../../constants/palette";
 import { CanvasController, RENDER_REFRESH_MS } from "./CanvasController";
 import { AudioType } from "./SoundController";
 import ModalTypes from "../../constants/modalTypes";
@@ -70,7 +69,7 @@ export default class InteractionController {
     return this.canvasController.position;
   }
   get currentColor() {
-    return store?.getState().selectedColor || palette[0];
+    return store?.getState().selectedColor || store?.getState().canvases.find((c) => c.id === store?.getState().currentCanvas)?.palette[0] || "#FFFFFF";
   }
   get canvas() {
     return this.canvasController.canvas;

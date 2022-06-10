@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'next-i18next';
-import palette from "../../../constants/palette";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../store";
@@ -55,7 +54,7 @@ function hexToRgb(hex: string) {
   ]
 }
 
-export function getRGBPalette() {
+export function getRGBPalette(palette: string[]) {
   return palette.map((p) => hexToRgb(p));
 }
 
@@ -78,9 +77,9 @@ export function FindNearestColor(pixel: number[], pal: number[][]) {
   return [nearest[1], nearest[2], nearest[3], nearest[4]];
 }
 
-function ImgToPalette(data: number[][][], width: number, height: number) {
+function ImgToPalette(data: number[][][], width: number, height: number, palette: string[]) {
   let cData = data;
-  let rgbPalette = getRGBPalette();
+  let rgbPalette = getRGBPalette(palette);
   rgbPalette.push([0, 0, 0, 0]);
 
   for (let i = 0; i < height; i++) {
@@ -93,18 +92,20 @@ function ImgToPalette(data: number[][][], width: number, height: number) {
 
 class Converter {
   canvas: HTMLCanvasElement | null = null;
+  palette: string[] = [];
 
-  initCanvas() {
+  initCanvas(palette: string[]) {
     if (!this.canvas) {
       this.canvas = document.createElement('canvas');
       this.canvas.width = 100;
       this.canvas.height = 100;
     }
+    this.palette = palette;
   }
 
   drawImage(img: HTMLImageElement, wantedWidth: number): HTMLCanvasElement {
     if (!this.canvas)
-      this.initCanvas();
+      this.initCanvas(this.palette);
 
     const ctx = this.canvas!.getContext('2d');
     
@@ -123,7 +124,7 @@ class Converter {
         const pData = imgData.data
         const imgArray = OneDimensionToImageArray(pData, imgData.width, imgData.height);
 
-        const transformedArray = ImgToPalette(imgArray, imgData.width, imgData.height);
+        const transformedArray = ImgToPalette(imgArray, imgData.width, imgData.height, this.palette);
         let transformedImg = ImageArrayToOneDimension(transformedArray, imgData.width, imgData.height, pData.length);
 
         for (let i = 0; i < pData.length; i++) {
@@ -144,6 +145,7 @@ export default function ModalConverter() {
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const currentCanvas = useSelector((state: ReduxState) => state.canvases.find((c) => c.id === state.currentCanvas));
   const [wantedWidth, setWantedWidth] = useState(50);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [grid, setGrid] = useState(false);
@@ -188,7 +190,7 @@ export default function ModalConverter() {
         ctx.canvas.height = newHeight;
 
         ctx.imageSmoothingEnabled = false;
-        converter.initCanvas();
+        converter.initCanvas(currentCanvas?.palette ?? []);
         const imgCanvas = converter.drawImage(img, wantedWidth);
         ctx.drawImage(imgCanvas, 0, 0, newWidth, newHeight);
 
