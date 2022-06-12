@@ -13,6 +13,7 @@ import ModalParameters from './modals/Parameters';
 import Captcha from './modals/Captcha';
 import ModalOverlay from './modals/Overlay';
 import ModalBookmarks from './modals/Bookmarks';
+import ModalCanvases from './modals/Canvases';
 import { Colors, getColor } from '../../constants/colors';
 
 const ModalBackdrop = styled.div<{darkMode: boolean}>`
@@ -98,6 +99,7 @@ const modalComponents = {
   [ModalTypes.CAPTCHA]: { title: '', component: <Captcha/> },
   [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/> },
   [ModalTypes.BOOKMARKS]: { title: 'bookmark:title', component: <ModalBookmarks/> },
+  [ModalTypes.CANVASES]: { title: 'canvas:title', component: <ModalCanvases/> },
 }
 
 export default function Modal() {

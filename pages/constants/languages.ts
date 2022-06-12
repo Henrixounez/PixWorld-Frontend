@@ -14,5 +14,6 @@ export const languagesModules = [
   'notification',
   'alerts',
   'bookmark',
-  'faction'
+  'faction',
+  'canvas'
 ];

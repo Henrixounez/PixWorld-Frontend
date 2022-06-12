@@ -6,10 +6,9 @@ import Cookies from 'universal-cookie';
 import { Download } from 'react-feather';
 
 import { languages, languagesDisplay } from '../../../constants/languages';
-import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../store/actions/parameters';
-import { ReduxState, store } from '../../store';
+import { SET_ACTIVITY, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../store/actions/parameters';
+import { ReduxState } from '../../store';
 import { SET_HISTORY_MODE_ACTIVE } from '../../store/actions/history';
-import { SET_POSITION } from '../../store/actions/painting';
 import { getCanvasController } from '../../controller/CanvasController';
 import { PIXEL_SIZE } from '../../../constants/painting';
 
@@ -39,28 +38,10 @@ export default function ModalParameters() {
   const notifications = useSelector((state: ReduxState) => state.notifications);
   const sounds = useSelector((state: ReduxState) => state.sounds);
   const history = useSelector((state: ReduxState) => state.history.activate);
-  const canvas = useSelector((state: ReduxState) => state.currentCanvas);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   return (
     <>
-      <hr/>
-      <InputRow>
-        {t('canvas')}
-        <select name="selectCanvas" id="canvasSelector" value={canvas} onChange={(e) => {
-          dispatch({type: SET_CANVAS, payload: e.target.value});
-          dispatch({type: SET_POSITION, payload: { x: 0, y: 0, zoom: 1 }});
-        }}>
-          {store?.getState().canvases.map((e, i) => (
-            <option
-              key={i}
-              value={e.id}
-            >
-              {e.name}
-            </option>
-          ))}
-        </select>
-      </InputRow>
       <hr/>
       <InputRow onClick={() => {
         const canvas = getCanvasController()?.canvas;

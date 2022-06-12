@@ -7,6 +7,7 @@ enum ModalTypes {
   CAPTCHA,
   OVERLAY,
   BOOKMARKS,
+  CANVASES,
 };
 
 export default ModalTypes;

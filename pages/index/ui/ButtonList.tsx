@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Link from 'next/link';
-import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp, Map } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 
@@ -175,6 +175,9 @@ export default function ButtonList() {
           </Button>
           <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })} darkMode={darkMode}>
             <Sliders/>
+          </Button>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CANVASES })} darkMode={darkMode}>
+            <Map/>
           </Button>
           <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })} darkMode={darkMode}>
             <Bookmark/>
