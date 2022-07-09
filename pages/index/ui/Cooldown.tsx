@@ -34,7 +34,7 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: b
 export default function Cooldown() {
   const { t } = useTranslation('notification');
   const [cooldownLeft, setCooldownLeft] = useState(0);
-  const cooldownUntil = useSelector((state: ReduxState) => state.cooldown);
+  const cooldownUntil = useSelector((state: ReduxState) => state.cooldown?.[state.currentCanvas] ?? 0);
   const notifications = useSelector((state: ReduxState) => state.notifications);
   const [display, setDisplay] = useState(false);
   const [lastNotifTime, setLastNotifTime] = useState(0);

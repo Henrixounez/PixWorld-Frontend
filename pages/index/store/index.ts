@@ -14,7 +14,7 @@ export interface ReduxState {
   cursorPos: {x: number, y: number};
   selectedColor: string;
   currentModal: ModalTypes;
-  cooldown: number;
+  cooldown: Record<string, number>;
   chatMessages: Message[];
   unreadMessage: boolean;
   gridActive: boolean;
@@ -71,7 +71,7 @@ export const initialState: ReduxState = {
   cursorPos: { x: 0, y: 0 },
   selectedColor: "#FFFFFF",
   currentModal: ModalTypes.NONE,
-  cooldown: 0,
+  cooldown: {},
   chatMessages: [],
   unreadMessage: false,
   gridActive: true,

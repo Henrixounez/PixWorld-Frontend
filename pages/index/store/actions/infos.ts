@@ -29,7 +29,7 @@ export interface SetModalAction {
 }
 export interface SetCooldownAction {
   type: typeof SET_COOLDOWN;
-  payload: number;
+  payload: Record<string, number>;
 }
 export interface SetAlertAction {
   type: typeof SET_ALERT;
