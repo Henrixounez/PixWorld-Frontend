@@ -205,7 +205,7 @@ export default function Chat() {
       payload: {
         author: 'PixWorld',
         color: 'green',
-        msg: `NPZ mode: ${!eraserMode}`
+        msg: `NPZ mode: ${!npzMode}`
       }
     });
   }
