@@ -8,12 +8,12 @@ import { onCoordinatesPaste } from "../../../../pagesComponents"
 import { ReduxState } from "../../../store";
 import { ModalBoxContainer, ModalBoxTitle, ModalCoordRow, ModalQueryForm, ModalTextfield } from "./components";
 
-const ContainerLogsResult = styled.div`
+export const ContainerLogsResult = styled.div`
   max-height: 500px;
   overflow: auto;
   position: relative;
 `;
-const LogsResults = styled.table`
+export const LogsResults = styled.table`
   overflow: auto;
   margin: 1rem;
   width: 100%;

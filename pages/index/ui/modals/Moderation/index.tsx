@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Database, Shield } from "react-feather";
+import { AlertOctagon, Database, Shield } from "react-feather";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Colors, getColor } from "../../../../constants/colors";
 import { ReduxState } from "../../../store";
+import { UserType } from "../../../store/actions/user";
 import PageBan from "./Ban";
 import PageLogs from "./Logs";
+import NoPixelZone from "./NoPixelZone";
 
 const Container = styled.div`
   display: flex;
@@ -42,23 +44,35 @@ const modPages = [
     icon: <Shield/>,
     component: <PageBan/>
   }
+];
+const adminPages = [
+  {
+    icon: <AlertOctagon/>,
+    component: <NoPixelZone/>
+  }
 ]
 
 export default function ModalModeration() {
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const isAdmin = useSelector((state: ReduxState) => state.user?.type === UserType.ADMIN);
   const [selected, setSelected] = useState(0);
+
+  const pages = [
+    ...modPages,
+    ...(isAdmin ? adminPages : []),
+  ];
 
   return (
     <Container>
       <TabList darkMode={darkMode}>
-        {modPages.map((mp, i) => (
+        {pages.map((mp, i) => (
           <div key={i} onClick={() => setSelected(i)}>
             {mp.icon}
           </div>
         ))}
       </TabList>
       <Component>
-        {modPages[selected].component}
+        {pages[selected].component}
       </Component>
     </Container>
   )

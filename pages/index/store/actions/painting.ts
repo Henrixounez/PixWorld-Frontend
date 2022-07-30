@@ -2,6 +2,17 @@ import { ReduxState } from "..";
 import { CHUNK_SIZE } from "../../../constants/painting";
 import { MAX_ZOOM } from "../../controller/CanvasController";
 
+export interface NoPixelZoneReturn {
+  id: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  canvas: string;
+  createdAt: Date;
+}
+
+
 /* Actions */
 export const SET_SELECTED_COLOR = 'SET_SELECTED_COLOR';
 export const SET_POSITION = 'SET_POSITION';
@@ -9,6 +20,7 @@ export const SET_SHOULD_RENDER = 'SET_SHOULD_RENDER';
 export const SET_SHOULD_LOAD_CHUNKS = 'SET_SHOULD_LOAD_CHUNKS';
 export const SET_SHOULD_CLEAR_CHUNKS = 'SET_SHOULD_CLEAR_CHUNKS';
 export const SET_ERASER_MODE = 'SET_ERASER_MODE';
+export const SET_NPZ_MODE = 'SET_NPZ_MODE';
 
 /* Types */
 export interface SetSelectedColorAction {
@@ -39,8 +51,15 @@ export interface SetEraserModeAction {
   type: typeof SET_ERASER_MODE;
   payload: boolean;
 }
+export interface SetNpzModeAction {
+  type: typeof SET_NPZ_MODE;
+  payload: {
+    activated: boolean
+    npzs: NoPixelZoneReturn[];
+  }
+}
 
-export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldClearChunksAction | SetEraserModeAction;
+export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldClearChunksAction | SetEraserModeAction | SetNpzModeAction;
 
 /* Functions */
 export function setSelectedColor(state: ReduxState, action: SetSelectedColorAction): ReduxState {
@@ -93,6 +112,13 @@ export function setEraserMode(state: ReduxState, action: SetEraserModeAction): R
     eraserMode: action.payload,
   };
 }
+export function setNpzMode(state: ReduxState, action: SetNpzModeAction): ReduxState {
+  return {
+    ...state,
+    npzMode: action.payload.activated,
+    npzList: action.payload.npzs,
+  };
+}
 
 /* Dispatches */
 export const dispatches = [
@@ -119,5 +145,9 @@ export const dispatches = [
   {
     action: SET_ERASER_MODE,
     function: setEraserMode,
+  },
+  {
+    action: SET_NPZ_MODE,
+    function: setNpzMode,
   }
 ];

@@ -449,6 +449,8 @@ export class CanvasController {
     }
     if (PIXEL_SIZE / this.position.zoom > LIMIT_DRAW_NORMAL_CHUNKS)
       this.drawChunks(ctx);
+    if (store?.getState().npzMode)
+      this.drawNpz(ctx);
     this.drawGrid(ctx);
     this.drawSquare(ctx);
     this.drawActivity(ctx);
@@ -544,6 +546,22 @@ export class CanvasController {
         ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
       }
     }
+  }
+  drawNpz = (ctx: CanvasRenderingContext2D) => {
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    const width = this.size.width;
+    const height = this.size.height;
+    const coordsStart = this.canvasToCoordinates(0, 0);
+    const coordsEnd = this.canvasToCoordinates(width, height);
+
+    const npzToDisplay = (store?.getState().npzList ?? []).filter((npz) => npz.startX <= coordsEnd.coordX && npz.startY <= coordsEnd.coordY && npz.endX >= coordsStart.coordX && npz.endY >= coordsStart.coordY);
+
+    npzToDisplay.forEach((npz) => {
+      const { posX: startPosX, posY: startPosY } = this.coordinatesOnCanvas(npz.startX, npz.startY);
+
+      ctx.fillStyle = "#FF000066";
+      ctx.fillRect(startPosX, startPosY, (npz.endX - npz.startX) * pixelSize, (npz.endY - npz.startY) * pixelSize);
+    })
   }
   drawActivity = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = "#FF000066";

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import axios from 'axios';
 import { MessageSquare } from 'react-feather';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,11 +7,12 @@ import { useTranslation } from 'next-i18next';
 // @ts-ignore
 import * as Flags from 'country-flag-icons/react/3x2';
 
+import { API_URL } from '../../constants/api';
 import { getCanvasController } from '../controller/CanvasController';
 import { ReduxState, store } from '../store';
 import { SET_CANVAS } from '../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
-import { SET_ERASER_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
+import { NoPixelZoneReturn, SET_ERASER_MODE, SET_NPZ_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
 import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../store/actions/chat';
 import countryCodes from '../../constants/countryCodes';
 import { useRouter } from 'next/dist/client/router';
@@ -180,16 +182,41 @@ export default function Chat() {
   const canvas = useSelector((state: ReduxState) => state.currentCanvas);
   const unreadMessage = useSelector((state: ReduxState) => state.unreadMessage);
   const eraserMode = useSelector((state: ReduxState) => state.eraserMode);
+  const npzMode = useSelector((state: ReduxState) => state.npzMode);
+  const currentNpzs = useSelector((state: ReduxState) => state.npzList);
 
   const messageToWs = (text: string) => {
     getCanvasController()?.connectionController.sendToWs('sendMessage', text);
     setForceScrollBottom(true);
+  }
+  const setNpz = async () => {
+    const token = localStorage.getItem('token');
+    const npzRes: NoPixelZoneReturn[] = !npzMode ? (await axios.get(`${API_URL}/noPixelZone`, { headers: { 'Authorization': token } })).data : currentNpzs;
+
+    dispatch({
+      type: SET_NPZ_MODE,
+      payload: {
+        activated: !npzMode,
+        npzs: npzRes
+      }
+    });
+    dispatch({
+      type: ADD_CHAT_MESSAGE,
+      payload: {
+        author: 'PixWorld',
+        color: 'green',
+        msg: `NPZ mode: ${!eraserMode}`
+      }
+    });
   }
   const sendMessage = () => {
     const cmd = message.split(' ')[0];
     switch (cmd) {
       case '/here':
         messageToWs(`#${store!.getState().canvases.find((e) => e.id === canvas)?.letter}(${Math.round(position.x)},${Math.round(position.y)},${Math.round(position.zoom)})`);
+        break;
+      case '/npz':
+        setNpz();
         break;
       case '/eraser':
         dispatch({

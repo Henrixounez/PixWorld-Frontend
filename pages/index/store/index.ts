@@ -8,6 +8,7 @@ import { User } from './actions/user';
 import { Canvas, getCanvasController, RENDER_REFRESH_MS } from '../controller/CanvasController';
 import { Message } from './actions/chat';
 import { Colors } from '../../constants/colors';
+import { NoPixelZoneReturn } from './actions/painting';
 
 export interface ReduxState {
   playersNb: number;
@@ -33,6 +34,8 @@ export interface ReduxState {
   showButtons: boolean;
   showPalette: boolean;
   eraserMode: boolean;
+  npzMode: boolean;
+  npzList: NoPixelZoneReturn[];
   lastNotificationDate: Date;
   lastReadNotificationDate: Date;
   position: {
@@ -91,6 +94,8 @@ export const initialState: ReduxState = {
   showButtons: true,
   showPalette: true,
   eraserMode: false,
+  npzMode: false,
+  npzList: [],
   lastNotificationDate: new Date(0),
   lastReadNotificationDate: new Date(0),
   position: {
