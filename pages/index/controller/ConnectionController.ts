@@ -44,6 +44,7 @@ export default class ConnectionController {
           if (!store?.getState().currentCanvas)
             store?.dispatch({ type: SET_CANVAS, payload: this.canvasController.canvases[0].id });
           this.getMe();
+          localStorage.removeItem('badConnection');
           break;
         case 'placePixel':
           if (data.canvas === store?.getState().currentCanvas) {
@@ -83,8 +84,16 @@ export default class ConnectionController {
           this.isInit = false;
           store?.dispatch({ type: SET_DISCONNECT, payload: data });
           store?.dispatch({ type: SET_MODAL, payload: ModalTypes.PROBLEM });
-          if (data === "Bad connection request.")
-            localStorage.removeItem("token");
+          if (data === 'Bad connection request.') {
+            const hadBadConnection = localStorage.getItem('badConnection');
+            if (hadBadConnection === 'true') {
+              localStorage.removeItem('token');
+              localStorage.removeItem('badConnection');
+            } else {
+              localStorage.setItem('badConnection', 'true');
+              location.reload();
+            }
+          }
           break;
         case 'newNotification':
           store?.dispatch({ type: SET_LAST_NOTIFICATION_DATE, payload: data });
