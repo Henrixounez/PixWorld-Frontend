@@ -205,10 +205,9 @@ export default function Chat() {
   const [forceScrollBottom, setForceScrollBottom] = useState(true);
   const [showChannels, setShowChannels] = useState(false);
   const channel = useSelector((state: ReduxState) => state.channel);
-  const messageList = useSelector((state: ReduxState) => state.chatMessages.filter((cm) => cm.channel === channel));
+  const messageList = useSelector((state: ReduxState) => state.channelMessages);
   const user = useSelector((state: ReduxState) => state.user);
   const showChat = useSelector((state: ReduxState) => state.showChat);
-  const position = useSelector((state: ReduxState) => state.position);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
@@ -246,6 +245,7 @@ export default function Chat() {
     const cmd = message.split(' ')[0];
     switch (cmd) {
       case '/here':
+        const position = store!.getState().position;
         messageToWs(`#${store!.getState().canvases.find((e) => e.id === canvas)?.letter}(${Math.round(position.x)},${Math.round(position.y)},${Math.round(position.zoom)})`);
         break;
       case '/npz':

@@ -67,28 +67,34 @@ export function setShowChat(state: ReduxState, action: SetShowChatAction): Redux
   };
 }
 export function setChatMessage(state: ReduxState, action: SetChatMessageAction): ReduxState {
+  const chatMessages = action.payload.map((m) => ({ ...m, createdAt: new Date(m.createdAt)})) 
   return {
     ...state,
-    chatMessages: action.payload.map((m) => ({ ...m, createdAt: new Date(m.createdAt)})),
+    chatMessages,
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
   };
 }
 export function addChatMessage(state: ReduxState, action: AddChatMessageAction): ReduxState {
+  const chatMessages = [...state.chatMessages, ({ ...action.payload, createdAt: new Date(action.payload.createdAt) })];
   return {
     ...state,
-    chatMessages: [...state.chatMessages, ({ ...action.payload, createdAt: new Date(action.payload.createdAt) })],
+    chatMessages,
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
     unreadMessage: !state.showChat && action.payload.channel === state.channel,
   };
 }
 export function clearChatMessages(state: ReduxState, action: ClearChatMessagesAction): ReduxState {
+  const chatMessages = state.chatMessages.map((c) => {
+    if (action.payload.includes(c.id)) {
+      return { ...c, msg: "<message deleted>" };
+    } else {
+      return c;
+    }
+  })
   return {
     ...state,
-    chatMessages: state.chatMessages.map((c) => {
-      if (action.payload.includes(c.id)) {
-        return { ...c, msg: "<message deleted>" };
-      } else {
-        return c;
-      }
-    }),
+    chatMessages,
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
     unreadMessage: !state.showChat && state.chatMessages.some((cm) => cm.channel === state.channel),
   };
 }
@@ -101,6 +107,7 @@ export function setUnreadMessage(state: ReduxState, action: SetUnreadMessageActi
 export function setChannel(state: ReduxState, action: SetChannelAction): ReduxState {
   return {
     ...state,
+    channelMessages: [...state.chatMessages.filter((cm) => cm.channel === action.payload)],
     channel: action.payload,
   };
 }
