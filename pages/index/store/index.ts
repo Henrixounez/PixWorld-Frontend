@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { createStore, Store } from 'redux';
+import { applyMiddleware, createStore, Store, Middleware } from 'redux';
+import { throttle } from 'lodash';
 import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
 import palette from '../../constants/palette';
 import ModalTypes from '../../constants/modalTypes';
 import { User } from './actions/user';
-import { Canvas } from '../controller/CanvasController';
+import { Canvas, getCanvasController, RENDER_REFRESH_MS } from '../controller/CanvasController';
 import { Message } from './actions/chat';
 import { Colors } from '../../constants/colors';
 
@@ -125,8 +126,35 @@ const reducer = (state = initialState, action: ActionTypes) => {
   return Actions.reducer(state, action);
 };
 
+const debounced = throttle(
+  function (state: ReduxState) {
+    const canvasController = getCanvasController();
+    if (canvasController) {
+      if (state.shouldClearChunks) {
+        canvasController?.clearChunks();
+      }
+      if (state.shouldRender) {
+        canvasController?.render();
+      }
+      if (state.shouldLoadChunks) {
+        canvasController?.loadNeighboringChunks();
+      }
+    }
+  }
+, RENDER_REFRESH_MS);
+
+const renderer: Middleware<{}, ReduxState> = storeApi => next => action => {
+  const result = next(action);
+
+  const state = storeApi.getState();
+  if (state && (state.shouldClearChunks || state.shouldRender || state.shouldLoadChunks)) {
+    debounced(state);
+  }
+  return result;
+}
+
 function initStore(preloadedState = initialState): Store<ReduxState, ActionTypes> {
-  return createStore(reducer, preloadedState) as Store<ReduxState, ActionTypes>;
+  return createStore(reducer, preloadedState, applyMiddleware<ActionTypes>(renderer)) as Store<ReduxState, ActionTypes>;
 }
 
 export const initializeStore = (preloadedState: ReduxState): Store<ReduxState, ActionTypes> => {

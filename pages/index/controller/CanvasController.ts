@@ -18,7 +18,7 @@ const ACTIVITY_REFRESH_MS = 25;
 const ACTIVITY_MAX_RADIUS = 10;
 const ACTIVITY_FRAME_NB = ACTIVITY_DURATION_MS / ACTIVITY_REFRESH_MS;
 
-const RENDER_REFRESH_MS = 25;
+export const RENDER_REFRESH_MS = 25;
 const LIMIT_DRAW_NORMAL_CHUNKS = 0.5;
 export const MAX_ZOOM = 3000;
 export const GRID_ZOOM = 6;
@@ -41,8 +41,7 @@ export class CanvasController {
   superChunks: Array<{[key: string]: Chunk}> = [];
   waitingPixels: Record<string, string> = {};
   pixelActivity: { x: number, y: number, frame: number}[] = [];
-  activityInterval: NodeJS.Timeout;
-  renderInterval: NodeJS.Timeout;
+  activityTimeout: NodeJS.Timeout | null = null;
 
   interactionController: InteractionController;
   connectionController: ConnectionController;
@@ -66,35 +65,20 @@ export class CanvasController {
     this.soundController = new SoundController(this);
     this.loadFromLocalStorage(pos);
 
-    this.renderInterval = setInterval(() => {
-      const state = store?.getState();
-
-      if (state) {
-        if (state.shouldClearChunks)
-          this.clearChunks();
-        if (state.shouldRender)
-          this.render();
-        if (state.shouldLoadChunks)
-          this.loadNeighboringChunks();
-      }
-    }, RENDER_REFRESH_MS);
-
-    this.activityInterval = setInterval(() => {
-      if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
-        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-      } else if (this.pixelActivity.length) {
-        this.pixelActivity = [];
-        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
-      }
-    }, ACTIVITY_REFRESH_MS);
+    // this.activityInterval = setInterval(() => {
+    //   if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
+    //     store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+    //   } else if (this.pixelActivity.length) {
+    //     this.pixelActivity = [];
+    //     store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+    //   }
+    // }, ACTIVITY_REFRESH_MS);
   }
 
   destructor() {
     this.interactionController.destructor();
     this.connectionController.destructor();
     this.overlayController.destructor();
-    clearInterval(this.activityInterval);
-    clearInterval(this.renderInterval);
   }
 
   get position() {
@@ -409,8 +393,8 @@ export class CanvasController {
       store!.getState().position.zoom = newZoom;
       store!.getState().position.x = this.position.x - toMoveX;
       store!.getState().position.y = this.position.y - toMoveY;
-      store!.getState().shouldLoadChunks = true;
-      store!.getState().shouldRender = true;
+      this.loadNeighboringChunks();
+      this.render();
     }
   }
   setZoom = (zoom: number) => {
@@ -575,6 +559,26 @@ export class CanvasController {
       return { x, y, frame: frame + 1 };
     });
     this.pixelActivity = this.pixelActivity.filter((e) => e.frame <= ACTIVITY_FRAME_NB + 1);
+
+    if (this.pixelActivity.length && store?.getState().activity && !store.getState().history.activate) {
+      if (this.activityTimeout) {
+        clearTimeout(this.activityTimeout);
+      }
+      this.activityTimeout = setTimeout(() => {
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+        this.activityTimeout = null;
+      }, RENDER_REFRESH_MS);
+    } else if (this.pixelActivity.length) {
+      this.pixelActivity = [];
+      if (this.activityTimeout) {
+        clearTimeout(this.activityTimeout);
+      }
+      this.activityTimeout = setTimeout(() => {
+        store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
+        this.activityTimeout = null;
+      }, RENDER_REFRESH_MS);
+    }
+
   }
 }
 let canvasController: CanvasController | null = null;

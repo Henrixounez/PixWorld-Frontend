@@ -1,3 +1,4 @@
+import { throttle } from "lodash";
 import { store } from "../store";
 import { SET_ALERT, SET_CURSOR_POS, SET_MODAL, SET_SEARCH } from "../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../store/actions/overlay";
@@ -6,7 +7,7 @@ import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../store/actions/para
 import { SET_HISTORY_MODE_ACTIVE } from "../store/actions/history";
 import { PIXEL_SIZE } from "../../constants/painting";
 import palette from "../../constants/palette";
-import { CanvasController } from "./CanvasController";
+import { CanvasController, RENDER_REFRESH_MS } from "./CanvasController";
 import { AudioType } from "./SoundController";
 import ModalTypes from "../../constants/modalTypes";
 import { Colors } from "../../constants/colors";
@@ -28,12 +29,12 @@ export default class InteractionController {
     this.canvasController = canvasController;
 
     this.canvas.addEventListener('mousedown', this.mouseDown);
-    this.canvas.addEventListener('mousemove', this.mouseMove);
+    this.canvas.addEventListener('mousemove', this.throttledMouseMove);
     this.canvas.addEventListener('mouseup', this.mouseUp);
     this.canvas.addEventListener('mouseenter', this.mouseEnter);
     this.canvas.addEventListener('mouseleave', this.mouseLeave);
     this.canvas.addEventListener('auxclick', this.auxclick);
-    this.canvas.addEventListener('wheel', this.zoom);
+    this.canvas.addEventListener('wheel', this.throttledZoom);
     this.canvas.addEventListener('touchstart', this.touchStart);
     this.canvas.addEventListener('touchend', this.touchEnd);
     this.canvas.addEventListener('touchcancel', this.touchCancel);
@@ -47,12 +48,12 @@ export default class InteractionController {
 
   destructor() {
     this.canvas.removeEventListener('mousedown', this.mouseDown);
-    this.canvas.removeEventListener('mousemove', this.mouseMove);
+    this.canvas.removeEventListener('mousemove', this.throttledMouseMove);
     this.canvas.removeEventListener('mouseup', this.mouseUp);
     this.canvas.removeEventListener('mouseenter', this.mouseEnter);
     this.canvas.removeEventListener('mouseleave', this.mouseLeave);
     this.canvas.removeEventListener('auxclick', this.auxclick);
-    this.canvas.removeEventListener('wheel', this.zoom);
+    this.canvas.removeEventListener('wheel', this.throttledZoom);
     this.canvas.removeEventListener('touchstart', this.touchStart);
     this.canvas.removeEventListener('touchend', this.touchEnd);
     this.canvas.removeEventListener('touchcancel', this.touchCancel);
@@ -127,6 +128,7 @@ export default class InteractionController {
         this.canvasController.placeUserPixel(coordX, coordY, this.canvasController.getColorOnCoordinates(coordX, coordY, true));
     }
   }
+  throttledMouseMove = throttle(this.mouseMove, RENDER_REFRESH_MS);
   mouseUp = (e: MouseEvent) => {
     if (this.isMoving === true) {
       this.startMove = { x: 0, y: 0 };
@@ -170,7 +172,7 @@ export default class InteractionController {
     else
       this.canvasController.changeZoom(e.deltaY < 0 ? 0.9 : 1.1, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
   }
-
+  throttledZoom = throttle(this.zoom, RENDER_REFRESH_MS);
 
   // Keyboard
   keydown = (e: KeyboardEvent) => {
