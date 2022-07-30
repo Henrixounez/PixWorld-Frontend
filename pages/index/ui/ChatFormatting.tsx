@@ -150,7 +150,7 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
           case FormatType.REDTEXT:
             return <Redtext key={i}>&lt;{formatChatText(text.replace('<', ''), onClick, darkMode)}</Redtext>
           case FormatType.LINK:
-            return <Link href={(text.startsWith('http') ? "" : "//") + text} key={i}>{text}</Link>;
+            return <Link href={(text.startsWith('http') ? "" : "//") + text} key={i} rel="noreferrer noopener" target='_blank'>{text}</Link>;
         }
       })}
     </>
