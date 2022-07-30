@@ -13,7 +13,7 @@ import { ReduxState, store } from '../store';
 import { SET_CANVAS } from '../store/actions/parameters';
 import formatChatText, { FormatType } from './ChatFormatting';
 import { NoPixelZoneReturn, SET_ERASER_MODE, SET_NPZ_MODE, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
-import { ADD_CHAT_MESSAGE, SET_SHOW_CHAT } from '../store/actions/chat';
+import { ADD_CHAT_MESSAGE, ChatChannels, SET_CHANNEL, SET_SHOW_CHAT } from '../store/actions/chat';
 import countryCodes from '../../constants/countryCodes';
 import { useRouter } from 'next/dist/client/router';
 import { Colors, getColor } from '../../constants/colors';
@@ -132,6 +132,37 @@ const SendButton = styled.div<{ darkMode: boolean }>`
   }
   user-select: none;
 `;
+const ChannelButton = styled.div<{ darkMode: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border-radius: 2px;
+  cursor: pointer;
+  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  &:hover {
+    opacity: 0.8;
+  }
+  user-select: none;
+`;
+const ChannelsContainer = styled.div<{ darkMode: boolean }>`
+  position: relative;
+  > .channel-list {
+    padding: 2px 10px;
+    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    border-radius: 2px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    bottom: 24px;
+    > p {
+      margin: 4px 0;
+      cursor: pointer;
+    }
+  }
+`
 const NotConnected = styled.div<{ darkMode: boolean }>`
   cursor: pointer;
   font-size: 0.8rem;
@@ -172,7 +203,9 @@ export default function Chat() {
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [forceScrollBottom, setForceScrollBottom] = useState(true);
-  const messageList = useSelector((state: ReduxState) => state.chatMessages);
+  const [showChannels, setShowChannels] = useState(false);
+  const channel = useSelector((state: ReduxState) => state.channel);
+  const messageList = useSelector((state: ReduxState) => state.chatMessages.filter((cm) => cm.channel === channel));
   const user = useSelector((state: ReduxState) => state.user);
   const showChat = useSelector((state: ReduxState) => state.showChat);
   const position = useSelector((state: ReduxState) => state.position);
@@ -267,7 +300,7 @@ export default function Chat() {
           });
           return;
         }
-        messageToWs(message);
+        messageToWs(JSON.stringify({ message, channel }));
         break;
     }
     setMessage('');
@@ -293,6 +326,11 @@ export default function Chat() {
       setForceScrollBottom(true);
     }
   }, [messageList, chatRef, showChat]);
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [channel])
 
   return (
     <>
@@ -337,6 +375,29 @@ export default function Chat() {
               <SendButton onClick={sendMessage} darkMode={darkMode}>
                 {t('send')}
               </SendButton>
+              <ChannelsContainer darkMode={darkMode}>
+                <ChannelButton darkMode={darkMode} onClick={() => setShowChannels(!showChannels)}>
+                  {channel}
+                </ChannelButton>
+                {showChannels ? (
+                    <div className='channel-list'>
+                      {Object.entries(ChatChannels).map(([key, channel]) => (
+                        <p
+                          key={key}
+                          onClick={() => {
+                            dispatch({
+                              type: SET_CHANNEL,
+                              payload: channel
+                            });
+                            setShowChannels(false)
+                          }}
+                        >
+                          {channel}
+                        </p>
+                      ))}
+                    </div>
+                  ) : null}
+              </ChannelsContainer>
             </>
           ) : (
             <NotConnected onClick={() => router.push('/user/login')} darkMode={darkMode}>

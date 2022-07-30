@@ -6,7 +6,7 @@ import { ActionTypes } from './reducer';
 import ModalTypes from '../../constants/modalTypes';
 import { User } from './actions/user';
 import { Canvas, getCanvasController, RENDER_REFRESH_MS } from '../controller/CanvasController';
-import { Message } from './actions/chat';
+import { ChatChannels, Message } from './actions/chat';
 import { Colors } from '../../constants/colors';
 import { ChunkRefresh, NoPixelZoneReturn } from './actions/painting';
 
@@ -22,6 +22,7 @@ export interface ReduxState {
   zoomTowardCursor: boolean;
   activity: boolean;
   showChat: boolean;
+  channel: ChatChannels;
   shouldRender: boolean;
   shouldLoadChunks: boolean;
   shouldClearChunks: boolean;
@@ -84,6 +85,7 @@ export const initialState: ReduxState = {
   zoomTowardCursor: true,
   activity: true,
   showChat: true,
+  channel: ChatChannels.INT,
   shouldRender: true,
   shouldLoadChunks: true,
   shouldClearChunks: false,

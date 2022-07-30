@@ -6,6 +6,16 @@ export const SET_CHAT_MESSAGE = 'SET_CHAT_MESSAGE';
 export const ADD_CHAT_MESSAGE = 'ADD_CHAT_MESSAGE';
 export const CLEAR_CHAT_MESSAGES = 'CLEAR_CHAT_MESSAGES';
 export const SET_UNREAD_MESSAGE = 'SET_UNREAD_MESSAGE';
+export const SET_CHANNEL = 'SET_CHANNEL';
+
+export enum ChatChannels {
+  INT = "int",
+  EN = "en",
+  FR = "fr",
+  RU = "ru",
+  ES = "es",
+  PT = "pt",
+}
 
 export type Message = {
   id: number;
@@ -14,6 +24,7 @@ export type Message = {
   msg: string;
   tag: string;
   color: string;
+  channel: ChatChannels;
   createdAt: Date;
 }
 
@@ -34,13 +45,16 @@ export interface ClearChatMessagesAction {
   type: typeof CLEAR_CHAT_MESSAGES;
   payload: number[];
 }
-
 export interface SetUnreadMessageAction {
   type: typeof SET_UNREAD_MESSAGE;
   payload: boolean;
 }
+export interface SetChannelAction {
+  type: typeof SET_CHANNEL;
+  payload: ChatChannels;
+}
 
-export type Actions = SetShowChatAction | SetChatMessageAction | AddChatMessageAction | ClearChatMessagesAction | SetUnreadMessageAction;
+export type Actions = SetShowChatAction | SetChatMessageAction | AddChatMessageAction | ClearChatMessagesAction | SetUnreadMessageAction | SetChannelAction;
 
 /* Functions */
 export function setShowChat(state: ReduxState, action: SetShowChatAction): ReduxState {
@@ -61,7 +75,7 @@ export function addChatMessage(state: ReduxState, action: AddChatMessageAction):
   return {
     ...state,
     chatMessages: [...state.chatMessages, ({ ...action.payload, createdAt: new Date(action.payload.createdAt) })],
-    unreadMessage: !state.showChat,
+    unreadMessage: !state.showChat && action.payload.channel === state.channel,
   };
 }
 export function clearChatMessages(state: ReduxState, action: ClearChatMessagesAction): ReduxState {
@@ -74,13 +88,19 @@ export function clearChatMessages(state: ReduxState, action: ClearChatMessagesAc
         return c;
       }
     }),
-    unreadMessage: !state.showChat,
+    unreadMessage: !state.showChat && state.chatMessages.some((cm) => cm.channel === state.channel),
   };
 }
 export function setUnreadMessage(state: ReduxState, action: SetUnreadMessageAction): ReduxState {
   return {
     ...state,
     unreadMessage: action.payload,
+  };
+}
+export function setChannel(state: ReduxState, action: SetChannelAction): ReduxState {
+  return {
+    ...state,
+    channel: action.payload,
   };
 }
 
@@ -105,5 +125,9 @@ export const dispatches = [
   {
     action: SET_UNREAD_MESSAGE,
     function: setUnreadMessage,
+  },
+  {
+    action: SET_CHANNEL,
+    function: setChannel,
   }
 ];
