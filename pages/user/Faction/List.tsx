@@ -3,10 +3,27 @@ import axios from "axios";
 import { useRouter } from "next/dist/client/router";
 import { useTranslation } from "react-i18next";
 
-import { List } from ".";
 import { API_URL } from "../../constants/api";
 import { BoxContainer, BoxRow, BoxTitle } from "../../pagesComponents";
 import { Faction } from "../store/actions/faction";
+import styled from "styled-components";
+
+const Table = styled.table`
+  gap: 0;
+  row-gap: 0;
+  column-gap: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  width: 100%;
+  td {
+    padding: 0.5rem 1rem;
+    margin: 0;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(0,0,0,0.3);
+  }
+`;
 
 export function FactionList() {
   const { t } = useTranslation('faction');
@@ -37,16 +54,35 @@ export function FactionList() {
         {t('list.title')}
       </BoxTitle>
       <BoxRow>
-        <List>
-          {factions.map((f, i) => (
-            <div key={i} style={{ gap: "2rem" }}>
-              <b style={{ flex: 'none' }}>[{f.tag}] {f.name}</b>
-              <span>
-                {f.description}
-              </span>
-            </div>
-          ))}
-        </List>
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Total pixels</th>
+            </tr>
+          </thead>
+          <tbody>
+            {factions.map((f, i) => (
+              <tr key={i}>
+                <td
+                  style={{ flex: 'none' }}
+                >
+                  [{f.tag}] {f.name}
+                </td>
+                <td>
+                  {f.description}
+                </td>
+                <td
+                  style={{ textAlign: "right" }}
+                >
+                  {f.totalPixelCount} Pixels
+                </td>
+              </tr>
+            ))}
+
+          </tbody>
+        </Table>
       </BoxRow>
     </BoxContainer>
   )

@@ -5,6 +5,7 @@ export interface Faction {
   name: string;
   tag: string;
   description: string;
+  totalPixelCount?: number;
   createdAt: Date;
 }
 
