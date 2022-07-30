@@ -8,6 +8,7 @@ export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const SET_SOUNDS = 'SET_SOUNDS';
 export const SET_CANVAS = 'SET_CANVAS';
 export const SET_DARK_MODE = 'SET_DARK_MODE';
+export const SET_GRID_SIZE = 'SET_GRID_SIZE';
 export const SET_SHOW_BUTTONS = 'SET_SHOW_BUTTONS';
 export const SET_SHOW_PALETTE = 'SET_SHOW_PALETTE';
 
@@ -41,6 +42,10 @@ export interface SetDarkModeAction {
   type: typeof SET_DARK_MODE;
   payload: boolean;
 }
+export interface SetGridSizeAction {
+  type: typeof SET_GRID_SIZE;
+  payload: number;
+}
 export interface SetShowButtonsAction {
   type: typeof SET_SHOW_BUTTONS;
   payload: boolean;
@@ -50,7 +55,7 @@ export interface SetShowPaletteAction {
   payload: boolean;
 }
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetShowButtonsAction | SetShowPaletteAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetGridSizeAction | SetShowButtonsAction | SetShowPaletteAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -120,6 +125,14 @@ export function setDarkMode(state: ReduxState, action: SetDarkModeAction): Redux
     darkMode: action.payload
   };
 }
+export function setGridSize(state: ReduxState, action: SetGridSizeAction): ReduxState {
+  localStorage.setItem('gridSize', String(action.payload));
+  return {
+    ...state,
+    gridSize: action.payload
+  };
+}
+
 export function setShowButtons(state: ReduxState, action: SetShowButtonsAction): ReduxState {
   localStorage.setItem('showButtons', String(action.payload));
   return {
@@ -165,6 +178,10 @@ export const dispatches = [
   {
     action: SET_DARK_MODE,
     function: setDarkMode
+  },
+  {
+    action: SET_GRID_SIZE,
+    function: setGridSize,
   },
   {
     action: SET_SHOW_BUTTONS,

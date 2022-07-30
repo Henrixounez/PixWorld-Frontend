@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import { Download } from 'react-feather';
 
 import { languages, languagesDisplay } from '../../../constants/languages';
-import { SET_ACTIVITY, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../store/actions/parameters';
+import { SET_ACTIVITY, SET_DARK_MODE, SET_GRID_ACTIVE, SET_GRID_SIZE, SET_NOTIFICATIONS, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from '../../store/actions/parameters';
 import { ReduxState } from '../../store';
 import { SET_HISTORY_MODE_ACTIVE } from '../../store/actions/history';
 import { getCanvasController } from '../../controller/CanvasController';
@@ -39,6 +39,7 @@ export default function ModalParameters() {
   const sounds = useSelector((state: ReduxState) => state.sounds);
   const history = useSelector((state: ReduxState) => state.history.activate);
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const gridSize = useSelector((state: ReduxState) => state.gridSize);
 
   return (
     <>
@@ -101,6 +102,11 @@ export default function ModalParameters() {
       <InputRow onClick={() => dispatch({type: SET_DARK_MODE, payload: !darkMode}) }>
         {t('darkMode')}
         <input type="checkbox" className="checkbox" id="darkMode" checked={darkMode} readOnly/>
+      </InputRow>
+      <hr/>
+      <InputRow>
+        {t('gridSize')}
+        <input type="number" id="gridSize" value={gridSize} min={1} onChange={(e) => dispatch({ type: SET_GRID_SIZE, payload: Number(e.target.value) })} />
       </InputRow>
       <hr/>
       <InputRow>

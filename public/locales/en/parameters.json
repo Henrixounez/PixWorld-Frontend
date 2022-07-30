@@ -8,5 +8,6 @@
   "sounds": "Activate sounds",
   "history": "Activate history view",
   "darkMode": "Activate dark mode",
+  "gridSize": "Set grid size",
   "download": "Download canvas on the screen"
 }

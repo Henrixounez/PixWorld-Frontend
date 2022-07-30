@@ -7,7 +7,7 @@ import ConnectionController from "./ConnectionController";
 import OverlayController from "./OverlayController";
 import SoundController, { AudioType } from "./SoundController";
 import { store } from "../store";
-import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_NOTIFICATIONS, SET_SHOW_BUTTONS, SET_SHOW_PALETTE, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../store/actions/parameters";
+import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_GRID_SIZE, SET_NOTIFICATIONS, SET_SHOW_BUTTONS, SET_SHOW_PALETTE, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../store/actions/parameters";
 import { SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../store/actions/overlay";
 import { SET_SHOW_CHAT } from "../store/actions/chat";
@@ -149,6 +149,10 @@ export class CanvasController {
     const darkMode = localStorage.getItem('darkMode')
     if (darkMode)
       store?.dispatch({ type: SET_DARK_MODE, payload: darkMode === "true" });
+    
+    const gridSize = localStorage.getItem('gridSize')
+    if (gridSize)
+      store?.dispatch({ type: SET_GRID_SIZE, payload: Number(gridSize) });
 
     const showButtons = localStorage.getItem('showButtons')
     if (showButtons)
@@ -455,6 +459,7 @@ export class CanvasController {
       return;
     }
 
+    const gridSize = store?.getState().gridSize || 10;
     const width = document.documentElement.clientWidth;
     const height = document.documentElement.clientHeight;
     const pixelSize = PIXEL_SIZE / this.position.zoom;
@@ -465,7 +470,7 @@ export class CanvasController {
 
     ctx.strokeStyle = "#2222227E";
     for (let i = centerCoord.y - linesH; i < centerCoord.y + linesH; i++) {
-      ctx.lineWidth = i % 10 === 0 ? 2 : 1;
+      ctx.lineWidth = i % gridSize === 0 ? 2 : 1;
       ctx.beginPath();
       const posY = centerPoint.posY + (i - centerCoord.y) * pixelSize;
       ctx.moveTo(0, posY);
@@ -473,7 +478,7 @@ export class CanvasController {
       ctx.stroke();
     }
     for (let i = centerCoord.x - linesV; i < centerCoord.x + linesV; i++) {
-      ctx.lineWidth = i % 10 === 0 ? 2 : 1;
+      ctx.lineWidth = i % gridSize === 0 ? 2 : 1;
       ctx.beginPath();
       const posX = centerPoint.posX + (i - centerCoord.x) * pixelSize;
       ctx.moveTo(posX, 0);
