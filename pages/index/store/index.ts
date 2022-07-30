@@ -8,7 +8,7 @@ import { User } from './actions/user';
 import { Canvas, getCanvasController, RENDER_REFRESH_MS } from '../controller/CanvasController';
 import { Message } from './actions/chat';
 import { Colors } from '../../constants/colors';
-import { NoPixelZoneReturn } from './actions/painting';
+import { ChunkRefresh, NoPixelZoneReturn } from './actions/painting';
 
 export interface ReduxState {
   playersNb: number;
@@ -25,6 +25,8 @@ export interface ReduxState {
   shouldRender: boolean;
   shouldLoadChunks: boolean;
   shouldClearChunks: boolean;
+  shouldRefreshChunks: boolean;
+  chunksToRefresh: ChunkRefresh[];
   searchActive: boolean;
   disconnectReason: string;
   notifications: boolean;
@@ -85,6 +87,8 @@ export const initialState: ReduxState = {
   shouldRender: true,
   shouldLoadChunks: true,
   shouldClearChunks: false,
+  shouldRefreshChunks: false,
+  chunksToRefresh: [],
   searchActive: false,
   disconnectReason: "",
   notifications: false,
@@ -137,13 +141,16 @@ const debounced = throttle(
     const canvasController = getCanvasController();
     if (canvasController) {
       if (state.shouldClearChunks) {
-        canvasController?.clearChunks();
+        canvasController?.clearChunks(state.chunksToRefresh);
       }
       if (state.shouldRender) {
         canvasController?.render();
       }
       if (state.shouldLoadChunks) {
         canvasController?.loadNeighboringChunks();
+      }
+      if (state.shouldRefreshChunks && state.chunksToRefresh.length) {
+        canvasController?.refreshChunks(state.chunksToRefresh);
       }
     }
   }
@@ -153,7 +160,7 @@ const renderer: Middleware<{}, ReduxState> = storeApi => next => action => {
   const result = next(action);
 
   const state = storeApi.getState();
-  if (state && (state.shouldClearChunks || state.shouldRender || state.shouldLoadChunks)) {
+  if (state && (state.shouldClearChunks || state.shouldRender || state.shouldLoadChunks || state.shouldRefreshChunks)) {
     debounced(state);
   }
   return result;

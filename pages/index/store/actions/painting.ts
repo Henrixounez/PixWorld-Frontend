@@ -11,6 +11,11 @@ export interface NoPixelZoneReturn {
   canvas: string;
   createdAt: Date;
 }
+export interface ChunkRefresh {
+  canvas: string;
+  x: number;
+  y: number;
+}
 
 
 /* Actions */
@@ -19,6 +24,7 @@ export const SET_POSITION = 'SET_POSITION';
 export const SET_SHOULD_RENDER = 'SET_SHOULD_RENDER';
 export const SET_SHOULD_LOAD_CHUNKS = 'SET_SHOULD_LOAD_CHUNKS';
 export const SET_SHOULD_CLEAR_CHUNKS = 'SET_SHOULD_CLEAR_CHUNKS';
+export const SET_SHOULD_REFRESH_CHUNKS = 'SET_SHOULD_REFRESH_CHUNKS';
 export const SET_ERASER_MODE = 'SET_ERASER_MODE';
 export const SET_NPZ_MODE = 'SET_NPZ_MODE';
 
@@ -47,6 +53,13 @@ export interface SetShouldClearChunksAction {
   type: typeof SET_SHOULD_CLEAR_CHUNKS;
   payload: boolean;
 }
+export interface SetShouldRefreshChunksAction {
+  type: typeof SET_SHOULD_REFRESH_CHUNKS;
+  payload: {
+    refresh: boolean;
+    chunks: ChunkRefresh[];
+  };
+}
 export interface SetEraserModeAction {
   type: typeof SET_ERASER_MODE;
   payload: boolean;
@@ -59,7 +72,7 @@ export interface SetNpzModeAction {
   }
 }
 
-export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldClearChunksAction | SetEraserModeAction | SetNpzModeAction;
+export type Actions = SetSelectedColorAction | SetPositionAction | SetShouldRenderAction | SetShouldLoadChunksAction | SetShouldRefreshChunksAction | SetShouldClearChunksAction | SetEraserModeAction | SetNpzModeAction;
 
 /* Functions */
 export function setSelectedColor(state: ReduxState, action: SetSelectedColorAction): ReduxState {
@@ -100,6 +113,14 @@ export function setShouldLoadChunks(state: ReduxState, action: SetShouldLoadChun
     shouldLoadChunks: action.payload,
   };
 }
+export function setShouldRefreshChunks(state: ReduxState, action: SetShouldRefreshChunksAction): ReduxState {
+  return {
+    ...state,
+    shouldRefreshChunks: action.payload.refresh,
+    chunksToRefresh: action.payload.chunks,
+  };
+}
+
 export function setShouldClearChunks(state: ReduxState, action: SetShouldClearChunksAction): ReduxState {
   return {
     ...state,
@@ -137,6 +158,10 @@ export const dispatches = [
   {
     action: SET_SHOULD_LOAD_CHUNKS,
     function: setShouldLoadChunks,
+  },
+  {
+    action: SET_SHOULD_REFRESH_CHUNKS,
+    function: setShouldRefreshChunks,
   },
   {
     action: SET_SHOULD_CLEAR_CHUNKS,

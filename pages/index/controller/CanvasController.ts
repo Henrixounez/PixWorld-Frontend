@@ -8,7 +8,7 @@ import OverlayController from "./OverlayController";
 import SoundController, { AudioType } from "./SoundController";
 import { store } from "../store";
 import { SET_ACTIVITY, SET_CANVAS, SET_DARK_MODE, SET_GRID_ACTIVE, SET_GRID_SIZE, SET_NOTIFICATIONS, SET_SHOW_BUTTONS, SET_SHOW_PALETTE, SET_SOUNDS, SET_ZOOM_TOWARD_CURSOR } from "../store/actions/parameters";
-import { SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
+import { ChunkRefresh, SET_POSITION, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_REFRESH_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_OPEN } from "../store/actions/overlay";
 import { SET_SHOW_CHAT } from "../store/actions/chat";
 import { SET_LAST_READ_NOTIFICATION_DATE } from "../store/actions/infos";
@@ -99,11 +99,18 @@ export class CanvasController {
   clearHistoryChunks() {
     this.historyChunks = {};
   }
-  clearChunks() {
-    this.chunks = {};
-    this.waitingPixels = {};
-    this.historyChunks = {};
-    this.superChunks = this.currentCanvas?.superchunkLevels.map(() => ({})) || [];
+  clearChunks(chunksToRefresh: ChunkRefresh[]) {
+    if (chunksToRefresh.length) {
+      [...chunksToRefresh].forEach((chunk) => {
+        if (chunk.canvas === this.currentCanvasId)
+          delete this.chunks[`${chunk.x};${chunk.y}`];
+      })
+    } else {
+      this.chunks = {};
+      this.waitingPixels = {};
+      this.historyChunks = {};
+      this.superChunks = this.currentCanvas?.superchunkLevels.map(() => ({})) || [];
+    }
     store?.dispatch({ type: SET_SHOULD_CLEAR_CHUNKS, payload: false });
   }
 
@@ -318,6 +325,23 @@ export class CanvasController {
       for (let y = this.position.y - CHUNK_SIZE * (chunkNbY / 2); y < this.position.y + CHUNK_SIZE * (chunkNbY / 2); y+= CHUNK_SIZE) {
         chunkLoading.push(this.loadChunk(Math.floor(x / CHUNK_SIZE), Math.floor(y / CHUNK_SIZE)));
       }
+    }
+    await Promise.all(chunkLoading);
+  }
+  refreshChunks = async (chunks: ChunkRefresh[]) => {
+    const chunksToRefreshs = [...chunks]
+    store?.dispatch({ type: SET_SHOULD_REFRESH_CHUNKS, payload: { refresh: false, chunks: [] } });
+
+    const pixelSize = PIXEL_SIZE / this.position.zoom;
+    if (pixelSize < LIMIT_DRAW_NORMAL_CHUNKS)
+      return;
+
+    const chunkLoading: Promise<void>[] = [];
+    for (let i = 0; i < chunksToRefreshs.length; i++) {
+      if (chunksToRefreshs[i].canvas !== this.currentCanvasId)
+        continue;
+      delete this.chunks[`${chunksToRefreshs[i].x};${chunksToRefreshs[i].y}`];
+      chunkLoading.push(this.loadChunk(chunksToRefreshs[i].x, chunksToRefreshs[i].y))
     }
     await Promise.all(chunkLoading);
   }
