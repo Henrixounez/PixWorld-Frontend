@@ -34,6 +34,7 @@ export enum FormatType {
   BOLD = 'BOLD',
   ITALICS = 'ITALICS',
   UNDERLINE = 'UNDERLINE',
+  CROSSED = 'CROSSED',
   CODE = 'CODE',
 }
 
@@ -65,6 +66,10 @@ const formattingTypes = [
   {
     type: FormatType.UNDERLINE,
     regex: /_{2}([^_]+)_{2}/gm
+  },
+  {
+    type: FormatType.CROSSED,
+    regex: /~{2}([^~]+)~{2}/gm
   },
   {
     type: FormatType.CODE,
@@ -120,6 +125,8 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
             return <i key={i}>{formatChatText(text.replace(/\*/gm, ''), onClick, darkMode)}</i>
           case FormatType.UNDERLINE:
             return <u key={i}>{formatChatText(text.replace(/_{2}/gm, ''), onClick, darkMode)}</u>
+          case FormatType.CROSSED:
+            return <del key={i}>{formatChatText(text.replace(/~{2}/gm, ''), onClick, darkMode)}</del>
           case FormatType.CODE:
             return <code key={i}>{text.replace(/`/gm, '')}</code>
           case FormatType.GREENTEXT:
