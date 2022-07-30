@@ -1,0 +1,6 @@
+{
+  "title": "Error",
+  "connectionLost": "Conexión perdida con el servidor",
+  "refresh": "Por favor recarga la página",
+  "refreshBtn": "Recargar"
+}

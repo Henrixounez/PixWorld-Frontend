@@ -1,0 +1,12 @@
+{
+  "title": "Overlay de imagen",
+  "input": "Imagen de entrada",
+  "inputUrl": "URL de la imagen",
+  "transparency": "Transparencia",
+  "position": "Posición",
+  "positionMouse": "Posicionar con el ratón",
+  "autoColor": "Color automático",
+  "tainted": "La imagen de la URL esta protegida, haciendo que la función de Color automático no funcione\nUtilice páginas que no soporte peticiones CORS (ej: imgur, dropbox).",
+  "options": "Opciones de Overlay",
+  "saveBtn": "Guardar configuración actual"
+}

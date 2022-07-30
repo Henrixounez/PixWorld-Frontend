@@ -1,0 +1,7 @@
+{
+  "title": "Captcha - ¿Eres un robot?",
+  "subtitle": "Escribe los caracteres mostrados debajo.",
+  "tips": "(Las mayúsculas no afectan al resultado, p y P son lo mismo)",
+  "input": "Ingresa el captcha...",
+  "send": "Enviar"
+}

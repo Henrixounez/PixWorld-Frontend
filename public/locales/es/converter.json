@@ -1,0 +1,8 @@
+{
+  "title": "Conversor",
+  "widthText": "Ancho final de la imagen: ",
+  "uploadText": "Sube una imagen: ",
+  "uploadBtn": "Seleccionar",
+  "downloadBtn": "Descargar",
+  "addGrid": "Añadir cuadrícula (No usar para una plantilla 1:1)"
+}

@@ -1,0 +1,39 @@
+{
+  "title": "Estadísticas",
+  "profile": {
+    "title": "Perfil",
+    "pixelsToday": "Píxeles de Hoy",
+    "pixelsTotal": "Píxeles Totales",
+    "loggedAs": "Sesión iniciada como",
+    "logout": "Cerrar sesión"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "username": "Nombre de Usuario",
+    "pixels": "Píxeles",
+    "totalRanking": "Total",
+    "dailyRanking": "Diario",
+    "reset": "El ranking diario se actualiza a las 00:00 UTC."
+  },
+  "edit": {
+    "title": "Editar info",
+    "emptyPassword": "Contraseña vacia",
+    "error": "Error durante la actualización",
+    "password": "Contraseña",
+    "email": "Nuevo email",
+    "verify": "Un link de verificación fue enviado a tu correo electrónico.",
+    "send": "Enviar"
+  },
+  "activity": {
+    "pixels": {
+      "title": "Actividad de píxeles (Todos los Usuarios, Últimas 24h)",
+      "legend": "Nb Píxeles colocados"
+    },
+    "colors": {
+      "title": "Colores colocados (Todos los Usuarios, Últimas 24h)"
+    }
+  },
+  "news": {
+    "title": "Noticias"
+  }
+}

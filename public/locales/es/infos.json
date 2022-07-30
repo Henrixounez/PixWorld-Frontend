@@ -1,0 +1,9 @@
+{
+  "title": "Bienvenido a PixWorld",
+  "text": "Coloca píxeles donde quieras en este lienzo!",
+  "madeBy": "Página creada por Henrixounez & MXS",
+  "os": "Código Open Source disponible en Github: ",
+  "discord": "Únete a nuestro ",
+  "controls": "\nControles\n\nPíxeles:\n  Selecciona colores con la paleta ubicada a la derecha\n  KeyBotónRuedaMouse o KeyCtrlIzquierdo o KeyMantenerPresionado para seleccionar el píxel bajo tu ratón\n  KeyClickIzquierdo o KeyPresionar para colocar un píxel\n  KeyShiftIzquierdo Para colocar píxeles mientras mueves el ratón.\n  KeyShiftDerecho para colocar píxeles basados en la vista histórica mientas mueves el ratón\n\nMoving:\n  KeyW KeyA KeyS KeyD  o  Key↑ Key← Key↓ Key→  o  KeyArrastrarMouse  o  KeyPresionarArrastrar para mover la cámara\n  KeyMoverRuedaDelRatón  o  KeyQ KeyE  o  KeyPresionarDosDedos para hacer zoom\n\nOpciones:\n  KeyG para activar la cuadrícula\n  KeyX para activar la actividad de píxeles\n  KeyH para activar la vista histórica\n  KeyO para activar el overlay\n  KeyL para resetear el zoom a 1:1\n  KeyM para silenciar los sonidos\n  KeyB para abrir el menú de guardados\n  KeyC para copiar las coordenadas del cursor\n  KeySHIFT+C para copiar coordenadas actuales como URL\n",
+  "rules": "\nReglas\n\n  - Nada de símbolos de odio u ofensivos (Especialmente esvasticas)\n  - Nada de bots excepto en los Océanos y Antárctica (Si lo haces, tendrás que explicar por qué al ser descubierto y posteriormente ser baneado de IP)\n  - Nada de proxies\n  - Nada de arte NSFW extremo(Los pezones estan permitidos, genitales y sexo no)\n  - Nada de cosas NSFL extremo (Un poco de sangre esta bien, pero nada de gore)\n  - Mantén el chat de Discord y dentro del juego limpios (Nada de racismo, Homofóbia, insultos, Abuso, etc...)\n  - Nada de doxxeo (No compartir información personal de otros o tuya)"
+}
