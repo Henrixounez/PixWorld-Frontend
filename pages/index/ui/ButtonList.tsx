@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Link from 'next/link';
-import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp, Map } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp, Map, Shield } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 
@@ -11,6 +11,7 @@ import { getCanvasController } from '../controller/CanvasController';
 import { coordinateLinkGoto } from './Chat';
 import { SET_SHOW_BUTTONS } from '../store/actions/parameters';
 import { Colors, getColor } from '../../constants/colors';
+import { UserType } from '../store/actions/user';
 
 const ButtonListContainer = styled.div`
   position: absolute;
@@ -128,6 +129,7 @@ export default function ButtonList() {
   const showButtons = useSelector((state: ReduxState) => state.showButtons);
   const lastNotificationDate = useSelector((state: ReduxState) => state.lastNotificationDate);
   const lastReadNotificationDate = useSelector((state: ReduxState) => state.lastReadNotificationDate);
+  const hasModerationAccess = useSelector((state: ReduxState) => state.user?.type === UserType.ADMIN || state.user?.type === UserType.MOD )
   const [display, setDisplay] = useState(true);
 
   useEffect(() => {
@@ -182,6 +184,11 @@ export default function ButtonList() {
           <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })} darkMode={darkMode}>
             <Bookmark/>
           </Button>
+          {hasModerationAccess ? (
+            <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.MODERATION })} darkMode={darkMode}>
+              <Shield/>
+            </Button>
+          ) : null}
           <SearchBtn/>
         </ButtonListDropdown>
       )}

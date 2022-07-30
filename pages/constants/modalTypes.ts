@@ -8,6 +8,7 @@ enum ModalTypes {
   OVERLAY,
   BOOKMARKS,
   CANVASES,
+  MODERATION,
 };
 
 export default ModalTypes;

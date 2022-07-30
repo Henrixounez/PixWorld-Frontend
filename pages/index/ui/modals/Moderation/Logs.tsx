@@ -1,12 +1,15 @@
 import axios from "axios";
 import { FormEvent, useState } from "react";
 import { Search } from "react-feather";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { API_URL } from "../constants/api";
-import { BoxContainer, BoxTitle, CoordRow, onCoordinatesPaste, QueryForm, Textfield } from "../pagesComponents"
+import { API_URL } from "../../../../constants/api";
+import { onCoordinatesPaste } from "../../../../pagesComponents"
+import { ReduxState } from "../../../store";
+import { ModalBoxContainer, ModalBoxTitle, ModalCoordRow, ModalQueryForm, ModalTextfield } from "./components";
 
 const ContainerLogsResult = styled.div`
-  height: 500px;
+  max-height: 500px;
   overflow: auto;
   position: relative;
 `;
@@ -56,6 +59,7 @@ function PixelLogs() {
   const [y, setY] = useState(0);
   const [canvas, setCanvas] = useState("");
   const [results, setResults] = useState<PixelLogResult[]>([]);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const searchPixelLogs = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,22 +73,22 @@ function PixelLogs() {
   }
 
   return (
-    <BoxContainer>
-      <BoxTitle>
+    <ModalBoxContainer darkMode={darkMode}>
+      <ModalBoxTitle darkMode={darkMode}>
         Coordinate Pixel Logs
-      </BoxTitle>
-      <QueryForm onSubmit={searchPixelLogs}>
-        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <Textfield placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
-          <Textfield placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
-        </CoordRow>
-        <CoordRow onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+      </ModalBoxTitle>
+      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield darkMode={darkMode} placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
+          <ModalTextfield darkMode={darkMode} placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+        </ModalCoordRow>
+        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
           <button>
             <Search/>
           </button>
-        </CoordRow>
-      </QueryForm>
+        </ModalCoordRow>
+      </ModalQueryForm>
       { results.length ? (
         <ContainerLogsResult>
           <LogsResults>
@@ -116,13 +120,14 @@ function PixelLogs() {
           </LogsResults>
         </ContainerLogsResult>
       ) : null}
-    </BoxContainer>
+    </ModalBoxContainer>
   );
 }
 
 function UserPixelLogs() {
   const [username, setUsername] = useState("");
   const [results, setResults] = useState<PixelLogResult[]>([]);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const searchPixelLogs = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -136,18 +141,18 @@ function UserPixelLogs() {
   }
 
   return (
-    <BoxContainer>
-      <BoxTitle>
+    <ModalBoxContainer darkMode={darkMode}>
+      <ModalBoxTitle darkMode={darkMode}>
         User Pixel Logs
-      </BoxTitle>
-      <QueryForm onSubmit={searchPixelLogs}>
-        <CoordRow>
-          <Textfield placeholder="Username" type="text" onChange={(e) => setUsername(e.target.value) }/>
+      </ModalBoxTitle>
+      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow darkMode={darkMode}>
+          <ModalTextfield darkMode={darkMode} placeholder="Username" type="text" onChange={(e) => setUsername(e.target.value) }/>
           <button>
             <Search/>
           </button>
-        </CoordRow>
-      </QueryForm>
+        </ModalCoordRow>
+      </ModalQueryForm>
       { results.length ? (
         <ContainerLogsResult>
           <LogsResults>
@@ -181,13 +186,14 @@ function UserPixelLogs() {
           </LogsResults>
         </ContainerLogsResult>
       ) : null}
-    </BoxContainer>
+    </ModalBoxContainer>
   );
 }
 
 function IpPixelLogs() {
   const [ip, setIp] = useState("");
   const [results, setResults] = useState<PixelLogResult[]>([]);
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   const searchPixelLogs = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -201,18 +207,18 @@ function IpPixelLogs() {
   }
 
   return (
-    <BoxContainer>
-      <BoxTitle>
+    <ModalBoxContainer darkMode={darkMode}>
+      <ModalBoxTitle darkMode={darkMode}>
         IP Pixel Logs
-      </BoxTitle>
-      <QueryForm onSubmit={searchPixelLogs}>
-        <CoordRow>
-          <Textfield placeholder="Ip" type="text" onChange={(e) => setIp(e.target.value) }/>
+      </ModalBoxTitle>
+      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow darkMode={darkMode}>
+          <ModalTextfield darkMode={darkMode} placeholder="Ip" type="text" onChange={(e) => setIp(e.target.value) }/>
           <button>
             <Search/>
           </button>
-        </CoordRow>
-      </QueryForm>
+        </ModalCoordRow>
+      </ModalQueryForm>
       { results.length ? (
         <ContainerLogsResult>
           <LogsResults>
@@ -246,7 +252,7 @@ function IpPixelLogs() {
           </LogsResults>
         </ContainerLogsResult>
       ) : null}
-    </BoxContainer>
+    </ModalBoxContainer>
   );
 }
 

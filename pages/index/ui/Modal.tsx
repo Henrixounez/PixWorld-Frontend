@@ -15,6 +15,7 @@ import ModalOverlay from './modals/Overlay';
 import ModalBookmarks from './modals/Bookmarks';
 import ModalCanvases from './modals/Canvases';
 import { Colors, getColor } from '../../constants/colors';
+import ModalModeration from './modals/Moderation';
 
 const ModalBackdrop = styled.div<{darkMode: boolean}>`
   position: absolute;
@@ -91,15 +92,16 @@ const CloseButton = styled.div`
 `;
 
 const modalComponents = {
-  [ModalTypes.NONE]: { title: '', component: null },
-  [ModalTypes.INFOS]: { title: 'infos:title', component: <ModalInfos/> },
-  [ModalTypes.PROBLEM]: { title: 'problem:title', component: <ModalProblem/> },
-  [ModalTypes.CONVERTER]: { title: 'converter:title', component: <ModalConverter/> },
-  [ModalTypes.PARAMETERS]: { title: 'parameters:title', component: <ModalParameters/> },
-  [ModalTypes.CAPTCHA]: { title: '', component: <Captcha/> },
-  [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/> },
-  [ModalTypes.BOOKMARKS]: { title: 'bookmark:title', component: <ModalBookmarks/> },
-  [ModalTypes.CANVASES]: { title: 'canvas:title', component: <ModalCanvases/> },
+  [ModalTypes.NONE]: { title: '', component: null, maxWidth: null },
+  [ModalTypes.INFOS]: { title: 'infos:title', component: <ModalInfos/>, maxWidth: null },
+  [ModalTypes.PROBLEM]: { title: 'problem:title', component: <ModalProblem/>, maxWidth: null },
+  [ModalTypes.CONVERTER]: { title: 'converter:title', component: <ModalConverter/>, maxWidth: null },
+  [ModalTypes.PARAMETERS]: { title: 'parameters:title', component: <ModalParameters/>, maxWidth: null },
+  [ModalTypes.CAPTCHA]: { title: '', component: <Captcha/>, maxWidth: null },
+  [ModalTypes.OVERLAY]: { title: 'overlay:options', component: <ModalOverlay/>, maxWidth: null },
+  [ModalTypes.BOOKMARKS]: { title: 'bookmark:title', component: <ModalBookmarks/>, maxWidth: null },
+  [ModalTypes.CANVASES]: { title: 'canvas:title', component: <ModalCanvases/>, maxWidth: null },
+  [ModalTypes.MODERATION]: { title: 'Moderation', component: <ModalModeration/>, maxWidth: "80vw" },
 }
 
 export default function Modal() {
@@ -113,7 +115,7 @@ export default function Modal() {
 
   return (
     <ModalBackdrop darkMode={darkMode} onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.NONE })}>
-      <ModalContent darkMode={darkMode} onClick={(e) => e.stopPropagation()}>
+      <ModalContent darkMode={darkMode} onClick={(e) => e.stopPropagation()} style={{ maxWidth: modalComponents[currentModal].maxWidth ?? undefined }}>
         <div style={{ height: "2.5rem" }}>
           <ModalTitle>
             {t(modalComponents[currentModal].title)}

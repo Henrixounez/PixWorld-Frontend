@@ -1,14 +1,12 @@
 import styled from 'styled-components'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Activity, Database, Mail, Map, Shield } from 'react-feather';
+import { Activity, Mail, Map } from 'react-feather';
 import { useRouter } from 'next/dist/client/router';
 
 import { API_URL } from '../constants/api';
 import SideBar from '../sidebar';
-import PageLogs from './Logs';
 import PageActivity from './Activity';
-import PageBan from './Ban';
 import PageMapOperations from './MapOperations';
 import PageNotifications from './Notifications';
 
@@ -50,18 +48,6 @@ export const pages = [
     icon: <Activity/>,
     name: "Activity",
     component: <PageActivity/>
-  },
-  {
-    type: PageTypes.LOGS,
-    icon: <Database/>,
-    name: "Logs",
-    component: <PageLogs/>
-  },
-  {
-    type: PageTypes.BAN,
-    icon: <Shield/>,
-    name: "Ban",
-    component: <PageBan/>
   },
   {
     type: PageTypes.MAP,

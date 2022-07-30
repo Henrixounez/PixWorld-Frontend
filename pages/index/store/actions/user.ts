@@ -1,11 +1,16 @@
 import { ReduxState } from "..";
 import { getCanvasController } from "../../controller/CanvasController";
 
+export enum UserType {
+  CLIENT = "client",
+  MOD = "mod",
+  ADMIN = "admin",
+}
 export interface User {
   username: string;
   totalPixels: number;
   dailyPixels: number;
-  type: string;
+  type: UserType;
 }
 
 /* Actions */
