@@ -27,6 +27,9 @@ const Greentext = styled.span`
 const Redtext = styled.span`
   color: red;
 `;
+const Link = styled.a`
+  color: blue;
+`;
 
 export enum FormatType {
   TEXT = 'TEXT',
@@ -40,6 +43,7 @@ export enum FormatType {
   UNDERLINE = 'UNDERLINE',
   CROSSED = 'CROSSED',
   CODE = 'CODE',
+  LINK = 'LINK',
 }
 
 const formattingTypes = [
@@ -82,6 +86,10 @@ const formattingTypes = [
   {
     type: FormatType.CODE,
     regex: /`.*`/gm
+  },
+  {
+    type: FormatType.LINK,
+    regex: /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+/gm
   }
 ]
 
@@ -141,7 +149,9 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
             return <Greentext key={i}>&gt;{formatChatText(text.replace('>', ''), onClick, darkMode)}</Greentext>
           case FormatType.REDTEXT:
             return <Redtext key={i}>&lt;{formatChatText(text.replace('<', ''), onClick, darkMode)}</Redtext>
-          }
+          case FormatType.LINK:
+            return <Link href={(text.startsWith('http') ? "" : "//") + text} key={i}>{text}</Link>;
+        }
       })}
     </>
   )
