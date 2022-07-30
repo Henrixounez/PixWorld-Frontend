@@ -71,7 +71,7 @@ export function setChatMessage(state: ReduxState, action: SetChatMessageAction):
   return {
     ...state,
     chatMessages,
-    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel || !cm.channel),
   };
 }
 export function addChatMessage(state: ReduxState, action: AddChatMessageAction): ReduxState {
@@ -79,7 +79,7 @@ export function addChatMessage(state: ReduxState, action: AddChatMessageAction):
   return {
     ...state,
     chatMessages,
-    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel || !cm.channel),
     unreadMessage: !state.showChat && action.payload.channel === state.channel,
   };
 }
@@ -94,7 +94,7 @@ export function clearChatMessages(state: ReduxState, action: ClearChatMessagesAc
   return {
     ...state,
     chatMessages,
-    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel),
+    channelMessages: chatMessages.filter((cm) => cm.channel === state.channel || !cm.channel),
     unreadMessage: !state.showChat && state.chatMessages.some((cm) => cm.channel === state.channel),
   };
 }
@@ -105,9 +105,11 @@ export function setUnreadMessage(state: ReduxState, action: SetUnreadMessageActi
   };
 }
 export function setChannel(state: ReduxState, action: SetChannelAction): ReduxState {
+  const chatMessages = state.chatMessages.filter((cm) => cm.channel);
   return {
     ...state,
-    channelMessages: [...state.chatMessages.filter((cm) => cm.channel === action.payload)],
+    chatMessages,
+    channelMessages: state.chatMessages.filter((cm) => cm.channel === action.payload),
     channel: action.payload,
   };
 }
