@@ -229,6 +229,17 @@ export default function Chat() {
             ` }});
         break;
       default:
+        if (message.length > 400) {
+          dispatch({
+            type: ADD_CHAT_MESSAGE,
+            payload: {
+              author: 'PixWorld',
+              color: 'green',
+              msg: `Your message exceeds the 400 characters limit`
+            }
+          });
+          return;
+        }
         messageToWs(message);
         break;
     }
@@ -278,7 +289,7 @@ export default function Chat() {
                 {msg.tag && `[${msg.tag}] `}
                 {msg.author}
               </span>
-              : {formatChatText(msg.msg, textClick, darkMode)}
+              : {formatChatText(msg.msg, textClick, darkMode, 0)}
             </ChatMessage>
           ))}
         </ChatText>
@@ -290,6 +301,7 @@ export default function Chat() {
                 ref={inputRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                maxLength={400}
                 onKeyDown={(e) => {
                   if (e.code === "Enter")
                     sendMessage();
