@@ -3,7 +3,6 @@ import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 import { throttle } from 'lodash';
 import * as Actions from './reducer';
 import { ActionTypes } from './reducer';
-import palette from '../../constants/palette';
 import ModalTypes from '../../constants/modalTypes';
 import { User } from './actions/user';
 import { Canvas, getCanvasController, RENDER_REFRESH_MS } from '../controller/CanvasController';
@@ -70,7 +69,7 @@ export let store: Store<ReduxState, ActionTypes> | undefined;
 export const initialState: ReduxState = {
   playersNb: 0,
   cursorPos: { x: 0, y: 0 },
-  selectedColor: palette[0],
+  selectedColor: "#FFFFFF",
   currentModal: ModalTypes.NONE,
   cooldown: 0,
   chatMessages: [],

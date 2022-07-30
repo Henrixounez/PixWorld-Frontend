@@ -110,6 +110,7 @@ export function setCanvas(state: ReduxState, action: SetCanvasAction): ReduxStat
     shouldLoadChunks: action.payload !== state.currentCanvas,
     currentCanvas: action.payload,
     shouldClearChunks: true,
+    selectedColor: state.canvases.find((c) => c.id === action.payload)?.palette[0] ?? "#FFFFFF"
   };
 }
 export function setDarkMode(state: ReduxState, action: SetDarkModeAction): ReduxState {

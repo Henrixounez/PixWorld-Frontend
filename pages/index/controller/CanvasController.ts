@@ -31,6 +31,7 @@ export interface Canvas {
   size: number;
   superchunkLevels: number[];
   locked?: boolean;
+  palette: string[];
 }
 
 export class CanvasController {

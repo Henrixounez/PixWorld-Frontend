@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "../store";
 import { ADD_CHAT_MESSAGE, SET_CHAT_MESSAGE, CLEAR_CHAT_MESSAGES } from "../store/actions/chat";
 import { SET_ALERT, SET_COOLDOWN, SET_DISCONNECT, SET_LAST_NOTIFICATION_DATE, SET_MODAL, SET_NB_PLAYERS } from "../store/actions/infos";
-import { SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
+import { SET_SELECTED_COLOR, SET_SHOULD_CLEAR_CHUNKS, SET_SHOULD_LOAD_CHUNKS, SET_SHOULD_RENDER } from "../store/actions/painting";
 import { SET_CANVAS } from "../store/actions/parameters";
 import { SET_NB_PIXELS, SET_USER } from "../store/actions/user";
 import { API_URL, WS_URL } from "../../constants/api";
@@ -41,8 +41,10 @@ export default class ConnectionController {
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });
           store?.dispatch({ type: SET_CHAT_MESSAGE, payload: data.chatMessages });
           store?.dispatch({ type: SET_LAST_NOTIFICATION_DATE, payload: data.lastNotification });
-          if (!store?.getState().currentCanvas)
+          if (!store?.getState().currentCanvas) {
             store?.dispatch({ type: SET_CANVAS, payload: this.canvasController.canvases[0].id });
+            store?.dispatch({ type: SET_SELECTED_COLOR, payload: this.canvasController.canvases[0].palette[0] })
+          }
           this.getMe();
           localStorage.removeItem('badConnection');
           break;
