@@ -59,6 +59,18 @@ function Members({ role }: { role: FactionRole }) {
     }
   }
 
+  const kickMember = async (memberId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) return;
+      await axios.delete(`${API_URL}/faction/${faction.id}/member/${memberId}`, { headers: { 'Authorization': token }});
+      getMembers();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   useEffect(() => {
     getMembers();
   }, []);
@@ -95,6 +107,11 @@ function Members({ role }: { role: FactionRole }) {
                     ) : (
                       <div style={{ width: "40px" }}/>
                     )}
+                    { member?.role === FactionRole.ADMIN && f.id !== member?.id && f.role !== FactionRole.ADMIN ? (
+                      <Button onClick={() => kickMember(f.id) } style={{ padding: "0.5rem" }}>
+                        <UserX/>
+                      </Button>
+                    ) : null }
                   </>
                 )}
               </div>
