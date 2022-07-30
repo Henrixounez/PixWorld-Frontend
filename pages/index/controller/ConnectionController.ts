@@ -13,6 +13,7 @@ import { Colors } from "../../constants/colors";
 export default class ConnectionController {
   canvasController: CanvasController;
   ws: WebSocket;
+  isInit: boolean = false;
 
   constructor(canvasController: CanvasController, wsHash: string) {
     this.canvasController = canvasController;
@@ -21,10 +22,12 @@ export default class ConnectionController {
       this.getMe();
     }
     this.ws.onclose = (e) => {
+      this.isInit = false;
       if (!e.wasClean || e.code === 1013)
         setTimeout(() => store?.dispatch({ type: SET_MODAL, payload: ModalTypes.PROBLEM }), 2000);
     }
     this.ws.onerror = () => {
+      this.isInit = false;
       setTimeout(() => store?.dispatch({ type: SET_MODAL, payload: ModalTypes.PROBLEM }), 2000);
     }
     this.ws.onmessage = (mess) => {
@@ -32,6 +35,7 @@ export default class ConnectionController {
 
       switch (type) {
         case 'init':
+          this.isInit = true;
           store?.dispatch({ type: SET_SHOULD_LOAD_CHUNKS, payload: true });
           store?.dispatch({ type: SET_NB_PLAYERS, payload: data.playerNb });
           store?.dispatch({ type: SET_COOLDOWN, payload: data.cooldown });
@@ -76,8 +80,11 @@ export default class ConnectionController {
           store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
           break;
         case 'disconnect':
+          this.isInit = false;
           store?.dispatch({ type: SET_DISCONNECT, payload: data });
           store?.dispatch({ type: SET_MODAL, payload: ModalTypes.PROBLEM });
+          if (data === "Bad connection request.")
+            localStorage.removeItem("token");
           break;
         case 'newNotification':
           store?.dispatch({ type: SET_LAST_NOTIFICATION_DATE, payload: data });
@@ -92,7 +99,7 @@ export default class ConnectionController {
   getMe = async () => {
     const token = localStorage.getItem('token');
 
-    if (!token || store?.getState().user)
+    if (!this.isInit || !token || store?.getState().user)
       return;
     try {
       const res = await axios.get(`${API_URL}/user/me`, { headers: { 'Authorization': token }});
