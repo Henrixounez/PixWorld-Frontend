@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
+import { useEffect } from 'react';
 import styled from 'styled-components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import crypto from 'crypto';
@@ -19,7 +20,7 @@ import Chat from './index/ui/Chat';
 import Alert from './index/ui/Alert';
 import HistoryMode from './index/ui/HistoryMode';
 import { API_URL } from './constants/api';
-import { Canvas as CanvasType  } from './index/controller/CanvasController';
+import { Canvas as CanvasType, getCanvasController  } from './index/controller/CanvasController';
 import { CHUNK_SIZE, PIXEL_SIZE } from './constants/painting';
 import { AppProps } from 'next/dist/next-server/lib/router/router';
 
@@ -38,6 +39,17 @@ interface HomeProps {
 }
 export default function Home({ wsHash, pos, initialReduxState, canvases }: AppProps | HomeProps) {
   const store = useStore(initialReduxState || { ...initialState, canvases: canvases });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+
+      if (token && !store.getState().user) {
+        getCanvasController()?.connectionController.getMe();
+        getCanvasController()?.connectionController.sendToWs("reload", {});
+      }
+    }
+  }, [store]);
 
   return (
     <Provider store={store}>
