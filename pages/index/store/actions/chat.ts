@@ -15,6 +15,7 @@ export enum ChatChannels {
   RU = "ru",
   ES = "es",
   PT = "pt",
+  TK = "tk"
 }
 
 export type Message = {
