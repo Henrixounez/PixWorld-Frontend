@@ -219,7 +219,7 @@ export default function Chat() {
   const currentNpzs = useSelector((state: ReduxState) => state.npzList);
 
   const messageToWs = (text: string) => {
-    getCanvasController()?.connectionController.sendToWs('sendMessage', text);
+    getCanvasController()?.connectionController.sendToWs('sendMessage', JSON.stringify({ message: text, channel }));
     setForceScrollBottom(true);
   }
   const setNpz = async () => {
@@ -300,7 +300,7 @@ export default function Chat() {
           });
           return;
         }
-        messageToWs(JSON.stringify({ message, channel }));
+        messageToWs(message);
         break;
     }
     setMessage('');
