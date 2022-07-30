@@ -1,11 +1,11 @@
 import axios from "axios";
 import { FormEvent, useState } from "react";
 import { Search, Send } from "react-feather";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { API_URL } from "../../../../constants/api";
 import { onCoordinatesPaste } from "../../../../pagesComponents";
 import { ReduxState } from "../../../store";
-import { NoPixelZoneReturn } from "../../../store/actions/painting";
+import { NoPixelZoneReturn, SET_NPZ_MODE } from "../../../store/actions/painting";
 import {
   ModalBoxContainer,
   ModalBoxTitle,
@@ -25,6 +25,9 @@ function CreateNPZ() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const npzMode = useSelector((state: ReduxState) => state.npzMode);
+  const currentNpzs = useSelector((state: ReduxState) => state.npzList);
+  const dispatch = useDispatch();
 
   const createNpz = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,6 +36,14 @@ function CreateNPZ() {
       setStatus("");
       const token = localStorage.getItem('token');
       await axios.post(`${API_URL}/noPixelZone`, { startX, startY, endX, endY, canvas }, { headers: { 'Authorization': token } });
+      const npzRes: NoPixelZoneReturn[] = !npzMode ? (await axios.get(`${API_URL}/noPixelZone`, { headers: { 'Authorization': token } })).data : currentNpzs;
+      dispatch({
+        type: SET_NPZ_MODE,
+        payload: {
+          activated: npzMode,
+          npzs: npzRes
+        }
+      });
       setStatus("success");
     } catch (err: any) {
       setError(err.response.data || err.message);
@@ -111,6 +122,9 @@ function DeleteNPZ() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const npzMode = useSelector((state: ReduxState) => state.npzMode);
+  const currentNpzs = useSelector((state: ReduxState) => state.npzList);
+  const dispatch = useDispatch();
 
   const banIp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,6 +134,15 @@ function DeleteNPZ() {
       const token = localStorage.getItem('token');
       await axios.delete(`${API_URL}/noPixelZone/${npzId}`, { headers: { 'Authorization': token } });
       setStatus("success");
+      const npzRes: NoPixelZoneReturn[] = !npzMode ? (await axios.get(`${API_URL}/noPixelZone`, { headers: { 'Authorization': token } })).data : currentNpzs;
+      dispatch({
+        type: SET_NPZ_MODE,
+        payload: {
+          activated: npzMode,
+          npzs: npzRes
+        }
+      });
+
     } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");

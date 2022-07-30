@@ -556,12 +556,18 @@ export class CanvasController {
 
     const npzToDisplay = (store?.getState().npzList ?? []).filter((npz) => npz.startX <= coordsEnd.coordX && npz.startY <= coordsEnd.coordY && npz.endX >= coordsStart.coordX && npz.endY >= coordsStart.coordY);
 
+    ctx.beginPath();
     npzToDisplay.forEach((npz) => {
       const { posX: startPosX, posY: startPosY } = this.coordinatesOnCanvas(npz.startX, npz.startY);
 
-      ctx.fillStyle = "#FF000066";
-      ctx.fillRect(startPosX, startPosY, (npz.endX - npz.startX) * pixelSize, (npz.endY - npz.startY) * pixelSize);
+      ctx.moveTo(startPosX, startPosY);
+      ctx.lineTo(startPosX + (npz.endX - npz.startX) * pixelSize, startPosY);
+      ctx.lineTo(startPosX + (npz.endX - npz.startX) * pixelSize, startPosY + (npz.endY - npz.startY) * pixelSize);
+      ctx.lineTo(startPosX, startPosY + (npz.endY - npz.startY) * pixelSize);
     })
+    ctx.fillStyle = "#FF000066";
+    ctx.closePath();
+    ctx.fill();
   }
   drawActivity = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = "#FF000066";
