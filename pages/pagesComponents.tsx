@@ -123,6 +123,7 @@ export const Textfield = styled.input`
     outline-offset: 0px;
     outline: -webkit-focus-ring-color auto 1px;
   }
+  color-scheme: dark;
   @media(max-width: 500px) {
     font-size: 0.7rem;
     padding: 0.5rem;
