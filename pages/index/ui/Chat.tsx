@@ -244,9 +244,9 @@ export default function Chat() {
   }
 
   useEffect(() => {
-    if (chatRef.current) {
-      const isAtBottom = chatRef.current.scrollTop === chatRef.current.scrollHeight - chatRef.current.clientHeight - 13;
-      if (isAtBottom || (forceScrollBottom && messageList.length)) {
+    if (messageList.length && chatRef.current) {
+      const isAtBottom = chatRef.current.scrollTop >= chatRef.current.scrollHeight - chatRef.current.clientHeight - (chatRef.current.lastElementChild?.clientHeight ?? 0) - 13;
+      if (isAtBottom || forceScrollBottom) {
         chatRef.current.scrollTop = chatRef.current.scrollHeight;
         if (forceScrollBottom)
           setForceScrollBottom(false);
