@@ -20,7 +20,7 @@ function Import() {
       const token = localStorage.getItem('token');
       await axios.post(`${API_URL}/admin/import`, { input: url, canvas, x, y }, { headers: { 'Authorization': token } });
       setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");
     }
@@ -64,6 +64,7 @@ function Erase() {
   const [endY, setEndY] = useState(0);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [color, setColor] = useState("#0000");
 
   const importImage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,9 +72,9 @@ function Erase() {
       setStatus("");
       setError("");
       const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/admin/erase`, { x: startX, y: startY, endX, endY, canvas }, { headers: { 'Authorization': token } });
+      await axios.post(`${API_URL}/admin/fill`, { x: startX, y: startY, endX, endY, canvas, color: color }, { headers: { 'Authorization': token } });
       setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");
     }
@@ -95,6 +96,7 @@ function Erase() {
         </CoordRow>
         <CoordRow>
           <Textfield placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+          <Textfield placeholder="Color" type="text" value={color} onChange={(e) => setColor(e.target.value)} />
           <button>
             <Send/>
           </button>
