@@ -28,6 +28,7 @@ export interface Canvas {
   id: string;
   letter: string;
   boundingChunks: [[number, number],[number, number]];
+  cooldownTime: number;
   size: number;
   superchunkLevels: number[];
   locked?: boolean;
