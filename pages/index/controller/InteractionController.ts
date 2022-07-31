@@ -320,7 +320,7 @@ export default class InteractionController {
 
   // Touch
   onLongTouch = (e: TouchEvent) => {
-    if (this.longTouchTimeout === null)
+    if (this.longTouchTimeout === null || this.autoBrush)
       return;
 
     const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.touches[0].clientX, e.touches[0].clientY);
