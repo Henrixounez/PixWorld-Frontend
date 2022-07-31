@@ -72,6 +72,7 @@ const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   width: 300px;
   max-width: 80vw;
   transition: .2s;
+  z-index: 10;
 
   background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
