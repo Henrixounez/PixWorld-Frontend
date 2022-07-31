@@ -158,7 +158,8 @@ const ChannelsContainer = styled.div<{ darkMode: boolean }>`
     flex-direction: column;
     bottom: 24px;
     > p {
-      margin: 4px 0;
+      padding: 4px 0;
+      margin: 0;
       cursor: pointer;
     }
   }
@@ -384,13 +385,12 @@ export default function Chat() {
                       {Object.entries(ChatChannels).map(([key, channel]) => (
                         <p
                           key={key}
-                          onClick={() => {
+                          onClick={() =>
                             dispatch({
                               type: SET_CHANNEL,
                               payload: channel
-                            });
-                            setShowChannels(false)
-                          }}
+                            })
+                          }
                         >
                           {channel}
                         </p>
