@@ -37,6 +37,7 @@ export interface ReduxState {
   gridSize: number;
   showButtons: boolean;
   showPalette: boolean;
+  autoBrush: boolean;
   eraserMode: boolean;
   npzMode: boolean;
   npzList: NoPixelZoneReturn[];
@@ -101,6 +102,7 @@ export const initialState: ReduxState = {
   gridSize: 10,
   showButtons: true,
   showPalette: true,
+  autoBrush: false,
   eraserMode: false,
   npzMode: false,
   npzList: [],

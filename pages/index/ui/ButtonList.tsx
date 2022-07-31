@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Link from 'next/link';
-import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp, Map, Shield } from 'react-feather';
+import { HelpCircle, Upload, Sliders, User, Search, ChevronsRight, Bookmark, ChevronDown, ChevronUp, Map, Shield, Edit3 } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 
@@ -9,7 +9,7 @@ import ModalTypes from '../../constants/modalTypes';
 import { ReduxState } from '../store';
 import { getCanvasController } from '../controller/CanvasController';
 import { coordinateLinkGoto } from './Chat';
-import { SET_SHOW_BUTTONS } from '../store/actions/parameters';
+import { SET_AUTO_BRUSH, SET_SHOW_BUTTONS } from '../store/actions/parameters';
 import { Colors, getColor } from '../../constants/colors';
 import { UserType } from '../store/actions/user';
 
@@ -129,6 +129,7 @@ export default function ButtonList() {
   const showButtons = useSelector((state: ReduxState) => state.showButtons);
   const lastNotificationDate = useSelector((state: ReduxState) => state.lastNotificationDate);
   const lastReadNotificationDate = useSelector((state: ReduxState) => state.lastReadNotificationDate);
+  const autoBrush = useSelector((state: ReduxState) => state.autoBrush);
   const hasModerationAccess = useSelector((state: ReduxState) => state.user?.type === UserType.ADMIN || state.user?.type === UserType.MOD )
   const [display, setDisplay] = useState(true);
 
@@ -189,6 +190,9 @@ export default function ButtonList() {
               <Shield/>
             </Button>
           ) : null}
+            <Button onClick={() => dispatch({ type: SET_AUTO_BRUSH, payload: !autoBrush })} darkMode={darkMode}>
+              <Edit3 style={{ color: getColor(autoBrush ? Colors.UNREAD : Colors.TEXT, darkMode) }}/>
+            </Button>
           <SearchBtn/>
         </ButtonListDropdown>
       )}

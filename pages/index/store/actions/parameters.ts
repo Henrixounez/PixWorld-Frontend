@@ -11,6 +11,7 @@ export const SET_DARK_MODE = 'SET_DARK_MODE';
 export const SET_GRID_SIZE = 'SET_GRID_SIZE';
 export const SET_SHOW_BUTTONS = 'SET_SHOW_BUTTONS';
 export const SET_SHOW_PALETTE = 'SET_SHOW_PALETTE';
+export const SET_AUTO_BRUSH = 'SET_AUTO_BRUSH';
 
 /* Types */
 
@@ -54,8 +55,12 @@ export interface SetShowPaletteAction {
   type: typeof SET_SHOW_PALETTE;
   payload: boolean;
 }
+export interface SetAutoBrushAction {
+  type: typeof SET_AUTO_BRUSH;
+  payload: boolean;
+}
 
-export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetGridSizeAction | SetShowButtonsAction | SetShowPaletteAction;
+export type Actions = SetGridActiveAction | SetZoomTowardCursorAction | SetActivityAction | SetNotificationsAction | SetSoundsAction | SetCanvasAction | SetDarkModeAction | SetGridSizeAction | SetShowButtonsAction | SetShowPaletteAction | SetAutoBrushAction;
 
 /* Functions */
 export function setGridActive(state: ReduxState, action: SetGridActiveAction): ReduxState {
@@ -147,6 +152,12 @@ export function setShowPalette(state: ReduxState, action: SetShowPaletteAction):
     showPalette: action.payload
   };
 }
+export function setAutoBrush(state: ReduxState, action: SetAutoBrushAction): ReduxState {
+  return {
+    ...state,
+    autoBrush: action.payload
+  };
+}
 
 
 /* Dispatches */
@@ -190,5 +201,9 @@ export const dispatches = [
   {
     action: SET_SHOW_PALETTE,
     function: setShowPalette
+  },
+  {
+    action: SET_AUTO_BRUSH,
+    function: setAutoBrush,
   }
 ]

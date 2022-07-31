@@ -3,7 +3,7 @@ import { store } from "../store";
 import { SET_ALERT, SET_CURSOR_POS, SET_MODAL, SET_SEARCH } from "../store/actions/infos";
 import { SET_OVERLAY_ACTIVATE, SET_OVERLAY_POSITION_MOUSE } from "../store/actions/overlay";
 import { SET_POSITION, SET_SELECTED_COLOR, SET_SHOULD_RENDER } from "../store/actions/painting";
-import { SET_ACTIVITY, SET_GRID_ACTIVE, SET_SOUNDS } from "../store/actions/parameters";
+import { SET_ACTIVITY, SET_AUTO_BRUSH, SET_GRID_ACTIVE, SET_SOUNDS } from "../store/actions/parameters";
 import { SET_HISTORY_MODE_ACTIVE } from "../store/actions/history";
 import { PIXEL_SIZE } from "../../constants/painting";
 import { CanvasController, RENDER_REFRESH_MS } from "./CanvasController";
@@ -17,7 +17,9 @@ export default class InteractionController {
   shiftPressed = false;
   rightShiftPressed = false;
   isMouseDown = false;
+  isZooming = false;
   isMoving = false;
+  isAutoBrushing = false;
   startMove = { x: 0, y: 0 };
   pinchDistance = 0;
   longTouchTimeout: NodeJS.Timeout | null = null;
@@ -74,6 +76,9 @@ export default class InteractionController {
   get canvas() {
     return this.canvasController.canvas;
   }
+  get autoBrush() {
+    return store?.getState().autoBrush;
+  }
 
 
   // Setters
@@ -96,11 +101,17 @@ export default class InteractionController {
 
 
   // Mouse
-  mouseDown = () => {
+  mouseDown = (e: MouseEvent) => {
     this.isMouseDown = true;
+
+    if (this.autoBrush) {
+      this.isAutoBrushing = true;
+      const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
+      this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
+    }
   }
   mouseMove = (e: MouseEvent) => {
-    if (this.isMouseDown === true) {
+    if (this.isMouseDown === true && !this.autoBrush) {
       if (!this.isMoving) {
         this.startMove = {
           x: e.clientX,
@@ -121,10 +132,11 @@ export default class InteractionController {
       };
       const { coordX, coordY } = this.canvasController.canvasToCoordinates(this.cursorPosition.x, this.cursorPosition.y);
       store?.dispatch({ type: SET_CURSOR_POS, payload: { x: coordX, y: coordY }});
-      if (this.shiftPressed === true)
+      if (this.shiftPressed === true || (this.isMouseDown && this.isAutoBrushing && this.autoBrush)) {
         this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
-      else if (this.rightShiftPressed == true)
+      } else if (this.rightShiftPressed == true) {
         this.canvasController.placeUserPixel(coordX, coordY, this.canvasController.getColorOnCoordinates(coordX, coordY, true));
+      }
     }
   }
   throttledMouseMove = throttle(this.mouseMove, RENDER_REFRESH_MS);
@@ -136,13 +148,13 @@ export default class InteractionController {
       if (e.button === 0) {
         if (store?.getState().overlay.positionMouse) {
           store.dispatch({ type: SET_OVERLAY_POSITION_MOUSE, payload: false });
-        } else {
+        } else if (this.isMouseDown) {
           const { coordX, coordY } = this.canvasController.canvasToCoordinates(e.clientX, e.clientY);
           this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
         }
       }
     }
-    this.isMouseDown = false
+    this.isMouseDown = false;
   }
   mouseEnter = () => {
     this.haveMouseOver = true;
@@ -262,6 +274,9 @@ export default class InteractionController {
       case 'KeyB':
         store?.dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS });
         break;
+      case 'KeyU':
+        store?.dispatch({ type: SET_AUTO_BRUSH, payload: !store.getState().autoBrush });
+        break;
       case 'KeyL':
         this.canvasController.setZoom(PIXEL_SIZE);
         break;
@@ -316,6 +331,11 @@ export default class InteractionController {
   }
   touchStart = (e: TouchEvent) => {
     this.longTouchTimeout = setTimeout(() => this.onLongTouch(e), 500);
+    if (e.touches.length === 1) {
+      this.isAutoBrushing = true;
+    } else {
+      this.isAutoBrushing = false;
+    }
     e.stopPropagation();
     e.preventDefault();
   }
@@ -332,7 +352,9 @@ export default class InteractionController {
       this.pinchDistance = 0;
       this.startMove = { x: 0, y: 0 };
       this.isMoving = false;
-      this.isMouseDown = false
+      this.isMouseDown = false;
+      this.isZooming = false;
+      this.isAutoBrushing = false;
     }
   }
   touchCancel = (e: TouchEvent) => {
@@ -346,40 +368,50 @@ export default class InteractionController {
 
     e.preventDefault();
     const touch = touches[0];
-    if (!this.isMouseDown) {
-      this.startMove = {
-        x: touch.clientX,
-        y: touch.clientY,
-      };
-      this.isMouseDown = true;
-    }
-    const pixelSize = PIXEL_SIZE / this.position.zoom;
-    const movDiff = Math.hypot(this.startMove.x - touch.clientX, this.startMove.y - touch.clientY);
-
-    if (movDiff > 0) {
-      this.isMoving = true;
-      if (this.longTouchTimeout) {
-        clearTimeout(this.longTouchTimeout);
+    if (touches.length === 1 && this.autoBrush) {
+      if (this.isAutoBrushing) {
+        const { coordX, coordY } = this.canvasController.canvasToCoordinates(touch.clientX, touch.clientY);
+        this.canvasController.placeUserPixel(coordX, coordY, this.currentColor);
       }
-      this.longTouchTimeout = null;
-
-      this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
-      this.startMove = {
-        x: touch.clientX,
-        y: touch.clientY,
+    } else {
+      if (!this.isMouseDown || (this.isZooming && touches.length === 1)) {
+        this.startMove = {
+          x: touch.clientX,
+          y: touch.clientY,
+        };
+        this.isMouseDown = true;
+        if (touches.length === 1)
+          this.isZooming = false;
       }
-      if (touches.length === 2) {
-        const distX = touches[0].clientX - touches[1].clientX;
-        const distY = touches[0].clientY - touches[1].clientY;
-        const pinchDistance = Math.hypot(distX, distY);
-        if (this.pinchDistance !== 0) {
-          const pinchDiff = (this.pinchDistance - pinchDistance) / 10;
-          if (store?.getState().zoomTowardCursor)
-            this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, touches[1].clientX + distX / 2, touches[1].clientY + distY / 2);
-          else
-            this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
+      const pixelSize = PIXEL_SIZE / this.position.zoom;
+      const movDiff = Math.hypot(this.startMove.x - touch.clientX, this.startMove.y - touch.clientY);
+
+      if (movDiff > 0) {
+        this.isMoving = true;
+        if (this.longTouchTimeout) {
+          clearTimeout(this.longTouchTimeout);
         }
-        this.pinchDistance = pinchDistance;
+        this.longTouchTimeout = null;
+
+        this.canvasController.changePosition((this.startMove.x - touch.clientX) / pixelSize, (this.startMove.y - touch.clientY) / pixelSize);
+        this.startMove = {
+          x: touch.clientX,
+          y: touch.clientY,
+        }
+        if (touches.length === 2) {
+          this.isZooming = true;
+          const distX = touches[0].clientX - touches[1].clientX;
+          const distY = touches[0].clientY - touches[1].clientY;
+          const pinchDistance = Math.hypot(distX, distY);
+          if (this.pinchDistance !== 0) {
+            const pinchDiff = (this.pinchDistance - pinchDistance) / 10;
+            if (store?.getState().zoomTowardCursor)
+              this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, touches[1].clientX + distX / 2, touches[1].clientY + distY / 2);
+            else
+              this.canvasController.changeZoom(pinchDiff < 0 ? 0.95 : 1.05, this.canvasController.size.width / 2, this.canvasController.size.height / 2);
+          }
+          this.pinchDistance = pinchDistance;
+        }
       }
     }
   }

@@ -393,6 +393,8 @@ export class CanvasController {
     this.placePixel(coordX, coordY, color);
     this.soundController.playSound(AudioType.BAD);
     this.interactionController.shiftPressed = false;
+    this.interactionController.isAutoBrushing = false;
+    this.interactionController.isMouseDown = false;
   }
   confirmPixel = (coordX: number, coordY: number) => {
     delete this.waitingPixels[`${coordX};${coordY}`];
