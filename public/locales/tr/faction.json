@@ -1,0 +1,30 @@
+{
+  "create": {
+    "title": "Fraksiyonunuzu Oluşturun",
+    "description": "Arkadaşlarınızı davet edin ve dünyada birlikte inşa edin. Bir hizip oluşturmak için 20 000 piksel yerleştirmiş olmanız gerekir..",
+    "name": "İsim",
+    "tag": "Tag (En Fazla 4 Karakter)"
+  },
+  "nonMemberInvites": {
+    "title": "Gelen Grup Davetleri"
+  },
+  "infos": {
+    "noDescription": "Açıklama yok"
+  },
+  "members": {
+    "title": "Üyeler"
+  },
+  "invites": {
+    "title": "Davetler",
+    "username": "Kullanıcı İsmi"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "description": "Tanımlama",
+    "quit": "Fraksiyondan çık",
+    "delete": "Fraksiyonu Sil"
+  },
+  "list": {
+    "title": "Grup Listesi"
+  }
+}
