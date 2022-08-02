@@ -13,7 +13,7 @@
     "pixels": "Pikseller",
     "totalRanking": "Toplam",
     "dailyRanking": "Günlük",
-    "reset": ""Günlük sıralamalar her gün 00:00 UTC'de sıfırlanır.""
+    "reset": "Günlük sıralamalar her gün 00:00 UTC'de sıfırlanır."
   },
   "edit": {
     "title": "Bilgileri düzenle",
