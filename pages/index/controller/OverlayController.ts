@@ -29,7 +29,7 @@ export default class OverlayController {
         const imgUrl = state.overlay.image;
         if (imgUrl !== this.imgUrl && imgUrl)
           this.setImage(imgUrl);
-        if (state.overlay.positionMouse && (state.overlay.position.x !== state.cursorPos.x || state.overlay.position.y !== state.cursorPos.y))
+        if (state.overlay.positionMouse && ((state.overlay.position.x ?? 0) !== state.cursorPos.x || (state.overlay.position.y ?? 0) !== state.cursorPos.y))
           store.dispatch({ type: SET_OVERLAY_POSITION, payload: state.cursorPos });
       }
     })

@@ -373,7 +373,7 @@ export class CanvasController {
 
     if (store?.getState().overlay.activate && store?.getState().overlay.autoColor) {
       const overlayPos = store.getState().overlay.position;
-      const overlayColor = this.overlayController.getColorAt(coordX - overlayPos.x, coordY - overlayPos.y);
+      const overlayColor = this.overlayController.getColorAt(coordX - (overlayPos.x ?? 0), coordY - (overlayPos.y ?? 0));
       if (!overlayColor)
         return;
       color = overlayColor;
