@@ -57,7 +57,7 @@ export interface ReduxState {
     activate: boolean;
     image: string;
     transparency: number;
-    position: { x: number, y: number };
+    position: { x: number | null, y: number | null };
     positionMouse: boolean;
     autoColor: boolean;
     tainted: boolean;

@@ -53,7 +53,7 @@ export default class OverlayController {
       ctx.imageSmoothingEnabled = false;
       ctx.globalAlpha = this.transparency;
       const pixelSize = PIXEL_SIZE / this.canvasController.position.zoom;
-      const { posX, posY } = this.canvasController.coordinatesOnCanvas(this.position.x, this.position.y);
+      const { posX, posY } = this.canvasController.coordinatesOnCanvas(this.position.x ?? 0, this.position.y ?? 0);
       ctx.drawImage(this.canvas, posX, posY, this.canvas.width * pixelSize, this.canvas.height * pixelSize);
       ctx.globalAlpha = 1;
     }

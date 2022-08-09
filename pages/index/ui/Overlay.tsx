@@ -151,7 +151,7 @@ export default function Overlay() {
       const currentTxt = localStorage.getItem('savedOverlays') || '[]';
       const data: Array<OverlaySave> = JSON.parse(currentTxt);
       const found = data.findIndex((e) => e.image === image);
-      const toAdd = { image, transparency, position, autoColor };
+      const toAdd = { image, transparency, position: { x: position.x ?? 0, y: position.y ?? 0 }, autoColor };
 
       if (found !== -1)
         data[found] = toAdd;
@@ -194,8 +194,18 @@ export default function Overlay() {
               </RangeSlider>
               <br/>
               {t('position')}
-              <input type="number" onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: Number(e.target.value), y: position.y }})} value={position.x} />
-              <input type="number" onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: position.x, y: Number(e.target.value) }})} value={position.y} />
+              <input
+                type="number"
+                onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: e.target.value ? Number(e.target.value) : null, y: position.y }})}
+                onBlur={() => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: position.x ?? 0, y: position.y }})}
+                value={position.x ?? ""}
+              />
+              <input
+                type="number"
+                onChange={(e) => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: position.x, y: e.target.value ? Number(e.target.value) : null }})}
+                onBlur={() => dispatch({ type: SET_OVERLAY_POSITION, payload: { x: position.x, y: position.y ?? 0 }})}
+                value={position.y ?? ""}
+              />
               <CheckboxRow onClick={() => dispatch({ type: SET_OVERLAY_POSITION_MOUSE, payload: !positionWithMouse })}>
                 <input type="checkbox" checked={positionWithMouse} readOnly />
                 {t('positionMouse')}

@@ -29,7 +29,7 @@ export interface SetOverlayTransparencyAction {
 }
 export interface SetOverlayPositionAction {
   type: typeof SET_OVERLAY_POSITION;
-  payload: { x: number, y: number };
+  payload: { x: number | null, y: number | null };
 }
 export interface SetOverlayPositionMouseAction {
   type: typeof SET_OVERLAY_POSITION_MOUSE;
