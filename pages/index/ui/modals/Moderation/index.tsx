@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertOctagon, Database, Shield } from "react-feather";
+import { AlertOctagon, Database, Map, Shield } from "react-feather";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Colors, getColor } from "../../../../constants/colors";
@@ -7,6 +7,7 @@ import { ReduxState } from "../../../store";
 import { UserType } from "../../../store/actions/user";
 import PageBan from "./Ban";
 import PageLogs from "./Logs";
+import PageMapOperations from "./MapOperations";
 import NoPixelZone from "./NoPixelZone";
 
 const Container = styled.div`
@@ -43,6 +44,10 @@ const modPages = [
   {
     icon: <Shield/>,
     component: <PageBan/>
+  },
+  {
+    icon: <Map/>,
+    component: <PageMapOperations/>
   }
 ];
 const adminPages = [

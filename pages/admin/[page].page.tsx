@@ -1,13 +1,12 @@
 import styled from 'styled-components'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Activity, Mail, Map } from 'react-feather';
+import { Activity, Mail } from 'react-feather';
 import { useRouter } from 'next/dist/client/router';
 
 import { API_URL } from '../constants/api';
 import SideBar from '../sidebar';
 import PageActivity from './Activity';
-import PageMapOperations from './MapOperations';
 import PageNotifications from './Notifications';
 
 const Container = styled.div`
@@ -48,12 +47,6 @@ export const pages = [
     icon: <Activity/>,
     name: "Activity",
     component: <PageActivity/>
-  },
-  {
-    type: PageTypes.MAP,
-    icon: <Map/>,
-    name: "Map",
-    component: <PageMapOperations/>
   },
   {
     type: PageTypes.NOTIFICATIONS,
