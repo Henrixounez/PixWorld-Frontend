@@ -1,13 +1,13 @@
 {
   "title": "Seçenekler",
-  "grid": "Izgara etkin",
+  "grid": "Izgarayı aç",
   "zoomCursor": "İmlece doğru yakınlaştır",
-  "language": "Dil Seç",
-  "activity": "Piksel Aktifiğini Göster",
+  "language": "Dil seç",
+  "activity": "Piksel aktifiğini göster",
   "notifications": "Bildirimleri etkinleştir",
-  "sounds": "Sesleri Aç",
+  "sounds": "Sesleri aç",
   "history": "Geçmiş görünümünü etkinleştir",
-  "darkMode": "Karanlık Tarafa Geç",
+  "darkMode": "Karanlık modunu aç",
   "gridSize": "Izgara boyutunu ayarla",
-  "download": "Ekranı indirin"
+  "download": "Ekranı indir"
 }

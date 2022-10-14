@@ -2,11 +2,11 @@
   "title": "Overlay",
   "input": "Resim",
   "inputUrl": "Resim URL",
-  "transparency": "Şeffaflık",
+  "transparency": "Opaklık",
   "position": "Konum",
   "positionMouse": "Konumu Fare İle Ayarla",
   "autoColor": "Oto Renk",
-  "tainted": "Resim URL'si korunur ve Otomatik Renk özelliği kullanılamaz hale gelir.\nCORS isteklerini desteklemeyen siteleri kullanın (ör. imgur, dropbox).",
+  "tainted": "Resim URL'si korunuyor, bu da Otomatik Renk özelliği kullanılamaz hale getiriyor.\nCORS isteklerini desteklemeyen siteleri kullanın (ör. imgur, dropbox).",
   "options": "Overlay Seçenekleri",
-  "saveBtn": "Geçerli yapılandırmayı kaydet"
+  "saveBtn": "Şu anki yapılandırmayı kaydet"
 }
