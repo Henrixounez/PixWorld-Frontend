@@ -2,14 +2,14 @@
   "title": "İstatistikler",
   "profile": {
     "title": "Profil",
-    "pixelsToday": "Bugün Atılan Piksel",
-    "pixelsTotal": "Toplam Atılan Piksel",
+    "pixelsToday": "Bugün Atılan Pikseller",
+    "pixelsTotal": "Toplam Atılan Pikseller",
     "loggedAs": "olarak günlüğe kaydedildi",
     "logout": "Çıkış Yap"
   },
   "ranking": {
-    "title": "Rank",
-    "username": "Kullanıcı İsmi",
+    "title": "Sıralama",
+    "username": "Kullanıcı Adı",
     "pixels": "Pikseller",
     "totalRanking": "Toplam",
     "dailyRanking": "Günlük",
@@ -17,11 +17,11 @@
   },
   "edit": {
     "title": "Bilgileri düzenle",
-    "emptyPassword": "boş şifre",
+    "emptyPassword": "Boş şifre",
     "error": "Güncelleme sırasında hata",
     "password": "Şifre",
-    "email": "Yeni Eposta",
-    "verify": "Yeni e-posta adresinize hesabınız için bir doğrulama bağlantısı gönderildi.",
+    "email": "Yeni e-posta",
+    "verify": "Hesabın için bir doğrulama bağlantısı yeni e-postanıza gönderildi.",
     "send": "Gönder"
   },
   "activity": {

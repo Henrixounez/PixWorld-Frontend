@@ -1,9 +1,9 @@
 {
-  "clipboard": "Kopyalandı!!!",
-  "unmuted": "Sesler:ON",
-  "muted": "Sesler: OFF",
-  "showActivity": "Pixel Aktifliği: ON",
-  "hideActivity": "Pixel Aktifliği: OFF",
-  "showGrid": "Izgarayı Göster: ON",
-  "hideGrid": "Izgarayı Göster: OFF"
+  "clipboard": "Panoya Kopyalandı",
+  "unmuted": "Sesler: Açık",
+  "muted": "Sesler: Kapalı",
+  "showActivity": "Pixel Aktifliği: Açık",
+  "hideActivity": "Pixel Aktifliği: Kapalı",
+  "showGrid": "Izgarayı Göster: Açık",
+  "hideGrid": "Izgarayı Göster: Kapalı"
 }

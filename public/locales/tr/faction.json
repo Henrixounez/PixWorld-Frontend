@@ -1,7 +1,7 @@
 {
   "create": {
-    "title": "Fraksiyonunuzu Oluşturun",
-    "description": "Arkadaşlarınızı davet edin ve dünyada birlikte inşa edin. Bir hizip oluşturmak için 20 000 piksel yerleştirmiş olmanız gerekir..",
+    "title": "Grubunuzu Oluşturun",
+    "description": "Arkadaşlarınızı davet edin ve dünyada birlikte inşa edin. Bir grup oluşturmak için, 20 000 piksel yerleştirmiş olmanız gerekir.",
     "name": "İsim",
     "tag": "Tag (En Fazla 4 Karakter)"
   },
@@ -20,9 +20,9 @@
   },
   "settings": {
     "title": "Ayarlar",
-    "description": "Tanımlama",
-    "quit": "Fraksiyondan çık",
-    "delete": "Fraksiyonu Sil"
+    "description": "Açıklama",
+    "quit": "Gruptan çık",
+    "delete": "Grubu Sil"
   },
   "list": {
     "title": "Grup Listesi"

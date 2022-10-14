@@ -1,8 +1,8 @@
 {
   "title": "Dönüştürücü",
-  "widthText": "Nihai görüntünün genişliği: ",
+  "widthText": "Son görüntünün genişliği: ",
   "uploadText": "Resmini yükle: ",
   "uploadBtn": "Seç",
   "downloadBtn": "İndir",
-  "addGrid": "Izgara ekle (1:1 şablon için değil)"
+  "addGrid": "Izgara ekle (1:1 şablon için değildir)"
 }
