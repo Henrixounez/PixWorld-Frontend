@@ -27,7 +27,10 @@
   "activity": {
     "pixels": {
       "title": "Pixel Activity (All Users, Last 24h)",
-      "legend": "Nb Pixels Placed"
+      "legend": "Nb Pixels Placed",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
     },
     "colors": {
       "title": "Placed Colors (All Users, Last 24h)"

@@ -124,7 +124,11 @@ function Rankings() {
   )
 }
 
-
+enum PixelActivityWindow {
+  DAY = "d",
+  WEEK = "w",
+  MONTH = "m"
+}
 interface PixelActivity {
   id: number;
   pixelPlaced: number;
@@ -133,12 +137,13 @@ interface PixelActivity {
 
 function PixelActivityGraph() {
   const { t } = useTranslation('stats');
+  const [window, setWindow] = useState(PixelActivityWindow.DAY);
   const [pixelActivity, setPixelActivity] = useState<PixelActivity[]>([]);
 
   const getPixelActivity = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/activity/pixels/d`, { headers: { 'Authorization': token } });
+      const res = await axios.get(`${API_URL}/activity/pixels/${window}`, { headers: { 'Authorization': token } });
       setPixelActivity(res.data);
     } catch (err) {
       console.error(err);
@@ -151,13 +156,33 @@ function PixelActivityGraph() {
     return () => {
       clearInterval(interval);
     }
-  }, []);
+  }, [window]);
 
   return (
     <BoxContainer>
       <BoxTitle>
         {t('activity.pixels.title')}
       </BoxTitle>
+      <BoxRow style={{ justifyContent: "center", paddingTop: 0 }}>
+        <RankingSwitchButton
+          onClick={() => setWindow(PixelActivityWindow.DAY)}
+          selected={window === PixelActivityWindow.DAY}
+        >
+          {t('activity.pixels.day')}
+        </RankingSwitchButton>
+        <RankingSwitchButton
+          onClick={() => setWindow(PixelActivityWindow.WEEK)}
+          selected={window === PixelActivityWindow.WEEK}
+        >
+          {t('activity.pixels.week')}
+        </RankingSwitchButton>
+        <RankingSwitchButton
+          onClick={() => setWindow(PixelActivityWindow.MONTH)}
+          selected={window === PixelActivityWindow.MONTH}
+        >
+          {t('activity.pixels.month')}
+        </RankingSwitchButton>
+      </BoxRow>
       <ChartWrapper>
         <Line
           style={{
@@ -170,7 +195,8 @@ function PixelActivityGraph() {
               y: {
                 beginAtZero: true
               }
-            }
+            },
+            animation: false,
           }}
           data={{
             labels: pixelActivity.map((e) => (new Date(e.createdAt)).toLocaleTimeString('fr-FR')),

@@ -27,7 +27,10 @@
   "activity": {
     "pixels": {
       "title": "Activité de Pixels (Tout les Joueurs, Dernières 24h)",
-      "legend": "Nb de Pixels Placés"
+      "legend": "Nb de Pixels Placés",
+      "day": "Journée",
+      "week": "Semaine",
+      "month": "Mois"
     },
     "colors": {
       "title": "Couleurs Posées (Tout les Joueurs, Dernières 24h)"
