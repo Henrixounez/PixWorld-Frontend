@@ -68,6 +68,7 @@ const ModalContent = styled.div<{ darkMode: boolean }>`
   }
 `;
 const ContentContainer = styled.div`
+  min-height: 100%;
   max-height: calc(80vh - 2.5rem);
   overflow: auto;
   padding-bottom: 2.5rem;

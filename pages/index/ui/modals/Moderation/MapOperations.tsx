@@ -5,7 +5,78 @@ import { useSelector } from "react-redux";
 import { API_URL } from "../../../../constants/api";
 import { onCoordinatesPaste } from "../../../../pagesComponents";
 import { ReduxState } from "../../../store";
-import { ModalBoxContainer, ModalBoxTitle, ModalCoordRow, ModalErrorBox, ModalQueryForm, ModalTextfield } from "./components"
+import {
+  CustomModalSelect,
+  ModalBoxContainer,
+  ModalBoxTitle,
+  ModalCoordRow,
+  ModalErrorBox,
+  ModalQueryForm,
+  ModalSelect,
+  ModalTextfield,
+} from "./components";
+
+export function ColorInputSelect({
+  color,
+  setColor,
+  canvas,
+}: {
+  color: string;
+  setColor(c: string): void;
+  canvas: string;
+}) {
+  const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const canvases = useSelector((state: ReduxState) => state.canvases);
+
+  return (
+    <CustomModalSelect
+      darkMode={darkMode}
+      value={
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <div
+            style={{
+              width: "16px",
+              height: "16px",
+              backgroundColor: color,
+            }}
+          />
+          <p style={{ margin: 0 }}>{color}</p>
+        </div>
+      }
+    >
+      {canvases
+        .find((c) => c.id === canvas)
+        ?.palette.map((c, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: "8px",
+            }}
+            onClick={() => setColor(c)}
+          >
+            <div
+              style={{
+                width: "16px",
+                height: "16px",
+                backgroundColor: c,
+              }}
+            />
+            <p style={{ margin: 0 }}>{c}</p>
+          </div>
+        ))}
+    </CustomModalSelect>
+  );
+}
 
 function Import() {
   const [url, setUrl] = useState("");
@@ -21,40 +92,68 @@ function Import() {
     try {
       setStatus("");
       setError("");
-      const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/admin/import`, { input: url, canvas, x, y }, { headers: { 'Authorization': token } });
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_URL}/admin/import`,
+        { input: url, canvas, x, y },
+        { headers: { Authorization: token } }
+      );
       setStatus("success");
     } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");
     }
-  }
+  };
 
   return (
     <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>
-        Import Image
-      </ModalBoxTitle>
+      <ModalBoxTitle darkMode={darkMode}>Import Image</ModalBoxTitle>
       <ModalQueryForm darkMode={darkMode} onSubmit={importImage}>
         <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield darkMode={darkMode} placeholder="URL" type="text" value={url} onChange={(e) => setUrl(e.target.value) }/>
-          <ModalTextfield darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="URL"
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <ModalTextfield
+            darkMode={darkMode}
+            onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}
+            placeholder="Canvas"
+            type="text"
+            value={canvas}
+            onChange={(e) => setCanvas(e.target.value)}
+          />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+        <ModalCoordRow
+          darkMode={darkMode}
+          onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}
+        >
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="X"
+            type="number"
+            value={x}
+            onChange={(e) => setX(Number(e.target.value))}
+          />
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="Y"
+            type="number"
+            value={y}
+            onChange={(e) => setY(Number(e.target.value))}
+          />
         </ModalCoordRow>
         <ModalCoordRow darkMode={darkMode}>
-          <div style={{ flex: 1 }}/>
+          <div style={{ flex: 1 }} />
           <button>
-            <Send/>
+            <Send />
           </button>
         </ModalCoordRow>
       </ModalQueryForm>
-      { error ? (
-        <ModalErrorBox darkMode={darkMode}>
-          {error}
-        </ModalErrorBox>
+      {error ? (
+        <ModalErrorBox darkMode={darkMode}>{error}</ModalErrorBox>
       ) : null}
     </ModalBoxContainer>
   );
@@ -70,47 +169,101 @@ function Erase() {
   const [error, setError] = useState("");
   const [color, setColor] = useState("#0000");
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
+  const canvases = useSelector((state: ReduxState) => state.canvases);
 
   const importImage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setStatus("");
       setError("");
-      const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/admin/fill`, { x: startX, y: startY, endX, endY, canvas, color: color }, { headers: { 'Authorization': token } });
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_URL}/admin/fill`,
+        { x: startX, y: startY, endX, endY, canvas, color: color },
+        { headers: { Authorization: token } }
+      );
       setStatus("success");
     } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");
     }
-  }
+  };
 
   return (
     <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>
-        Erase
-      </ModalBoxTitle>
+      <ModalBoxTitle darkMode={darkMode}>Erase</ModalBoxTitle>
       <ModalQueryForm darkMode={darkMode} onSubmit={importImage}>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setStartX, setStartY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="Start X" type="number" value={startX} onChange={(e) => setStartX(Number(e.target.value)) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="Start Y" type="number" value={startY} onChange={(e) => setStartY(Number(e.target.value)) }/>
+        <ModalCoordRow
+          darkMode={darkMode}
+          onPaste={(e) => {
+            onCoordinatesPaste(e, setStartX, setStartY, setCanvas);
+            setColor("");
+          }}
+        >
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="Start X"
+            type="number"
+            value={startX}
+            onChange={(e) => setStartX(Number(e.target.value))}
+          />
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="Start Y"
+            type="number"
+            value={startY}
+            onChange={(e) => setStartY(Number(e.target.value))}
+          />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setEndX, setEndY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="End X" type="number" value={endX} onChange={(e) => setEndX(Number(e.target.value)) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="End Y" type="number" value={endY} onChange={(e) => setEndY(Number(e.target.value)) }/>
+        <ModalCoordRow
+          darkMode={darkMode}
+          onPaste={(e) => {
+            onCoordinatesPaste(e, setEndX, setEndY, setCanvas);
+            setColor("");
+          }}
+        >
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="End X"
+            type="number"
+            value={endX}
+            onChange={(e) => setEndX(Number(e.target.value))}
+          />
+          <ModalTextfield
+            darkMode={darkMode}
+            placeholder="End Y"
+            type="number"
+            value={endY}
+            onChange={(e) => setEndY(Number(e.target.value))}
+          />
         </ModalCoordRow>
         <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="Color" type="text" value={color} onChange={(e) => setColor(e.target.value)} />
+          <ModalSelect
+            darkMode={darkMode}
+            value={canvas}
+            onChange={(e) => {
+              setCanvas(e.target.value);
+              setColor("");
+            }}
+          >
+            <option value="" disabled>
+              Canvas
+            </option>
+            {canvases.map((c, i) => (
+              <option key={i} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </ModalSelect>
+          <ColorInputSelect color={color} setColor={setColor} canvas={canvas} />
+
           <button>
-            <Send/>
+            <Send />
           </button>
         </ModalCoordRow>
       </ModalQueryForm>
-      { error ? (
-        <ModalErrorBox darkMode={darkMode}>
-          {error}
-        </ModalErrorBox>
+      {error ? (
+        <ModalErrorBox darkMode={darkMode}>{error}</ModalErrorBox>
       ) : null}
     </ModalBoxContainer>
   );
@@ -119,8 +272,8 @@ function Erase() {
 export default function PageMapOperations() {
   return (
     <>
-      <Import/>
-      <Erase/>
+      <Import />
+      <Erase />
     </>
-  )
+  );
 }

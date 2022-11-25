@@ -187,6 +187,7 @@ export const BoxRow = styled.div`
 const canvases = {
   "w": "world",
   "a": "art",
+  "b": "bw"
 }
 
 export function onCoordinatesPaste(e: ClipboardEvent<HTMLInputElement | HTMLDivElement>, setX: Dispatch<SetStateAction<number>>, setY: Dispatch<SetStateAction<number>>, setCanvas: Dispatch<SetStateAction<string>>) {
