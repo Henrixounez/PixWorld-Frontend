@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { API_URL } from "../../../constants/api";
+import { STORAGE_URL } from "../../../constants/api";
 import { Colors, getColor } from "../../../constants/colors";
 import { ReduxState } from "../../store";
 import { SET_POSITION } from "../../store/actions/painting";
@@ -67,9 +67,9 @@ export default function ModalCanvases() {
         >
           <div className="img-container">
             <img
-              src={`${API_URL}/superchunk/${canvas.id}/${
+              src={`${STORAGE_URL}/chunks/${canvas.id}/sc/${
                 canvas.superchunkLevels.length - 1
-              }/0/0`}
+              }/0/0.png`}
             />
           </div>
           <p>{canvas.name}</p>

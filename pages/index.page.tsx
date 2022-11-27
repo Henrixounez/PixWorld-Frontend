@@ -19,7 +19,7 @@ import Cooldown from './index/ui/Cooldown';
 import Chat from './index/ui/Chat';
 import Alert from './index/ui/Alert';
 import HistoryMode from './index/ui/HistoryMode';
-import { API_URL } from './constants/api';
+import { API_URL, STORAGE_URL } from './constants/api';
 import { Canvas as CanvasType, getCanvasController  } from './index/controller/CanvasController';
 import { CHUNK_SIZE, PIXEL_SIZE } from './constants/painting';
 import { AppProps } from 'next/dist/next-server/lib/router/router';
@@ -71,7 +71,7 @@ export default function Home({ wsHash, pos, initialReduxState, canvases }: AppPr
 };
 
 
-const DEFAULT_OG_IMAGE = 'https://api.henrixounez.com/pixworld/superchunk/world/3/0/0';
+const DEFAULT_OG_IMAGE = `${STORAGE_URL}/chunks/world/sc/3/0/0.png`;
 
 async function getPosAndOgImage(canvases: Array<CanvasType>, pos: string): Promise<{ img: string, pos?: { x: number, y: number, zoom: number, canvas: string } }> {
   const regex = /(.)\((-?\d*),\s*(-?\d*),\s*(-?\d*)\)/;
@@ -111,7 +111,7 @@ async function getPosAndOgImage(canvases: Array<CanvasType>, pos: string): Promi
     let toLoadX = Math.floor((x + halfCanvasSize) / superChunkSize);
     let toLoadY = Math.floor((y + halfCanvasSize) / superChunkSize);
 
-    return { pos: { x, y, zoom, canvas: canvas.id }, img: `https://api.henrixounez.com/pixworld/superchunk/${canvas.id}/${selectedZoom}/${toLoadX}/${toLoadY}` };
+    return { pos: { x, y, zoom, canvas: canvas.id }, img: `${STORAGE_URL}/chunks/${canvas.id}/sc/${selectedZoom}/${toLoadX}/${toLoadY}.png` };
   }
 }
 

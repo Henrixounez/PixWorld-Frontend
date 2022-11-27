@@ -29,16 +29,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel='shortcut icon' href='/favicon.ico' />
             
         <meta name='twitter:card' content='summary' />
-        <meta name='twitter:url' content='https://pixworld.vercel.app' />
+        <meta name='twitter:url' content='https://pixworld.net' />
         <meta name='twitter:title' content='PixWorld' />
         <meta name='twitter:description' content='Place pixels where you want on this canvas !' />
-        <meta name='twitter:image' content='https://pixworld.vercel.app/icons/android-chrome-192x192.png' />
+        <meta name='twitter:image' content='https://pixworld.net/icons/android-chrome-192x192.png' />
         <meta name='twitter:creator' content='@Henrixounez' />
         <meta property='og:type' content='website' />
         <meta property='og:title' content='PixWorld' />
         <meta property='og:description' content='Place pixels where you want on this canvas !' />
         <meta property='og:site_name' content='PixWorld' />
-        <meta property='og:url' content='https://pixworld.vercel.app' />
+        <meta property='og:url' content='https://pixworld.net' />
         <meta property='og:image' content={pageProps.ogImage} />
       </Head>
       <Component {...pageProps} />

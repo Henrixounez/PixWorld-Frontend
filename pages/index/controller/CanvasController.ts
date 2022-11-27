@@ -1,4 +1,4 @@
-import { API_URL } from "../../constants/api";
+import { STORAGE_URL } from "../../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../../constants/painting";
 
 import Chunk from "./Chunk";
@@ -38,6 +38,7 @@ export interface Canvas {
 export class CanvasController {
   canvas: HTMLCanvasElement;
   size = { width: 0, height: 0 };
+  bgChunks: Record<string, Chunk> = {};
   chunks: Record<string, Chunk> = {};
   historyChunks: Record<string, Chunk> = {};
   superChunks: Array<{[key: string]: Chunk}> = [];
@@ -258,7 +259,7 @@ export class CanvasController {
           if (this.superChunks[i][`${toLoadX};${toLoadY}`])
             continue;
           const chunk = new Chunk({ x: posX , y: posY }, (canvas.size * CHUNK_SIZE) / chunkNb);
-          const img = chunk.fetchImage(`${API_URL}/superchunk/${this.currentCanvasId}/${i}/${toLoadX}/${toLoadY}`);
+          const img = chunk.fetchImage(`${STORAGE_URL}/chunks/${this.currentCanvasId}/sc/${i}/${toLoadX}/${toLoadY}.png`);
           this.superChunks[i][`${toLoadX};${toLoadY}`] = chunk;
           chunk.loadImage(await img);
         }
@@ -269,10 +270,14 @@ export class CanvasController {
   getChunkUrl = (chunkX: number, chunkY: number, history: boolean) => {
     const { date, hour } = store!.getState().history;
 
-    if (history) {
-      return `${API_URL}/history/chunk/${date}/${hour}/${this.currentCanvasId}/${chunkX}/${chunkY}`;
-    } else {
-      return `${API_URL}/chunk/${this.currentCanvasId}/${chunkX}/${chunkY}${store?.getState().eraserMode ? '?noBg' : ''}`;
+    const bgUrl = `${STORAGE_URL}/chunks/${this.currentCanvasId}/bg/${chunkX}/${chunkY}.png`;
+    const fgUrl = history ?
+      `${STORAGE_URL}/chunks/${this.currentCanvasId}/history/${date}/${hour}/${chunkX}/${chunkY}.png` :
+      `${STORAGE_URL}/chunks/${this.currentCanvasId}/fg/${chunkX}/${chunkY}.png`;
+
+    return {
+      bg: bgUrl,
+      fg: fgUrl,
     }
   }
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
@@ -293,11 +298,23 @@ export class CanvasController {
 
     const imgUrl = this.getChunkUrl(chunkX, chunkY, history);
 
+    if (!this.bgChunks[`${chunkX};${chunkY}`]) {
+      try {
+        const chunk = new Chunk({x: chunkX, y: chunkY}, CHUNK_SIZE);
+        const img = chunk.fetchImage(imgUrl.bg);
+        this.bgChunks[`${chunkX};${chunkY}`] = chunk;
+        chunk.loadImage(await img, true);
+      } catch (e) {
+        console.error(e);
+      }
+  
+    }
+
     if (!reload && this.currentChunks[`${chunkX};${chunkY}`])
       return;
     try {
       const chunk = new Chunk({x: chunkX, y: chunkY}, CHUNK_SIZE);
-      const img = chunk.fetchImage(imgUrl);
+      const img = chunk.fetchImage(imgUrl.fg);
       this.currentChunks[`${chunkX};${chunkY}`] = chunk;
       chunk.loadImage(await img);
       store?.dispatch({ type: SET_SHOULD_RENDER, payload: true });
@@ -453,8 +470,12 @@ export class CanvasController {
       px = px >= 0 ? px : CHUNK_SIZE + px;
       py = py >= 0 ? py : CHUNK_SIZE + py;
       const chunk = workingChunk[`${chunkX};${chunkY}`];
-      return chunk.getColorAt(px, py);
-    } else {
+      const color = chunk.getColorAt(px, py);
+      if (color === "#0000" && this.bgChunks[`$${chunkX};${chunkY}`])
+        return this.bgChunks[`${chunkX};${chunkY}`].getColorAt(px, py);
+      else
+        return color;
+    } {
       return "";
     }
   }
@@ -563,12 +584,14 @@ export class CanvasController {
         const toDisplayX = Math.floor(x / CHUNK_SIZE);
         const toDisplayY = Math.floor(y / CHUNK_SIZE);
 
+        const bgChunk = this.bgChunks[`${toDisplayX};${toDisplayY}`];
         const chunk = this.currentChunks[`${toDisplayX};${toDisplayY}`];
 
-        if (!chunk)
+        if (!chunk || !bgChunk || !chunk.isLoaded || !bgChunk.isLoaded)
           continue;
 
         const { posX, posY } = this.coordinatesOnCanvas(chunk.position.x * CHUNK_SIZE, chunk.position.y * CHUNK_SIZE);
+        ctx.drawImage(bgChunk.canvas, posX, posY, bgChunk.chunkSize * pixelSize, bgChunk.chunkSize * pixelSize);
         ctx.drawImage(chunk.canvas, posX, posY, chunk.chunkSize * pixelSize, chunk.chunkSize * pixelSize);
       }
     }
