@@ -1,4 +1,4 @@
-import { STORAGE_URL } from "../../constants/api";
+import { API_URL, STORAGE_URL } from "../../constants/api";
 import { CHUNK_SIZE, PIXEL_SIZE } from "../../constants/painting";
 
 import Chunk from "./Chunk";
@@ -271,13 +271,17 @@ export class CanvasController {
     const { date, hour } = store!.getState().history;
 
     const bgUrl = `${STORAGE_URL}/chunks/${this.currentCanvasId}/bg/${chunkX}/${chunkY}.png`;
-    const fgUrl = history ?
-      `${STORAGE_URL}/chunks/${this.currentCanvasId}/history/${date}/${hour}/${chunkX}/${chunkY}.png` :
-      `${STORAGE_URL}/chunks/${this.currentCanvasId}/fg/${chunkX}/${chunkY}.png`;
 
-    return {
-      bg: bgUrl,
-      fg: fgUrl,
+    if (history) {
+      return {
+        bg: bgUrl,
+        fg: `${API_URL}/history/chunk/${date}/${hour}/${this.currentCanvasId}/${chunkX}/${chunkY}`
+      }
+    } else {
+      return {
+        bg: bgUrl,
+        fg: `${STORAGE_URL}/chunks/${this.currentCanvasId}/fg/${chunkX}/${chunkY}.png`,
+      }  
     }
   }
   loadChunk = async (chunkX: number, chunkY: number, reload: boolean = false) => {
