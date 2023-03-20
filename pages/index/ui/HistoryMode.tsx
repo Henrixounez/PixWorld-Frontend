@@ -34,13 +34,13 @@ const HistoryContainer = styled.div<{ darkMode: boolean }>`
   }
 `;
 
-function dateFrToEn(date: string) {
+export function dateFrToEn(date: string) {
   if (date === '')
     return '';
   const [dd, mm, yyyy] = date.split('-');
   return `${yyyy}-${mm}-${dd}`;
 }
-function dateEnToFr(date: string) {
+export function dateEnToFr(date: string) {
   if (date === '')
     return '';
   const [yyyy, mm, dd] = date.split('-');
@@ -69,7 +69,7 @@ export default function HistoryMode() {
     } catch (err) {
       console.error(err);
     }
-    }
+  }
 
   async function setHoursFromDate(date: string) {
     if (!date || date === '')
