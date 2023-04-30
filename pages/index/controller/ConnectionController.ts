@@ -15,9 +15,9 @@ export default class ConnectionController {
   ws: WebSocket;
   isInit: boolean = false;
 
-  constructor(canvasController: CanvasController, wsHash: string) {
+  constructor(canvasController: CanvasController) {
     this.canvasController = canvasController;
-    this.ws = new WebSocket(`${WS_URL}/pix/connect?hash=${wsHash}`);
+    this.ws = new WebSocket(`${WS_URL}/pix/connect`);
     this.ws.onopen = () => {
       this.getMe();
     }

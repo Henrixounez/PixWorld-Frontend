@@ -39,7 +39,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta property='og:description' content='Place pixels where you want on this canvas !' />
         <meta property='og:site_name' content='PixWorld' />
         <meta property='og:url' content='https://pixworld.net' />
-        <meta property='og:image' content={pageProps.ogImage} />
       </Head>
       <Component {...pageProps} />
     </>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetServerSidePropsContext } from "next";
+import { GetStaticPropsContext } from "next";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/dist/client/router";
@@ -34,7 +34,7 @@ function Login() {
       await axios.post(`${API_URL}/user/register`, { email, username, password });
 
       setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       setStatus("error");
       setError(err.response?.data || "Error during registration");
     }
@@ -141,7 +141,7 @@ export default function LoginPage() {
   )
 }
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext & { locale: string }) {
+export async function getStaticProps(ctx: GetStaticPropsContext & { locale: string }) {
   return {
     props: {
       ...(await serverSideTranslations(ctx.locale, languagesModules))

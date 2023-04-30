@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GetServerSidePropsContext } from 'next';
+import { GetStaticPropsContext } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import axios from 'axios';
@@ -137,7 +137,7 @@ export default function UserPage() {
   )
 }
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext & { locale: string }) {
+export async function getStaticProps(ctx: GetStaticPropsContext & { locale: string }) {
   return {
     props: {
       ...(await serverSideTranslations(ctx.locale, languagesModules))

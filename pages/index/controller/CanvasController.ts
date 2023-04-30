@@ -51,7 +51,7 @@ export class CanvasController {
   overlayController: OverlayController;
   soundController: SoundController;
 
-  constructor(wsHash: string, pos?: { x: number, y: number, zoom: number, canvas: string }) {
+  constructor(pos?: { x: number, y: number, zoom: number, canvas: string }) {
     this.size = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -63,7 +63,7 @@ export class CanvasController {
     this.canvas.focus();
 
     this.interactionController = new InteractionController(this);
-    this.connectionController = new ConnectionController(this, wsHash);
+    this.connectionController = new ConnectionController(this);
     this.overlayController = new OverlayController(this);
     this.soundController = new SoundController(this);
     this.loadFromLocalStorage(pos);
@@ -662,8 +662,8 @@ let canvasController: CanvasController | null = null;
 export function getCanvasController() {
   return canvasController;
 }
-export function initCanvasController(wsHash: string, pos?: { x: number, y: number, zoom: number, canvas: string }) {
-  canvasController = new CanvasController(wsHash, pos);
+export function initCanvasController(pos?: { x: number, y: number, zoom: number, canvas: string }) {
+  canvasController = new CanvasController(pos);
 }
 export function destructCanvasController() {
   canvasController?.destructor();
