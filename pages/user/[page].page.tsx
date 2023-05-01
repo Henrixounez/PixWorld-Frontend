@@ -49,6 +49,7 @@ export enum PageTypes {
   FACTION = "faction"
 }
 
+// Also add to getStaticPaths below
 export const pages = [
   {
     type: PageTypes.HOME,
@@ -135,6 +136,18 @@ export default function UserPage() {
       <UserRouterPage/>
     </Provider>
   )
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { page: PageTypes.HOME } },
+      { params: { page: PageTypes.ACTIVITY } },
+      { params: { page: PageTypes.SETTINGS } },
+      { params: { page: PageTypes.FACTION } },
+    ],
+    fallback: false
+  };
 }
 
 export async function getStaticProps(ctx: GetStaticPropsContext & { locale: string }) {
