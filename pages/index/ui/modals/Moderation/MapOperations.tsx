@@ -198,7 +198,6 @@ function Erase() {
           darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setStartX, setStartY, setCanvas);
-            setColor("");
           }}
         >
           <ModalTextfield
@@ -220,7 +219,6 @@ function Erase() {
           darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setEndX, setEndY, setCanvas);
-            setColor("");
           }}
         >
           <ModalTextfield
