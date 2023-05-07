@@ -10,7 +10,7 @@ import { Activity, Settings, User, Users } from 'react-feather';
 import { API_URL } from '../constants/api';
 import { initialState, useStore } from './store';
 import { SET_USER } from './store/actions/user';
-import { languagesModules } from '../constants/languages';
+import { languages, languagesModules } from '../constants/languages';
 
 import SideBar from '../sidebar';
 import PageHome from './Home';
@@ -139,14 +139,19 @@ export default function UserPage() {
 }
 
 export async function getStaticPaths() {
+  const paths = 
+    languages.flatMap((l) => 
+      Object.keys(PageTypes).map((p) => ({
+        params: {
+          page: p,
+        },
+        locale: l
+      }))
+    )
+
   return {
-    paths: [
-      { params: { page: PageTypes.HOME } },
-      { params: { page: PageTypes.ACTIVITY } },
-      { params: { page: PageTypes.SETTINGS } },
-      { params: { page: PageTypes.FACTION } },
-    ],
-    fallback: false
+    paths: paths,
+    fallback: true
   };
 }
 
