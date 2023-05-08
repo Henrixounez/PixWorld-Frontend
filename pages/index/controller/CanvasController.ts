@@ -475,7 +475,7 @@ export class CanvasController {
       py = py >= 0 ? py : CHUNK_SIZE + py;
       const chunk = workingChunk[`${chunkX};${chunkY}`];
       const color = chunk.getColorAt(px, py);
-      if (color === "#0000" && this.bgChunks[`$${chunkX};${chunkY}`])
+      if (color === "#0000" && this.bgChunks[`${chunkX};${chunkY}`])
         return this.bgChunks[`${chunkX};${chunkY}`].getColorAt(px, py);
       else
         return color;
