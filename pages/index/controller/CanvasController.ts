@@ -259,7 +259,7 @@ export class CanvasController {
           if (this.superChunks[i][`${toLoadX};${toLoadY}`])
             continue;
           const chunk = new Chunk({ x: posX , y: posY }, (canvas.size * CHUNK_SIZE) / chunkNb);
-          const img = chunk.fetchImage(`${STORAGE_URL}/chunks/${this.currentCanvasId}/sc/${i}/${toLoadX}/${toLoadY}.png`);
+          const img = chunk.fetchImage(`${STORAGE_URL}/chunks/${this.currentCanvasId}/sc/${i}/${toLoadX}/${toLoadY}.png?d=${Date.now()}`);
           this.superChunks[i][`${toLoadX};${toLoadY}`] = chunk;
           chunk.loadImage(await img);
         }
@@ -280,7 +280,7 @@ export class CanvasController {
     } else {
       return {
         bg: bgUrl,
-        fg: `${STORAGE_URL}/chunks/${this.currentCanvasId}/fg/${chunkX}/${chunkY}.png`,
+        fg: `${STORAGE_URL}/chunks/${this.currentCanvasId}/fg/${chunkX}/${chunkY}.png?d=${Date.now()}`,
       }  
     }
   }

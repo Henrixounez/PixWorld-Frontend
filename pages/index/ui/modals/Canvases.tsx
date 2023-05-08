@@ -69,7 +69,7 @@ export default function ModalCanvases() {
             <img
               src={`${STORAGE_URL}/chunks/${canvas.id}/sc/${
                 canvas.superchunkLevels.length - 1
-              }/0/0.png`}
+              }/0/0.png?d=${Date.now()}`}
             />
           </div>
           <p>{canvas.name}</p>
