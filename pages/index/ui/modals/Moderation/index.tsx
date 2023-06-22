@@ -44,16 +44,20 @@ const modPages = [
   {
     icon: <Shield/>,
     component: <PageBan/>
-  },
+  }/*,
   {
     icon: <Map/>,
     component: <PageMapOperations/>
-  }
+  }*/
 ];
 const adminPages = [
   {
     icon: <AlertOctagon/>,
     component: <NoPixelZone/>
+  },
+  {
+    icon: <Map/>,
+    component: <PageMapOperations/>
   }
 ]
 
