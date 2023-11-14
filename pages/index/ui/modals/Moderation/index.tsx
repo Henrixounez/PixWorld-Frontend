@@ -48,13 +48,13 @@ const modPages = [
   {
     icon: <Map/>,
     component: <PageMapOperations/>
-  },
+  }
 ];
 const adminPages = [
   {
     icon: <AlertOctagon/>,
     component: <NoPixelZone/>
-  },
+  }
 ]
 
 export default function ModalModeration() {
