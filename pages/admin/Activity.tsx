@@ -56,7 +56,7 @@ function PixelActivityGraph() {
             {
               label: 'Nb Pixels Placed',
               fill: false,
-              lineTension: 0.1,
+              tension: 0.1,
               borderColor: 'rgba(75,192,192,1)',
               borderCapStyle: 'butt',
               borderDash: [],

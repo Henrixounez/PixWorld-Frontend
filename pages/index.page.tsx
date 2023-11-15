@@ -2,7 +2,7 @@ import { GetStaticPropsContext } from 'next';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { AppProps } from 'next/dist/next-server/lib/router/router';
+import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Provider } from 'react-redux';
@@ -36,7 +36,7 @@ interface HomeProps {
   canvases: Array<CanvasType>,
   initialReduxState: ReduxState,
 }
-export default function Home({ initialReduxState, canvases }: AppProps | HomeProps) {
+export default function Home({ initialReduxState, canvases }: AppProps & HomeProps) {
   const router = useRouter();
   const [pos, setPos] = useState<{ x: number, y: number, zoom: number, canvas: string } | undefined>(undefined);
   const store = useStore(initialReduxState || { ...initialState, canvases: canvases });

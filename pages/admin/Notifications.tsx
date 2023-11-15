@@ -25,7 +25,7 @@ function CreateNotification() {
       setTitle("");
       setText("")
       setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       setError(err.response.data || err.message);
       setStatus("error");
     }
