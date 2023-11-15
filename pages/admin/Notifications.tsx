@@ -32,7 +32,7 @@ function CreateNotification() {
   }
 
   return (
-    <BoxContainer status={status}>
+    <BoxContainer $status={status}>
       <BoxTitle>
         Create Notification
       </BoxTitle>

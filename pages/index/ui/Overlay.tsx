@@ -10,14 +10,14 @@ import { SET_MODAL } from '../store/actions/infos';
 import ModalTypes from '../../constants/modalTypes';
 import { Colors, getColor } from '../../constants/colors';
 
-const OverlayContainer = styled.div<{darkMode: boolean}>`
+const OverlayContainer = styled.div<{ $darkMode: boolean }>`
   position: fixed;
   top: 10px;
   right: 10px;
   font-size: 1rem;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode) };
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode) };
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode) };
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode) };
   padding: 5px 10px;
   min-width: 50px;
   text-align: center;
@@ -80,9 +80,9 @@ const SaveRow = styled.div`
   width: 80%;
   gap: 1rem;
 `;
-const OverlayOptions = styled.div<{ darkMode: boolean }>`
+const OverlayOptions = styled.div<{ $darkMode: boolean }>`
   cursor: pointer;
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border-radius: 2px;
   padding: .25rem .5rem;
   transition: .2s;
@@ -91,12 +91,12 @@ const OverlayOptions = styled.div<{ darkMode: boolean }>`
     opacity: 0.8;
   }
 `;
-const OverlaySave = styled.div<{ darkMode: boolean }>`
+const OverlaySave = styled.div<{ $darkMode: boolean }>`
   cursor: pointer;
   transition: .2s;
   
   svg {
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
     transition: .2s;
   }
   &:hover {
@@ -170,7 +170,7 @@ export default function Overlay() {
   }, [image]);
 
   return (
-    <OverlayContainer darkMode={darkMode}>
+    <OverlayContainer $darkMode={darkMode}>
       <ActivateButton onClick={() => {
         dispatch({ type: SET_OVERLAY_ACTIVATE, payload: !activate });
       }}>
@@ -223,11 +223,11 @@ export default function Overlay() {
               )}
               <br/>
               <SaveRow>
-                <OverlayOptions onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.OVERLAY })} darkMode={darkMode}>
+                <OverlayOptions onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.OVERLAY })} $darkMode={darkMode}>
                   {t('options')}
                 </OverlayOptions>
                 { image && image.startsWith('http') ? (
-                  <OverlaySave title={t('saveBtn')} onClick={() => saveOverlay()} darkMode={darkMode}>
+                  <OverlaySave title={t('saveBtn')} onClick={() => saveOverlay()} $darkMode={darkMode}>
                     <Bookmark />
                   </OverlaySave>
                 ) : null }

@@ -17,7 +17,7 @@ const Container = styled.div`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   gap: 1rem;
 `;
-const TabList = styled.div<{ darkMode: boolean }>`
+const TabList = styled.div<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -28,7 +28,7 @@ const TabList = styled.div<{ darkMode: boolean }>`
     justify-content: center;
     padding: 8px;
     border-radius: 0.4rem;
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     cursor: pointer;
   }
 `;
@@ -69,7 +69,7 @@ export default function ModalModeration() {
 
   return (
     <Container>
-      <TabList darkMode={darkMode}>
+      <TabList $darkMode={darkMode}>
         {pages.map((mp, i) => (
           <div key={i} onClick={() => setSelected(i)}>
             {mp.icon}

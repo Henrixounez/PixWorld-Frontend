@@ -5,17 +5,17 @@ import { useSelector } from "react-redux";
 import { ReduxState } from "../../store";
 import { Colors, getColor } from "../../../constants/colors";
 
-const Container = styled.div<{darkMode: boolean}>`
+const Container = styled.div<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   button {
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
 
-const ImagePreviewCanvas = styled.div<{darkMode: boolean}>`
+const ImagePreviewCanvas = styled.div<{ $darkMode: boolean }>`
 `;
 
 function OneDimensionToImageArray(data: Uint8ClampedArray, width: number, height: number) {
@@ -107,7 +107,7 @@ class Converter {
     if (!this.canvas)
       this.initCanvas(this.palette);
 
-    const ctx = this.canvas!.getContext('2d');
+    const ctx = this.canvas!.getContext('2d', { willReadFrequently: true });
     
     if (ctx) {
       const scale = wantedWidth / img.width;
@@ -161,7 +161,7 @@ export default function ModalConverter() {
   }
 
   const DownloadImage = () => {
-    const ctx = previewRef.current?.getContext('2d');
+    const ctx = previewRef.current?.getContext('2d', { willReadFrequently: true });
 
     if (ctx) {
       const url = ctx.canvas.toDataURL('image/png');
@@ -178,7 +178,7 @@ export default function ModalConverter() {
   }
 
   function displayImg(img: HTMLImageElement) {
-    const ctx = previewRef.current?.getContext('2d');
+    const ctx = previewRef.current?.getContext('2d', { willReadFrequently: true });
 
     if (ctx) {
       const scale = wantedWidth / img.width;
@@ -244,7 +244,7 @@ export default function ModalConverter() {
   }
 
   return (
-    <Container darkMode={darkMode}>
+    <Container $darkMode={darkMode}>
       {t('widthText')}
       <input type="number" id="wantedWidth" defaultValue="50" min="1" onChange={WantedWidthChange}/>
       <br/>
@@ -258,7 +258,7 @@ export default function ModalConverter() {
         <input type='checkbox' checked={grid} readOnly />
       </div>
       <hr/>
-        <ImagePreviewCanvas darkMode={darkMode}>
+        <ImagePreviewCanvas $darkMode={darkMode}>
           <canvas ref={previewRef} id="preview"/>
         </ImagePreviewCanvas>
       <hr/>

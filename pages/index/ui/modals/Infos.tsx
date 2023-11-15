@@ -11,11 +11,11 @@ const Text = styled.div`
   width: fit-content;
   max-width: 560px;
 `;
-const Key = styled.span<{ darkMode: boolean }>`
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+const Key = styled.span<{ $darkMode: boolean }>`
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0.3rem 0.4rem;
   border-radius: 0.4rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   font-weight: bold;
   font-size: 0.8rem;
   line-height: 2rem;
@@ -80,7 +80,7 @@ function formatControls(text: string) {
           case FormatType.BREAK:
             return <br key={i}/>;  
           case FormatType.KEY:
-            return <Key key={i} darkMode={darkMode}>{text.substr(3)}</Key>;
+            return <Key key={i} $darkMode={darkMode}>{text.substr(3)}</Key>;
           case FormatType.TAB:
             return <React.Fragment key={i}>&nbsp;&nbsp;</React.Fragment>
         }

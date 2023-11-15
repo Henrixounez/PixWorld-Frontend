@@ -10,7 +10,7 @@ import { Colors, getColor } from '../../constants/colors';
 const COOLDOWN_TIME = 4;
 const MAX_COOLDOWN = 60;
 
-const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: boolean}>`
+const CooldownContainer = styled.div<{ $show: boolean, $limit: boolean, $darkMode: boolean }>`
   position: fixed;
   top: 10px;
   left: 50vw;
@@ -18,8 +18,8 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: b
   transform: translate(-50%, 0);
   font-size: 1rem;
   height: 35px;
-  background-color: ${({ limit, darkMode }) => getColor(limit ? Colors.ALERT : Colors.UI_BACKGROUND, darkMode) };
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  background-color: ${({ $limit: limit, $darkMode: darkMode }) => getColor(limit ? Colors.ALERT : Colors.UI_BACKGROUND, darkMode) };
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0 10px;
   gap: 10px;
   display: flex;
@@ -27,7 +27,7 @@ const CooldownContainer = styled.div<{show: boolean, limit: boolean, darkMode: b
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .5s;
-  opacity: ${({ show }) => show ? '1' : '0'};
+  opacity: ${({ $show: show }) => show ? '1' : '0'};
   user-select: none;
 `;
 
@@ -94,7 +94,7 @@ export default function Cooldown() {
   return (
     <>
       { display ? (
-        <CooldownContainer show={cooldownLeft > 0} limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME} darkMode={darkMode}>
+        <CooldownContainer $show={cooldownLeft > 0} $limit={cooldownLeft > MAX_COOLDOWN - COOLDOWN_TIME} $darkMode={darkMode}>
           {cooldownLeft}
         </CooldownContainer>
       ) : null }

@@ -24,7 +24,7 @@ const ButtonListContainer = styled.div`
   gap: 5px;
   flex-wrap: wrap;
 `;
-const ButtonListDropdown = styled.div<{ show: boolean }>`
+const ButtonListDropdown = styled.div<{ $show: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -33,11 +33,11 @@ const ButtonListDropdown = styled.div<{ show: boolean }>`
   max-width: 40px;
   max-height: calc(100vh - 150px);
   transition: .5s;
-  opacity: ${({ show }) => show ? '1' : '0'};
+  opacity: ${({ $show: show }) => show ? '1' : '0'};
 `;
-const Button = styled.div<{ darkMode: boolean }>`
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+const Button = styled.div<{ $darkMode: boolean }>`
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   box-sizing: border-box;
   min-width: 40px;
   height: 40px;
@@ -50,16 +50,16 @@ const Button = styled.div<{ darkMode: boolean }>`
     opacity: 0.8;
   }
   svg {
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
-const SearchInput = styled.input<{active: boolean}>`
+const SearchInput = styled.input<{ $active: boolean}>`
   width: 5rem;
   padding: .25rem .25rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 `;
-const UnreadBubble = styled.div<{ darkMode: boolean }>`
+const UnreadBubble = styled.div<{ $darkMode: boolean }>`
   position: absolute;
   top: -4px;
   right: -4px;
@@ -67,7 +67,7 @@ const UnreadBubble = styled.div<{ darkMode: boolean }>`
   height: 12px;
   user-select: none;
   border-radius: 100%;
-  background-color: ${({ darkMode }) => getColor(Colors.UNREAD, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UNREAD, darkMode)};
 `;
 
 function SearchBtn() {
@@ -97,7 +97,7 @@ function SearchBtn() {
   }, [searchActive]);
 
   return (
-    <Button onClick={() => dispatch({ type: SET_SEARCH, payload: !searchActive })} darkMode={darkMode}>
+    <Button onClick={() => dispatch({ type: SET_SEARCH, payload: !searchActive })} $darkMode={darkMode}>
       <Search/>
       { searchActive ? (
         <>
@@ -110,7 +110,7 @@ function SearchBtn() {
                 positionSearch();
               }
             }}
-            active={searchActive}
+            $active={searchActive}
             type="text"
           />
           <ChevronsRight
@@ -155,42 +155,42 @@ export default function ButtonList() {
 
   return (
     <ButtonListContainer>
-      <Button onClick={() => { showButtons ? setDisplay(!display) : dispatch({ type: SET_SHOW_BUTTONS, payload: !showButtons }) }} darkMode={darkMode}>
+      <Button onClick={() => { showButtons ? setDisplay(!display) : dispatch({ type: SET_SHOW_BUTTONS, payload: !showButtons }) }} $darkMode={darkMode}>
         {display ? <ChevronDown/> : <ChevronUp/> }
       </Button>
       { showButtons && (
-        <ButtonListDropdown show={display}>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })} darkMode={darkMode}>
+        <ButtonListDropdown $show={display}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.INFOS })} $darkMode={darkMode}>
             <HelpCircle/>
           </Button>
           <Link href="/user/home">
-            <a style={{ color: "inherit", position: "relative" }}>
-              <Button darkMode={darkMode}>
+            <div style={{ color: "inherit", position: "relative" }}>
+              <Button $darkMode={darkMode}>
                 <User/>
               </Button>
               { lastNotificationDate > lastReadNotificationDate ? (
-                <UnreadBubble darkMode={darkMode}/>
+                <UnreadBubble $darkMode={darkMode}/>
               ) : null }
-            </a>
+            </div>
           </Link>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })} darkMode={darkMode}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CONVERTER })} $darkMode={darkMode}>
             <Upload/>
           </Button>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })} darkMode={darkMode}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.PARAMETERS })} $darkMode={darkMode}>
             <Sliders/>
           </Button>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CANVASES })} darkMode={darkMode}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.CANVASES })} $darkMode={darkMode}>
             <Map/>
           </Button>
-          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })} darkMode={darkMode}>
+          <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.BOOKMARKS })} $darkMode={darkMode}>
             <Bookmark/>
           </Button>
           {hasModerationAccess ? (
-            <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.MODERATION })} darkMode={darkMode}>
+            <Button onClick={() => dispatch({ type: SET_MODAL, payload: ModalTypes.MODERATION })} $darkMode={darkMode}>
               <Shield/>
             </Button>
           ) : null}
-            <Button onClick={() => dispatch({ type: SET_AUTO_BRUSH, payload: !autoBrush })} darkMode={darkMode}>
+            <Button onClick={() => dispatch({ type: SET_AUTO_BRUSH, payload: !autoBrush })} $darkMode={darkMode}>
               <Edit3 style={{ color: getColor(autoBrush ? Colors.UNREAD : Colors.TEXT, darkMode) }}/>
             </Button>
           <SearchBtn/>

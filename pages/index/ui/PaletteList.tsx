@@ -28,32 +28,32 @@ const OpenButton = styled(BottomButton)`
     width: calc(5 * 25px + 8px);
   }
 `;
-const Palette = styled.div<{ show: boolean, darkMode: boolean, colorsNb: number }>`
+const Palette = styled.div<{ $show: boolean, $darkMode: boolean, $colorsNb: number }>`
   padding: 3px;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   overflow: hidden;
 
   display: flex;
   flex-flow: column wrap;
 
-  height: calc(${({ colorsNb }) => Math.min(30, colorsNb)}*25px);
+  height: calc(${({ $colorsNb: colorsNb }) => Math.min(30, colorsNb)}*25px);
   transition: 0.5s;
 
   @media (max-height: 800px) {
-    height: calc(${({ colorsNb }) => Math.min(15, colorsNb)} * 25px);
-    width: calc(${({ colorsNb }) => Math.ceil(colorsNb / Math.min(15, colorsNb)) } * 25px);
+    height: calc(${({ $colorsNb: colorsNb }) => Math.min(15, colorsNb)} * 25px);
+    width: calc(${({ $colorsNb: colorsNb }) => Math.ceil(colorsNb / Math.min(15, colorsNb)) } * 25px);
   }
   @media (max-height: 450px) {
-    height: calc(${({ colorsNb }) => Math.min(6, colorsNb)} * 25px);
-    width: calc(${({ colorsNb }) => Math.ceil(colorsNb / Math.min(6, colorsNb)) } * 25px);
+    height: calc(${({ $colorsNb: colorsNb }) => Math.min(6, colorsNb)} * 25px);
+    width: calc(${({ $colorsNb: colorsNb }) => Math.ceil(colorsNb / Math.min(6, colorsNb)) } * 25px);
   }
-  ${({ show }) => !show && css`
+  ${({ $show: show }) => !show && css`
     height: 0px !important;
   `};
 `;
-const PaletteButton = styled.div<{ selected: boolean, darkMode: boolean }>`
+const PaletteButton = styled.div<{ $selected: boolean, $darkMode: boolean }>`
   width: 25px;
   height: 25px;
   cursor: pointer;
@@ -61,9 +61,9 @@ const PaletteButton = styled.div<{ selected: boolean, darkMode: boolean }>`
   box-sizing: border-box;
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0px 0px 5px ${({ darkMode }) => getColor(Colors.LIGHT_TEXT, darkMode)};
+    box-shadow: 0px 0px 5px ${({ $darkMode: darkMode }) => getColor(Colors.LIGHT_TEXT, darkMode)};
   }
-  ${({ selected, darkMode }) => selected && `
+  ${({ $selected: selected, $darkMode: darkMode }) => selected && `
     transform: scale(1.1);
     box-shadow: 0px 0px 5px ${getColor(Colors.LIGHT_TEXT, darkMode)};
     border: 1px solid ${getColor(Colors.UI_BORDER, false)};
@@ -101,20 +101,20 @@ export default function PaletteList() {
 
   return (
     <Container>
-      <OpenButton darkMode={darkMode} onClick={() => { showPalette ? setDisplay(!display) : dispatch({ type: SET_SHOW_PALETTE, payload: !showPalette }) }}>
+      <OpenButton $darkMode={darkMode} onClick={() => { showPalette ? setDisplay(!display) : dispatch({ type: SET_SHOW_PALETTE, payload: !showPalette }) }}>
         <Grid/>
       </OpenButton>
       { showPalette && (
-        <Palette show={display} darkMode={darkMode} colorsNb={currentCanvas?.palette.length ?? 0}>
+        <Palette $show={display} $darkMode={darkMode} $colorsNb={currentCanvas?.palette.length ?? 0}>
           {currentCanvas?.palette.map((color, i) => (
             <PaletteButton
               key={i}
-              selected={selectedColor === color}
+              $selected={selectedColor === color}
               style={{
                 backgroundColor: color,
                 transform: selectedColor === color ? "scale(1.2)" : '',
               }}
-              darkMode={darkMode}
+              $darkMode={darkMode}
               onClick={() => {
                 dispatch({
                   type: SET_SELECTED_COLOR,

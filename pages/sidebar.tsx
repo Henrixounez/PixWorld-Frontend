@@ -14,7 +14,7 @@ const SideBarContainer = styled.div`
   box-sizing: border-box;
   position: relative;
 `;
-const SideBarButton = styled.div<{active: boolean}>`
+const SideBarButton = styled.div<{ $active: boolean}>`
   background-color: hsla(0,0%,100%,0.04);
   width: 55px;
   height: 55px;
@@ -36,7 +36,7 @@ const SideBarButton = styled.div<{active: boolean}>`
       color: #ffffff;
     }
   }
-  ${({ active }) => active && css`
+  ${({ $active: active }) => active && css`
     border-radius: 1rem;
     background-color: #3eb1b1;
   `}
@@ -49,7 +49,7 @@ const SideBarButton = styled.div<{active: boolean}>`
       height: 12px;
     }
     border-radius: 15px;
-    ${({ active }) => active && css`
+    ${({ $active: active }) => active && css`
       border-radius: 0.5rem;
     `}
   }
@@ -74,7 +74,7 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
     <SideBarContainer>
       { pages.map((p, i) => (
         <Link key={i} href={`/${routePrefix}/${p.type}`}>
-          <SideBarButton title={p.name} active={currentPage === p.type}>
+          <SideBarButton title={p.name} $active={currentPage === p.type}>
             {p.icon}
           </SideBarButton>
         </Link>
@@ -82,7 +82,7 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
       <div style={{ display: "flex", flexDirection: "column", position: "absolute", bottom: ".5rem", gap: ".5rem" }}>
         <SideBarButton
           title="Go to map"
-          active={false}
+          $active={false}
           onClick={() => {
             router.push('/');
           }}
@@ -91,7 +91,7 @@ export default function SideBar({ currentPage, pages, routePrefix }: SideBarProp
         </SideBarButton>
         <SideBarButton
           title="Disconnect"
-          active={false}
+          $active={false}
           onClick={() => {
             localStorage.removeItem('token');
             router.push('/');

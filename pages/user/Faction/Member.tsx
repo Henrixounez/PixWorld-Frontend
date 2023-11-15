@@ -180,7 +180,7 @@ function Invites() {
   }, []);
 
   return (
-    <BoxContainer status={status}>
+    <BoxContainer $status={status}>
       <BoxTitle>
         {t('invites.title')}
       </BoxTitle>
@@ -281,7 +281,7 @@ function ManageFaction({ role }: { role: FactionRole }) {
   };
 
   return (
-    <BoxContainer status={status}>
+    <BoxContainer $status={status}>
       <BoxTitle>
         {t('settings.title')}
       </BoxTitle>

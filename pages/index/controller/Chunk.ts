@@ -16,7 +16,7 @@ export default class Chunk {
   }
   
   private displayImg(img: HTMLImageElement) {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
@@ -38,7 +38,7 @@ export default class Chunk {
   }
 
   loadImage(img: HTMLImageElement, isBg = false) {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
@@ -62,7 +62,7 @@ export default class Chunk {
     return s.length === 1 ? '0' + s : s;
   }
   getColorAt(x: number, y: number) {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true  });
 
     if (!ctx)
       return '#000000';
@@ -72,7 +72,7 @@ export default class Chunk {
     return ('#' + this.toHex(data[0]) + this.toHex(data[1]) + this.toHex(data[2])).toUpperCase();
   }
   placePixel(x: number, y: number, color: string) {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     if (!ctx)
       return;

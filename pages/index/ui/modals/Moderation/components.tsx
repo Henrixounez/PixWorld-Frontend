@@ -4,20 +4,20 @@ import styled, { css } from "styled-components";
 import { Colors, getColor } from "../../../../constants/colors";
 
 export const ModalBoxContainer = styled.div<{
-  status?: string;
-  darkMode: boolean;
+  $status?: string;
+  $darkMode: boolean;
 }>`
   border-radius: 0.5rem;
   margin: 1rem auto;
   max-width: 1500px;
   width: 100%;
   box-sizing: border-box;
-  ${({ status }) =>
+  ${({ $status: status }) =>
     status === "success" &&
     css`
       border: 2px solid #3aa1a1;
     `}
-  ${({ status }) =>
+  ${({ $status: status }) =>
     status === "error" &&
     css`
       border: 2px solid #a53030;
@@ -26,7 +26,7 @@ export const ModalBoxContainer = styled.div<{
     margin: 0.5rem auto;
   }
 `;
-export const ModalErrorBox = styled.div<{ darkMode: boolean }>`
+export const ModalErrorBox = styled.div<{ $darkMode: boolean }>`
   padding: 1rem;
   color: #a53030;
   @media (max-width: 500px) {
@@ -34,7 +34,7 @@ export const ModalErrorBox = styled.div<{ darkMode: boolean }>`
   }
 `;
 
-export const ModalBoxTitle = styled.h1<{ darkMode: boolean }>`
+export const ModalBoxTitle = styled.h1<{ $darkMode: boolean }>`
   font-size: 1.5rem;
   padding: 1rem;
   margin: 0;
@@ -44,7 +44,7 @@ export const ModalBoxTitle = styled.h1<{ darkMode: boolean }>`
   }
 `;
 
-export const ModalQueryForm = styled.form<{ darkMode: boolean }>`
+export const ModalQueryForm = styled.form<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: column;
   align-self: stretch;
@@ -56,8 +56,8 @@ export const ModalQueryForm = styled.form<{ darkMode: boolean }>`
     display: flex;
     align-items: center;
     padding: 1rem;
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
@@ -84,14 +84,14 @@ export const ModalQueryForm = styled.form<{ darkMode: boolean }>`
     }
   }
 `;
-export const ModalButton = styled.button<{ darkMode: boolean }>`
+export const ModalButton = styled.button<{ $darkMode: boolean }>`
   display: flex;
   align-items: center;
   padding: 1rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-  background-color: ${({ darkMode }) =>
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) =>
     getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
@@ -111,15 +111,15 @@ export const ModalButton = styled.button<{ darkMode: boolean }>`
   }
 `;
 
-export const ModalTextfield = styled.input<{ darkMode: boolean }>`
+export const ModalTextfield = styled.input<{ $darkMode: boolean }>`
   flex: 1;
   padding: 1rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   border: none;
   border-radius: 0;
   min-width: 5rem;
   border-radius: 4px;
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   &:hover {
     outline-offset: 0px;
     outline: -webkit-focus-ring-color auto 1px;
@@ -129,12 +129,12 @@ export const ModalTextfield = styled.input<{ darkMode: boolean }>`
     padding: 0.5rem;
   }
 `;
-export const ModalTextarea = styled.textarea<{ darkMode: boolean }>`
+export const ModalTextarea = styled.textarea<{ $darkMode: boolean }>`
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   flex: 1;
   padding: 1rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border: none;
   border-radius: 4px;
   min-width: 5rem;
@@ -147,7 +147,7 @@ export const ModalTextarea = styled.textarea<{ darkMode: boolean }>`
     padding: 0.5rem;
   }
 `;
-export const ModalCheckbox = styled.div<{ darkMode: boolean }>`
+export const ModalCheckbox = styled.div<{ $darkMode: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,15 +169,15 @@ export const ModalCheckbox = styled.div<{ darkMode: boolean }>`
     }
   }
 `;
-export const ModalSelect = styled.select<{ darkMode: boolean }>`
+export const ModalSelect = styled.select<{ $darkMode: boolean }>`
   flex: 1;
   padding: 1rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   border: none;
   border-radius: 0;
   min-width: 5rem;
   border-radius: 4px;
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   &:hover {
     outline-offset: 0px;
     outline: -webkit-focus-ring-color auto 1px;
@@ -187,13 +187,13 @@ export const ModalSelect = styled.select<{ darkMode: boolean }>`
     padding: 0.5rem;
   }
 `;
-export const ModalCoordRow = styled.div<{ darkMode: boolean }>`
+export const ModalCoordRow = styled.div<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: stretch;
   gap: 0.5rem;
 `;
-export const ModalBoxRow = styled.div<{ darkMode: boolean }>`
+export const ModalBoxRow = styled.div<{ $darkMode: boolean }>`
   padding: 1rem;
   display: flex;
   flex-direction: row;
@@ -201,16 +201,16 @@ export const ModalBoxRow = styled.div<{ darkMode: boolean }>`
   gap: 0.5rem;
 `;
 
-const CustomModalSelectContainer = styled.div<{ darkMode: boolean }>`
+const CustomModalSelectContainer = styled.div<{ $darkMode: boolean }>`
   flex: 1;
   position: relative;
 
   > .select-input {
     padding: 1rem;
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
     min-width: 5rem;
     border-radius: 4px;
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -243,10 +243,10 @@ const CustomModalSelectContainer = styled.div<{ darkMode: boolean }>`
     outline: none !important;
     z-index: 1000;
 
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
     min-width: 5rem;
     border-radius: 4px;
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
 
     line-height: normal;
     font-size: 0.9rem;
@@ -260,7 +260,7 @@ const CustomModalSelectContainer = styled.div<{ darkMode: boolean }>`
       border: 1px solid transparent;
       &:hover {
         border: 1px solid
-          ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+          ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
       }
     }
   }
@@ -280,7 +280,7 @@ export function CustomModalSelect({
   return (
     <CustomModalSelectContainer
       tabIndex={0}
-      darkMode={darkMode}
+      $darkMode={darkMode}
       {...rest}
       onClick={() => setIsOpen(!isOpen)}
       onBlur={() => setIsOpen(false)}

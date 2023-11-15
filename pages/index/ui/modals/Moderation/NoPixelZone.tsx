@@ -52,24 +52,24 @@ function CreateNPZ() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>Create No Pixel Zone</ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={createNpz}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>Create No Pixel Zone</ModalBoxTitle>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={createNpz}>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) =>
             onCoordinatesPaste(e, setStartX, setStartY, setCanvas)
           }
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Coord X"
             type="number"
             value={startX}
             onChange={(e) => setStartX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Coord Y"
             type="number"
             value={startY}
@@ -77,27 +77,27 @@ function CreateNPZ() {
           />
         </ModalCoordRow>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => onCoordinatesPaste(e, setEndX, setEndY, setCanvas)}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Coord X"
             type="number"
             value={endX}
             onChange={(e) => setEndX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Coord Y"
             type="number"
             value={endY}
             onChange={(e) => setEndY(Number(e.target.value))}
           />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Canvas"
             type="text"
             value={canvas}
@@ -109,7 +109,7 @@ function CreateNPZ() {
         </ModalCoordRow>
       </ModalQueryForm>
       { error ? (
-        <ModalErrorBox darkMode={darkMode}>
+        <ModalErrorBox $darkMode={darkMode}>
           {error}
         </ModalErrorBox>
       ) : null}
@@ -150,20 +150,20 @@ function DeleteNPZ() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>
         Delete No Pixel Zone
       </ModalBoxTitle>
-      <ModalQueryForm onSubmit={banIp} darkMode={darkMode}>
-        <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield placeholder="npzId" type="text" value={npzId} required onChange={(e) => setNpzId(e.target.value) } darkMode={darkMode}/>
+      <ModalQueryForm onSubmit={banIp} $darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
+          <ModalTextfield placeholder="npzId" type="text" value={npzId} required onChange={(e) => setNpzId(e.target.value) } $darkMode={darkMode}/>
           <button>
             <Send/>
           </button>
         </ModalCoordRow>
       </ModalQueryForm>
       { error ? (
-        <ModalErrorBox darkMode={darkMode}>
+        <ModalErrorBox $darkMode={darkMode}>
           {error}
         </ModalErrorBox>
       ) : null}
@@ -190,17 +190,17 @@ function ListNPZ() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode}>
+      <ModalBoxTitle $darkMode={darkMode}>
         Search No Pixel Zones
       </ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow $darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
+          <ModalTextfield $darkMode={darkMode} placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+        <ModalCoordRow $darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
           <button>
             <Search/>
           </button>

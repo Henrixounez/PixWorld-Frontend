@@ -3,6 +3,8 @@ import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react"
 import { Line, Pie } from 'react-chartjs-2';
 import styled, { css } from "styled-components";
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 import { API_URL } from "../constants/api";
 import { BoxContainer, BoxRow, BoxTitle } from "../pagesComponents"
@@ -24,7 +26,7 @@ const RankingTable = styled.table`
     background-color: rgba(0,0,0,0.3);
   }
 `;
-const RankingSwitchButton = styled.div<{selected: boolean}>`
+const RankingSwitchButton = styled.div<{ $selected: boolean }>`
   cursor: pointer;
 
   transition: .2s;
@@ -35,7 +37,7 @@ const RankingSwitchButton = styled.div<{selected: boolean}>`
   &:hover {
     color: #4bc0c0;
   }
-  ${({ selected }) => selected && css`
+  ${({ $selected: selected }) => selected && css`
     font-size: 1.5rem;
     color: #4bc0c0;
   `}
@@ -84,13 +86,13 @@ function Rankings() {
       <BoxRow style={{ justifyContent: "center", paddingTop: 0 }}>
         <RankingSwitchButton
           onClick={() => setCurrentRanking(RankingType.TOTAL)}
-          selected={currentRanking === RankingType.TOTAL}
+          $selected={currentRanking === RankingType.TOTAL}
         >
           {t('ranking.totalRanking')}
         </RankingSwitchButton>
         <RankingSwitchButton
           onClick={() => setCurrentRanking(RankingType.DAILY)}
-          selected={currentRanking === RankingType.DAILY}
+          $selected={currentRanking === RankingType.DAILY}
         >
           {t('ranking.dailyRanking')}
         </RankingSwitchButton>
@@ -166,19 +168,19 @@ function PixelActivityGraph() {
       <BoxRow style={{ justifyContent: "center", paddingTop: 0 }}>
         <RankingSwitchButton
           onClick={() => setWindow(PixelActivityWindow.DAY)}
-          selected={window === PixelActivityWindow.DAY}
+          $selected={window === PixelActivityWindow.DAY}
         >
           {t('activity.pixels.day')}
         </RankingSwitchButton>
         <RankingSwitchButton
           onClick={() => setWindow(PixelActivityWindow.WEEK)}
-          selected={window === PixelActivityWindow.WEEK}
+          $selected={window === PixelActivityWindow.WEEK}
         >
           {t('activity.pixels.week')}
         </RankingSwitchButton>
         <RankingSwitchButton
           onClick={() => setWindow(PixelActivityWindow.MONTH)}
-          selected={window === PixelActivityWindow.MONTH}
+          $selected={window === PixelActivityWindow.MONTH}
         >
           {t('activity.pixels.month')}
         </RankingSwitchButton>

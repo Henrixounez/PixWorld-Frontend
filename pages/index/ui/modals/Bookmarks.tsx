@@ -16,7 +16,7 @@ const Container = styled.div`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   gap: 1rem;
 `;
-const OverlayRow = styled.div<{ darkMode: boolean }>`
+const OverlayRow = styled.div<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -46,7 +46,7 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     }
   }
 `;
-const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
+const AddNew = styled.div<{ $error: boolean, $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -56,7 +56,7 @@ const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
 
   input {
     max-width: 30vw;
-    border-color: ${({ error, darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
+    border-color: ${({ $error: error, $darkMode: darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
   }
   svg {
     cursor: pointer;
@@ -145,7 +145,7 @@ export default function ModalBookmarks() {
   return (
     <Container>
       { bookmarks.map((b, i) => (
-        <OverlayRow darkMode={darkMode} key={i}>
+        <OverlayRow $darkMode={darkMode} key={i}>
           <div>
             {b.title}
           </div>
@@ -159,7 +159,7 @@ export default function ModalBookmarks() {
           </div>
         </OverlayRow>
       ))}
-      <AddNew error={errorNew} darkMode={darkMode}>
+      <AddNew $error={errorNew} $darkMode={darkMode}>
         <input type="text" value={newBookmarkTitle} placeholder={t('name')} onChange={(e) => setNewBookmarkTitle(e.target.value)} />
         <input type="text" value={newBookmarkPosition} placeholder={t('position')} onChange={(e) => setNewBookmarkPosition(e.target.value)} />
         <FilePlus onClick={() => saveNew() }/>

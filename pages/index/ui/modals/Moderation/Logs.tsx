@@ -94,17 +94,17 @@ function PixelLogBan({
   return (
     <tr>
       <td colSpan={7}>
-        <ModalQueryForm onSubmit={banUser} darkMode={darkMode}>
-          <ModalCoordRow darkMode={darkMode}>
-            <ModalTextfield placeholder="Reason" type="text" value={reason} onChange={(e) => setReason(e.target.value)}  darkMode={darkMode}/>
-            <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)}  darkMode={darkMode}/>
+        <ModalQueryForm onSubmit={banUser} $darkMode={darkMode}>
+          <ModalCoordRow $darkMode={darkMode}>
+            <ModalTextfield placeholder="Reason" type="text" value={reason} onChange={(e) => setReason(e.target.value)}  $darkMode={darkMode}/>
+            <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)}  $darkMode={darkMode}/>
             <button>
               <Send/>
             </button>
           </ModalCoordRow>
         </ModalQueryForm>
         { error ? (
-          <ModalErrorBox darkMode={darkMode}>
+          <ModalErrorBox $darkMode={darkMode}>
             {error}
           </ModalErrorBox>
         ) : null}
@@ -133,17 +133,17 @@ function PixelLogs() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode}>
+      <ModalBoxTitle $darkMode={darkMode}>
         Coordinate Pixel Logs
       </ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
-          <ModalTextfield darkMode={darkMode} placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow $darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Coord X" type="number" value={x} onChange={(e) => setX(Number(e.target.value)) }/>
+          <ModalTextfield $darkMode={darkMode} placeholder="Coord Y" type="number" value={y} onChange={(e) => setY(Number(e.target.value)) }/>
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
-          <ModalTextfield darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
+        <ModalCoordRow $darkMode={darkMode} onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Canvas" type="text" value={canvas} onChange={(e) => setCanvas(e.target.value) }/>
           <button>
             <Search/>
           </button>
@@ -216,13 +216,13 @@ function UserPixelLogs() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode}>
+      <ModalBoxTitle $darkMode={darkMode}>
         User Pixel Logs
       </ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
-        <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield darkMode={darkMode} placeholder="Username" type="text" onChange={(e) => setUsername(e.target.value) }/>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow $darkMode={darkMode}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Username" type="text" onChange={(e) => setUsername(e.target.value) }/>
           <button>
             <Search/>
           </button>
@@ -282,13 +282,13 @@ function IpPixelLogs() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode}>
+      <ModalBoxTitle $darkMode={darkMode}>
         IP Pixel Logs
       </ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={searchPixelLogs}>
-        <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield darkMode={darkMode} placeholder="Ip" type="text" onChange={(e) => setIp(e.target.value) }/>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={searchPixelLogs}>
+        <ModalCoordRow $darkMode={darkMode}>
+          <ModalTextfield $darkMode={darkMode} placeholder="Ip" type="text" onChange={(e) => setIp(e.target.value) }/>
           <button>
             <Search/>
           </button>

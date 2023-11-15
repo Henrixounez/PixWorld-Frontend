@@ -18,14 +18,14 @@ import countryCodes from '../../constants/countryCodes';
 import { useRouter } from 'next/dist/client/router';
 import { Colors, getColor } from '../../constants/colors';
 
-export const BottomButton = styled.div<{ darkMode: boolean }>`
+export const BottomButton = styled.div<{ $darkMode: boolean }>`
   font-size: 1rem;
   height: 35px;
   width: 35px;
   transition: .2s;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode) };
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode) };
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode) };
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode) };
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@ export const BottomButton = styled.div<{ darkMode: boolean }>`
   cursor: pointer;
   user-select: none;
   &:hover {
-    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
+    background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode) };
   }
 
   svg {
@@ -53,7 +53,7 @@ const ChatButton = styled(BottomButton)`
     right: 150px;
   }
 `;
-const UnreadBubble = styled.div<{ darkMode: boolean }>`
+const UnreadBubble = styled.div<{ $darkMode: boolean }>`
   position: absolute;
   top: -5px;
   right: -5px;
@@ -61,9 +61,9 @@ const UnreadBubble = styled.div<{ darkMode: boolean }>`
   height: 12px;
   user-select: none;
   border-radius: 100%;
-  background-color: ${({ darkMode }) => getColor(Colors.UNREAD, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UNREAD, darkMode)};
 `;
-const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
+const ChatWindow = styled.div<{ $show: boolean, $darkMode: boolean }>`
   position: fixed;
   bottom: 50px;
   right: 50px;
@@ -74,16 +74,16 @@ const ChatWindow = styled.div<{show: boolean, darkMode: boolean}>`
   transition: .2s;
   z-index: 10;
 
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: .8rem;
 
-  ${({ show }) => !show && `
+  ${({ $show: show }) => !show && `
     display: none;
   `}
   @media (max-height: 800px) {
@@ -101,7 +101,7 @@ const ChatText = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const ChatInteraction = styled.div<{ darkMode: boolean }>`
+const ChatInteraction = styled.div<{ $darkMode: boolean }>`
   padding: 5px;
   box-sizing: border-box;
   display: flex;
@@ -110,49 +110,49 @@ const ChatInteraction = styled.div<{ darkMode: boolean }>`
   gap: 5px;
   input {
     width: 80%;
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
     border-radius: 2px;
-    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-    color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+    background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   }
 `;
 const ChatMessage = styled.div`
   word-break: break-all;
 `;
-const SendButton = styled.div<{ darkMode: boolean }>`
+const SendButton = styled.div<{ $darkMode: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2px 10px;
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border-radius: 2px;
   cursor: pointer;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   &:hover {
     opacity: 0.8;
   }
   user-select: none;
 `;
-const ChannelButton = styled.div<{ darkMode: boolean }>`
+const ChannelButton = styled.div<{ $darkMode: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2px 10px;
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border-radius: 2px;
   cursor: pointer;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
   &:hover {
     opacity: 0.8;
   }
   user-select: none;
 `;
-const ChannelsContainer = styled.div<{ darkMode: boolean }>`
+const ChannelsContainer = styled.div<{ $darkMode: boolean }>`
   position: relative;
   > .channel-list {
     padding: 2px 10px;
-    border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
-    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+    border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+    background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
     border-radius: 2px;
     position: absolute;
     display: flex;
@@ -165,15 +165,15 @@ const ChannelsContainer = styled.div<{ darkMode: boolean }>`
     }
   }
 `
-const NotConnected = styled.div<{ darkMode: boolean }>`
+const NotConnected = styled.div<{ $darkMode: boolean }>`
   cursor: pointer;
   font-size: 0.8rem;
-  color: ${({ darkMode }) => getColor(Colors.LINK, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.LINK, darkMode)};
   text-align: center;
   width: 100%;
 
   &:hover {
-    color: ${({ darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
   }
 `;
 
@@ -336,13 +336,13 @@ export default function Chat() {
 
   return (
     <>
-      <ChatButton onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })} darkMode={darkMode}>
+      <ChatButton onClick={() => dispatch({ type: SET_SHOW_CHAT, payload: !showChat })} $darkMode={darkMode}>
         <MessageSquare height="20px" />
         { unreadMessage && (
-          <UnreadBubble  darkMode={darkMode}/>
+          <UnreadBubble  $darkMode={darkMode}/>
         )}
       </ChatButton>
-      <ChatWindow show={showChat} darkMode={darkMode}>
+      <ChatWindow $show={showChat} $darkMode={darkMode}>
         <ChatText ref={chatRef}>
           {messageList.map((msg, i) => (
             <ChatMessage key={i} >
@@ -360,7 +360,7 @@ export default function Chat() {
             </ChatMessage>
           ))}
         </ChatText>
-        <ChatInteraction darkMode={darkMode}>
+        <ChatInteraction $darkMode={darkMode}>
           { user ? (
             <>
               <input
@@ -374,11 +374,11 @@ export default function Chat() {
                     sendMessage();
                 }}
               />
-              <SendButton onClick={sendMessage} darkMode={darkMode}>
+              <SendButton onClick={sendMessage} $darkMode={darkMode}>
                 {t('send')}
               </SendButton>
-              <ChannelsContainer darkMode={darkMode}>
-                <ChannelButton darkMode={darkMode} onClick={() => setShowChannels(!showChannels)}>
+              <ChannelsContainer $darkMode={darkMode}>
+                <ChannelButton $darkMode={darkMode} onClick={() => setShowChannels(!showChannels)}>
                   {channel}
                 </ChannelButton>
                 {showChannels ? (
@@ -401,7 +401,7 @@ export default function Chat() {
               </ChannelsContainer>
             </>
           ) : (
-            <NotConnected onClick={() => router.push('/user/login')} darkMode={darkMode}>
+            <NotConnected onClick={() => router.push('/user/login')} $darkMode={darkMode}>
               {t('needConnect')}
             </NotConnected>
           )}

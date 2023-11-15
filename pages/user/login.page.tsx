@@ -54,7 +54,7 @@ function Login() {
   return (
     <Container>
       <ContentContainer>
-        <BoxContainer status={status}>
+        <BoxContainer $status={status}>
           <BoxTitle>
             {t('login.title')}
           </BoxTitle>
@@ -83,9 +83,9 @@ function Login() {
               <BoxRow>
                 {t('login.noAccount')}
                 <Link href='/user/register'>
-                  <a style={{ color: '#4bc0c0' }}>
+                  <p style={{ color: '#4bc0c0' }}>
                     {t('login.goToRegister')}
-                  </a>
+                  </p>
                 </Link>
               </BoxRow>
               <div style={{ flex: 1 }}/>

@@ -4,15 +4,15 @@ import { Edit3, Users } from 'react-feather';
 import { ReduxState } from "../store"
 import { Colors, getColor } from '../../constants/colors';
 
-const Counter = styled.div<{darkMode: boolean}>`
+const Counter = styled.div<{ $darkMode: boolean }>`
   position: fixed;
   bottom: 55px;
   left: 10px;
   font-size: 1rem;
   height: 35px;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   padding: 0 10px;
   gap: 5px;
   display: flex;
@@ -37,7 +37,7 @@ export default function PlayerCounter() {
   const darkMode = useSelector((state: ReduxState) => state.darkMode);
 
   return (
-    <Counter darkMode={darkMode}>
+    <Counter $darkMode={darkMode}>
       <Users height="20px" />
       {playerNb}
       { pixelNb ? (

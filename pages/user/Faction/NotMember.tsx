@@ -49,7 +49,7 @@ export function FactionCreate() {
   };
   
   return (
-    <BoxContainer status={status}>
+    <BoxContainer $status={status}>
       <BoxTitle>
         {t('create.title')}
       </BoxTitle>

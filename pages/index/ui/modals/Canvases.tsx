@@ -14,12 +14,12 @@ const Container = styled.div`
   gap: 1rem;
   padding: 0px 16px;
 `;
-const CanvasItem = styled.div<{ selected: boolean, darkMode: boolean }>`
+const CanvasItem = styled.div<{ $selected: boolean, $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
-  border: 1px solid ${({ darkMode, selected }) => getColor(selected ? Colors.ALERT : Colors.UI_BORDER, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode, $selected: selected }) => getColor(selected ? Colors.ALERT : Colors.UI_BORDER, darkMode)};
   border-radius: 0.5rem;
   padding: 16px 8px;
 
@@ -58,8 +58,8 @@ export default function ModalCanvases() {
       {canvases.map((canvas, i) => (
         <CanvasItem
           key={i}
-          darkMode={darkMode}
-          selected={canvas.id === currentCanvas}
+          $darkMode={darkMode}
+          $selected={canvas.id === currentCanvas}
           onClick={() => {
             dispatch({type: SET_CANVAS, payload: canvas.id });
             dispatch({type: SET_POSITION, payload: { x: 0, y: 0, zoom: 1 }});  

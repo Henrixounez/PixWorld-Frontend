@@ -486,7 +486,7 @@ export class CanvasController {
 
   // Drawing //
   render = () => {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx)
       return;
 

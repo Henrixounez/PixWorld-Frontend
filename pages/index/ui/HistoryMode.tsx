@@ -10,15 +10,15 @@ import { SET_SHOULD_LOAD_CHUNKS } from '../store/actions/painting';
 import { getCanvasController } from '../controller/CanvasController';
 import { Colors, getColor } from '../../constants/colors';
 
-const HistoryContainer = styled.div<{ darkMode: boolean }>`
+const HistoryContainer = styled.div<{ $darkMode: boolean }>`
   position: fixed;
   top: 10px;
   left: 50vw;
   transform: translate(-50%, 0);
   font-size: 1rem;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   padding: 0.5rem 0.5rem;
   gap: 10px;
   display: flex;
@@ -121,7 +121,7 @@ export default function HistoryMode() {
   return (
     <>
       {active ? (
-        <HistoryContainer darkMode={darkMode}>
+        <HistoryContainer $darkMode={darkMode}>
           Select date:
           <input
             type='date'

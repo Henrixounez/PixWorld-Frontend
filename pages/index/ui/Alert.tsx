@@ -8,16 +8,16 @@ import { getCanvasController } from '../controller/CanvasController';
 import { AudioType } from '../controller/SoundController';
 import { Colors, getColor } from '../../constants/colors';
 
-const AlertContainer = styled.div<{show: boolean, bgColor: string, darkMode: boolean}>`
+const AlertContainer = styled.div<{ $show: boolean, $bgColor: string, $darkMode: boolean }>`
   position: fixed;
   top: 55px;
   left: calc(50vw);
   transform: translate(-50%, 0);
   font-size: 1rem;
   text-align: center;
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
-  background-color: ${({ bgColor }) => bgColor};
-  border: ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $bgColor: bgColor }) => bgColor};
+  border: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
   border: 1px solid #000;
   padding: 10px;
   gap: 10px;
@@ -26,7 +26,7 @@ const AlertContainer = styled.div<{show: boolean, bgColor: string, darkMode: boo
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: .5s;
-  opacity: ${({ show }) => show ? '1' : '0'};
+  opacity: ${({ $show: show }) => show ? '1' : '0'};
   user-select: none;
 `;
 
@@ -62,7 +62,7 @@ export default function Alert() {
   return (
     <>
       { alert.show && alert.text ? (
-        <AlertContainer show={display} bgColor={getColor(color, darkMode)} darkMode={darkMode}>
+        <AlertContainer $show={display} $bgColor={getColor(color, darkMode)} $darkMode={darkMode}>
           {t(alert.text)}
         </AlertContainer>
       ) : (

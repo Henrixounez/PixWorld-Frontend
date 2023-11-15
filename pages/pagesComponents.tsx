@@ -1,17 +1,17 @@
 import { ClipboardEvent, Dispatch, SetStateAction } from "react";
 import styled, { css } from "styled-components"
 
-export const BoxContainer = styled.div<{ status?: string }>`
+export const BoxContainer = styled.div<{ $status?: string }>`
   border-radius: .5rem;
   margin: 1rem auto;
   background-color: rgba(0,0,0,0.2);
   max-width: 1500px;
   width: 100%;
   box-sizing: border-box;
-  ${({ status }) => status === "success" && css`
+  ${({ $status: status }) => status === "success" && css`
     border: 2px solid #3aa1a1;
   `}
-  ${({ status }) => status === "error" && css`
+  ${({ $status: status }) => status === "error" && css`
     border: 2px solid #a53030;
   `}
   @media(max-width: 500px) {

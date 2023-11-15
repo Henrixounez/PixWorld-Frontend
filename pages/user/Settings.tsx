@@ -62,7 +62,7 @@ function Edit() {
   }
 
   return (
-    <BoxContainer status={status}>
+    <BoxContainer $status={status}>
       <BoxTitle>
         {t('edit.title')}
       </BoxTitle>

@@ -34,16 +34,16 @@ function BanIp() {
   }
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>
         Ban IP
       </ModalBoxTitle>
-      <ModalQueryForm onSubmit={banIp} darkMode={darkMode}>
-        <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield placeholder="IP" type="text" value={ip} required onChange={(e) => setIp(e.target.value) } darkMode={darkMode}/>
-          <ModalTextfield placeholder="Reason" type="text" value={reason} required={ban} onChange={(e) => setReason(e.target.value)} darkMode={darkMode} />
-          <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)} darkMode={darkMode} />
-          <ModalCheckbox onClick={() => setBan(!ban) } darkMode={darkMode}>
+      <ModalQueryForm onSubmit={banIp} $darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
+          <ModalTextfield placeholder="IP" type="text" value={ip} required onChange={(e) => setIp(e.target.value) } $darkMode={darkMode}/>
+          <ModalTextfield placeholder="Reason" type="text" value={reason} required={ban} onChange={(e) => setReason(e.target.value)} $darkMode={darkMode} />
+          <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)} $darkMode={darkMode} />
+          <ModalCheckbox onClick={() => setBan(!ban) } $darkMode={darkMode}>
             {ban ? <CheckSquare/> : <Square/> }
           </ModalCheckbox>
           <button>
@@ -52,7 +52,7 @@ function BanIp() {
         </ModalCoordRow>
       </ModalQueryForm>
       { error ? (
-        <ModalErrorBox darkMode={darkMode}>
+        <ModalErrorBox $darkMode={darkMode}>
           {error}
         </ModalErrorBox>
       ) : null}
@@ -87,16 +87,16 @@ function BanUser() {
   }
 
   return (
-    <ModalBoxContainer status={status} darkMode={darkMode}>
-      <ModalBoxTitle darkMode={darkMode}>
+    <ModalBoxContainer $status={status} $darkMode={darkMode}>
+      <ModalBoxTitle $darkMode={darkMode}>
         Ban User
       </ModalBoxTitle>
-      <ModalQueryForm onSubmit={banUser} darkMode={darkMode}>
-        <ModalCoordRow darkMode={darkMode}>
-          <ModalTextfield placeholder="Username" type="text" value={username} onChange={(e) => setUsername(e.target.value) } darkMode={darkMode}/>
-          <ModalTextfield placeholder="Reason" type="text" value={reason} required={ban} onChange={(e) => setReason(e.target.value)}  darkMode={darkMode}/>
-          <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)}  darkMode={darkMode}/>
-          <ModalCheckbox onClick={() => setBan(!ban) } darkMode={darkMode}>
+      <ModalQueryForm onSubmit={banUser} $darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
+          <ModalTextfield placeholder="Username" type="text" value={username} onChange={(e) => setUsername(e.target.value) } $darkMode={darkMode}/>
+          <ModalTextfield placeholder="Reason" type="text" value={reason} required={ban} onChange={(e) => setReason(e.target.value)}  $darkMode={darkMode}/>
+          <ModalTextfield type="datetime-local" value={date} min={format(new Date(), "yyyy-MM-dd'T'hh:mm")} step={60} onChange={(e) => setDate(e.target.value)}  $darkMode={darkMode}/>
+          <ModalCheckbox onClick={() => setBan(!ban) } $darkMode={darkMode}>
             {ban ? <CheckSquare/> : <Square/> }
           </ModalCheckbox>
           <button>
@@ -105,7 +105,7 @@ function BanUser() {
         </ModalCoordRow>
       </ModalQueryForm>
       { error ? (
-        <ModalErrorBox darkMode={darkMode}>
+        <ModalErrorBox $darkMode={darkMode}>
           {error}
         </ModalErrorBox>
       ) : null}

@@ -14,7 +14,7 @@ const Container = styled.div`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   gap: 1rem;
 `;
-const OverlayRow = styled.div<{ darkMode: boolean }>`
+const OverlayRow = styled.div<{ $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -27,7 +27,7 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     width: 50%;
   }
   img {
-    background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, !darkMode)};
+    background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, !darkMode)};
     padding: 0.5rem;
     width: 15%;
     max-height: 50px;
@@ -46,7 +46,7 @@ const OverlayRow = styled.div<{ darkMode: boolean }>`
     }
   }
 `;
-const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
+const AddNew = styled.div<{ $error: boolean, $darkMode: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -56,7 +56,7 @@ const AddNew = styled.div<{error: boolean, darkMode: boolean}>`
 
   input {
     max-width: 30vw;
-    border-color: ${({ error, darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
+    border-color: ${({ $error: error, $darkMode: darkMode }) => error ? getColor(Colors.ALERT, darkMode) : 'initial'};
   }
   svg {
     cursor: pointer;
@@ -134,7 +134,7 @@ export default function ModalOverlay() {
   return (
     <Container>
       { overlays.map((o, i) => (
-        <OverlayRow darkMode={darkMode} key={i}>
+        <OverlayRow $darkMode={darkMode} key={i}>
           <img src={o.image} width="80px"/>
           <input readOnly value={JSON.stringify(o)} />
           <div>
@@ -144,7 +144,7 @@ export default function ModalOverlay() {
           </div>
         </OverlayRow>
       ))}
-      <AddNew error={errorNew} darkMode={darkMode}>
+      <AddNew $error={errorNew} $darkMode={darkMode}>
         <input type="text" value={newOverlayValue} onChange={(e) => setNewOverlayValue(e.target.value)} />
         <FilePlus onClick={() => saveNew() }/>
       </AddNew>

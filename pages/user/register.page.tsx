@@ -48,7 +48,7 @@ function Login() {
   return (
     <Container>
       <ContentContainer>
-        <BoxContainer status={status}>
+        <BoxContainer $status={status}>
           <BoxTitle>
             {t('register.title')}
           </BoxTitle>
@@ -63,9 +63,9 @@ function Login() {
               </BoxRow>
               <BoxRow style={{ textAlign: 'center', justifyContent: 'center' }}>
                 <Link href='/user/login'>
-                  <a style={{ color: '#4bc0c0' }}>
+                  <p style={{ color: '#4bc0c0' }}>
                     {t('register.goToLogin')}
-                  </a>
+                  </p>
                 </Link>
               </BoxRow>
             </>
@@ -108,9 +108,9 @@ function Login() {
                 <BoxRow>
                   {t('register.haveAccount')}
                   <Link href='/user/login'>
-                    <a style={{ color: '#4bc0c0' }}>
+                    <p style={{ color: '#4bc0c0' }}>
                       {t('register.goToLogin')}
-                    </a>
+                    </p>
                   </Link>
                 </BoxRow>
                 <div style={{ flex: 1 }}/>

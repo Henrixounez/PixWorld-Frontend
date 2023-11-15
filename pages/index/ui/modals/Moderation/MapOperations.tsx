@@ -107,19 +107,19 @@ function Import() {
   };
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>Import Image</ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={importImage}>
-        <ModalCoordRow darkMode={darkMode}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>Import Image</ModalBoxTitle>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={importImage}>
+        <ModalCoordRow $darkMode={darkMode}>
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="URL"
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}
             placeholder="Canvas"
             type="text"
@@ -128,25 +128,25 @@ function Import() {
           />
         </ModalCoordRow>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => onCoordinatesPaste(e, setX, setY, setCanvas)}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="X"
             type="number"
             value={x}
             onChange={(e) => setX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Y"
             type="number"
             value={y}
             onChange={(e) => setY(Number(e.target.value))}
           />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
           <div style={{ flex: 1 }} />
           <button>
             <Send />
@@ -154,7 +154,7 @@ function Import() {
         </ModalCoordRow>
       </ModalQueryForm>
       {error ? (
-        <ModalErrorBox darkMode={darkMode}>{error}</ModalErrorBox>
+        <ModalErrorBox $darkMode={darkMode}>{error}</ModalErrorBox>
       ) : null}
     </ModalBoxContainer>
   );
@@ -191,24 +191,24 @@ function Erase() {
   };
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>Erase</ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={importImage}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>Erase</ModalBoxTitle>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={importImage}>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setStartX, setStartY, setCanvas);
           }}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Start X"
             type="number"
             value={startX}
             onChange={(e) => setStartX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Start Y"
             type="number"
             value={startY}
@@ -216,29 +216,29 @@ function Erase() {
           />
         </ModalCoordRow>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setEndX, setEndY, setCanvas);
           }}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="End X"
             type="number"
             value={endX}
             onChange={(e) => setEndX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="End Y"
             type="number"
             value={endY}
             onChange={(e) => setEndY(Number(e.target.value))}
           />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
           <ModalSelect
-            darkMode={darkMode}
+            $darkMode={darkMode}
             value={canvas}
             onChange={(e) => {
               setCanvas(e.target.value);
@@ -262,7 +262,7 @@ function Erase() {
         </ModalCoordRow>
       </ModalQueryForm>
       {error ? (
-        <ModalErrorBox darkMode={darkMode}>{error}</ModalErrorBox>
+        <ModalErrorBox $darkMode={darkMode}>{error}</ModalErrorBox>
       ) : null}
     </ModalBoxContainer>
   );
@@ -360,24 +360,24 @@ function Rollback() {
   }, [date, canvas]);
 
   return (
-    <ModalBoxContainer darkMode={darkMode} status={status}>
-      <ModalBoxTitle darkMode={darkMode}>Rollback</ModalBoxTitle>
-      <ModalQueryForm darkMode={darkMode} onSubmit={importImage}>
+    <ModalBoxContainer $darkMode={darkMode} $status={status}>
+      <ModalBoxTitle $darkMode={darkMode}>Rollback</ModalBoxTitle>
+      <ModalQueryForm $darkMode={darkMode} onSubmit={importImage}>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setStartX, setStartY, setCanvas);
           }}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Start X"
             type="number"
             value={startX}
             onChange={(e) => setStartX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Start Y"
             type="number"
             value={startY}
@@ -385,29 +385,29 @@ function Rollback() {
           />
         </ModalCoordRow>
         <ModalCoordRow
-          darkMode={darkMode}
+          $darkMode={darkMode}
           onPaste={(e) => {
             onCoordinatesPaste(e, setEndX, setEndY, setCanvas);
           }}
         >
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="End X"
             type="number"
             value={endX}
             onChange={(e) => setEndX(Number(e.target.value))}
           />
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="End Y"
             type="number"
             value={endY}
             onChange={(e) => setEndY(Number(e.target.value))}
           />
         </ModalCoordRow>
-        <ModalCoordRow darkMode={darkMode}>
+        <ModalCoordRow $darkMode={darkMode}>
           <ModalSelect
-            darkMode={darkMode}
+            $darkMode={darkMode}
             value={canvas}
             onChange={(e) => {
               setCanvas(e.target.value);
@@ -424,7 +424,7 @@ function Rollback() {
           </ModalSelect>
 
           <ModalTextfield
-            darkMode={darkMode}
+            $darkMode={darkMode}
             placeholder="Date"
             type="date"
             min={new Date(dateFrToEn(minDate)).toISOString().slice(0, 10)}
@@ -435,7 +435,7 @@ function Rollback() {
           />
 
           <ModalSelect
-            darkMode={darkMode}
+            $darkMode={darkMode}
             value={hour}
             onChange={(e) => setHour(e.target.value)}
             disabled={!canvas || !availableHours.length}
@@ -456,7 +456,7 @@ function Rollback() {
         </ModalCoordRow>
       </ModalQueryForm>
       {error ? (
-        <ModalErrorBox darkMode={darkMode}>{error}</ModalErrorBox>
+        <ModalErrorBox $darkMode={darkMode}>{error}</ModalErrorBox>
       ) : null}
     </ModalBoxContainer>
   );

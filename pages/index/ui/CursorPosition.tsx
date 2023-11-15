@@ -5,15 +5,15 @@ import { ReduxState, store } from "../store"
 import { SET_ALERT } from '../store/actions/infos';
 import { Colors, getColor } from '../../constants/colors';
 
-const Pos = styled.div<{darkMode: boolean}>`
+const Pos = styled.div<{ $darkMode: boolean }>`
   position: fixed;
   bottom: 10px;
   left: 10px;
   font-size: 1rem;
   height: 35px;
-  background-color: ${({ darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
-  border: 1px solid ${({ darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
-  color: ${({ darkMode }) => getColor(Colors.TEXT, darkMode)};
+  background-color: ${({ $darkMode: darkMode }) => getColor(Colors.UI_BACKGROUND, darkMode)};
+  border: 1px solid ${({ $darkMode: darkMode }) => getColor(Colors.UI_BORDER, darkMode)};
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.TEXT, darkMode)};
   padding: 0 10px;
   min-width: 50px;
   text-align: center;
@@ -44,7 +44,7 @@ export default function CursorPosition() {
 
   return (
     <Pos
-      darkMode={darkMode}
+      $darkMode={darkMode}
       onClick={copyPos}
       onMouseEnter={() => setShowCursorPos(false)}
       onMouseLeave={() => setShowCursorPos(true)}

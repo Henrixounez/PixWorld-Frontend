@@ -65,7 +65,7 @@ export default class OverlayController {
       img.crossOrigin = "anonymous";
     img.src = imgUrl;
     img.onload = () => {
-      const ctx = this.canvas.getContext('2d');
+      const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
       this.canvas.width = img.width
       this.canvas.height = img.height;
 
@@ -93,7 +93,7 @@ export default class OverlayController {
     return s.length === 1 ? '0' + s : s;
   }
   getColorAt(x: number, y: number) {
-    const ctx = this.canvas.getContext('2d');
+    const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     if (!ctx)
       return null;

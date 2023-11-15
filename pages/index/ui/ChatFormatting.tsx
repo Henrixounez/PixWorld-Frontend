@@ -8,17 +8,17 @@ function createColor(text: string) {
   return '#' + md5(text).substr(0, 6);
 }
 
-const Position = styled.span<{ darkMode: boolean }>`
-  color: ${({ darkMode }) => getColor(Colors.LINK, darkMode)};
+const Position = styled.span<{ $darkMode: boolean }>`
+  color: ${({ $darkMode: darkMode }) => getColor(Colors.LINK, darkMode)};
   padding: 0 2px;
   cursor: pointer;
   &:hover {
-    color: ${({ darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
+    color: ${({ $darkMode: darkMode }) => getColor(Colors.HOVERED_LINK, darkMode)};
   }
 `;
-const Mention = styled.span<{color: string, isMe: boolean, darkMode: boolean}>`
-  ${( { isMe, color }) => `${isMe ? 'background-color' : 'color'}: ${color}`};
-  ${( { isMe }) => `${isMe ? 'color' : 'background-color'}: ${isMe ? getColor(Colors.TEXT, true) : 'transparent'}`};
+const Mention = styled.span<{ $color: string, $isMe: boolean, $darkMode: boolean }>`
+  ${( { $isMe: isMe, $color: color }) => `${isMe ? 'background-color' : 'color'}: ${color}`};
+  ${( { $isMe: isMe }) => `${isMe ? 'color' : 'background-color'}: ${isMe ? getColor(Colors.TEXT, true) : 'transparent'}`};
   padding: 0 2px;
 `;
 const Greentext = styled.span`
@@ -134,10 +134,10 @@ export default function formatChatText(text: string, onClick: (type: FormatType,
           case FormatType.BREAK:
             return <br key={i}/>;
           case FormatType.POSITION:
-            return <Position onClick={() => onClick(FormatType.POSITION, text)} key={i} darkMode={darkMode}>{text}</Position>;
+            return <Position onClick={() => onClick(FormatType.POSITION, text)} key={i} $darkMode={darkMode}>{text}</Position>;
           case FormatType.MENTION:
             const name = text.replace('@', '');
-            return <Mention isMe={name === store?.getState().user?.username} color={createColor(name)} key={i} darkMode={darkMode}>{text}</Mention>;
+            return <Mention $isMe={name === store?.getState().user?.username} $color={createColor(name)} key={i} $darkMode={darkMode}>{text}</Mention>;
           case FormatType.BOLD:
             return <b key={i}>{formatChatText(text.replace(/\*{2}/gm, ''), onClick, darkMode, nbCalls + 1)}</b>
           case FormatType.ITALICS:
