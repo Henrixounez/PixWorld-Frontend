@@ -1,8 +1,25 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
 import { Line } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 import { API_URL } from "../constants/api";
 import { BoxContainer, BoxTitle } from "../pagesComponents"

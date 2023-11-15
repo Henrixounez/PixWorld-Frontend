@@ -3,8 +3,27 @@ import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react"
 import { Line, Pie } from 'react-chartjs-2';
 import styled, { css } from "styled-components";
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+} from "chart.js";
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title
+);
 
 import { API_URL } from "../constants/api";
 import { BoxContainer, BoxRow, BoxTitle } from "../pagesComponents"
