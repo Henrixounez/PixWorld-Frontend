@@ -1,5 +1,5 @@
-export const languages = ['en', 'fr', 'ptbr', 'ru', 'es', 'tr'];
-export const languagesDisplay = ['en', 'fr', 'pt-br', 'ru', 'es', 'tr'];
+export const languages = ['en', 'es', 'fr', 'ge', 'ptbr', 'ru', 'tr'];
+export const languagesDisplay = ['en', 'es', 'fr', 'ge', 'pt-br', 'ru', 'tr'];
 export const languagesModules = [
   'common',
   'infos',
